@@ -31,8 +31,8 @@
       <!-- Remember Me -->
       <div class="flex items-center justify-between">
         <label class="flex items-center cursor-pointer">
-          <%= f.check_box :remember_me, class: "w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" %>
-          <span class="ml-2 text-sm text-gray-600">로그인 상태 유지</span>
+          <%= f.check_box :remember_me, checked: true, class: "w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" %>
+          <span class="ml-2 text-sm text-gray-600">로그인 상태 유지 (1년)</span>
         </label>
         <% if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
           <%= link_to "비밀번호 찾기", new_password_path(resource_name), class: "text-sm text-blue-600 hover:text-blue-700 font-medium" %>

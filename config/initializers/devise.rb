@@ -8,6 +8,13 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 12
   config.reconfirmable = false
   config.expire_all_remember_me_on_sign_out = true
+
+  # 로그인 유지 기간 설정 (1년)
+  config.remember_for = 1.year
+
+  # 사용자가 사이트 방문 시 remember me 쿠키 자동 갱신
+  config.extend_remember_period = true
+
   config.password_length = 6..128
   config.email_regexp = /\A[^@\s]+@[^@\s]+\z/
   config.reset_password_within = 6.hours
