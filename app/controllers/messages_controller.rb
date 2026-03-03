@@ -51,7 +51,7 @@ class MessagesController < ApplicationController
   end
 
   def message_params
-    params.require(:message).permit(:content)
+    params.require(:message).permit(:content, images: [], videos: [])
   end
 
   def mark_unread_messages_as_read

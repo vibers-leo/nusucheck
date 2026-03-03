@@ -26,7 +26,20 @@ class Customers::RequestsController < ApplicationController
     if @request.save
       # 백그라운드에서 이메일 발송 (자동 재시도 3회)
       RequestMailerJob.perform_later("request_received", @request.id)
-      redirect_to customers_request_path(@request), notice: "누수 체크 접수가 완료되었습니다."
+
+      # AI 환영 메시지 발송
+      SystemMessageService.send_welcome_message(@request)
+
+      # 영상/사진이 첨부되었다면 확인 메시지
+      if @request.photos.attached? || @request.videos.attached?
+        SystemMessageService.send_video_received_message(@request)
+      end
+
+      # 전문가 매칭 진행 중 메시지
+      SystemMessageService.send_matching_in_progress_message(@request)
+
+      # 채팅방으로 리디렉션
+      redirect_to request_messages_path(@request), notice: "누수 체크 접수가 완료되었습니다. AI 안내를 확인하세요!"
     else
       render :new, status: :unprocessable_entity
     end

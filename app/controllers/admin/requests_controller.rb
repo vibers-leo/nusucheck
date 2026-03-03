@@ -27,6 +27,10 @@ class Admin::RequestsController < ApplicationController
     master = Master.find(params[:master_id])
     @request.assign!(master: master)
     NotificationService.notify_request_assigned(@request) rescue nil
+
+    # AI 시스템 메시지: 전문가 배정 완료
+    SystemMessageService.send_master_assigned_message(@request, master)
+
     redirect_to admin_request_path(@request), notice: "#{master.name} 마스터가 직접 배정되었습니다."
   rescue AASM::InvalidTransition => e
     redirect_to admin_request_path(@request), alert: "마스터 배정 실패: #{e.message}"

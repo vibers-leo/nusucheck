@@ -1,24 +1,43 @@
-<% is_my_message = message.sender_id == current_user.id %>
-
 <%= turbo_frame_tag dom_id(message) do %>
-  <div class="flex <%= is_my_message ? 'justify-end' : 'justify-start' %> mb-2">
-    <div class="max-w-[70%]">
-      <% unless is_my_message %>
-        <div class="text-xs text-gray-500 mb-1 ml-1"><%= message.sender_name %></div>
-      <% end %>
-
-      <div class="<%= is_my_message ? 'bg-blue-500 text-white' : 'bg-white text-gray-900' %> rounded-2xl px-4 py-2.5 shadow-sm">
-        <div class="break-words whitespace-pre-wrap"><%= message.content %></div>
-      </div>
-
-      <div class="flex items-center gap-1 mt-1 <%= is_my_message ? 'justify-end' : 'justify-start' %>">
-        <div class="text-xs text-gray-400">
-          <%= message.created_at.strftime("%H:%M") %>
+  <% if message.system_message? %>
+    <!-- 시스템 메시지 (AI 안내) -->
+    <div class="flex justify-center mb-4">
+      <div class="max-w-md w-full">
+        <div class="bg-gray-100 rounded-xl px-4 py-3 shadow-sm border border-gray-200">
+          <div class="text-center text-xs text-gray-500 mb-1.5">
+            <%= message.sender_name %>
+          </div>
+          <div class="text-sm text-gray-700 text-center break-words whitespace-pre-wrap">
+            <%= message.content %>
+          </div>
+          <div class="text-center text-xs text-gray-400 mt-1.5">
+            <%= message.created_at.strftime("%H:%M") %>
+          </div>
         </div>
-        <% if is_my_message && message.read? %>
-          <div class="text-xs text-gray-400">읽음</div>
-        <% end %>
       </div>
     </div>
-  </div>
+  <% else %>
+    <!-- 일반 메시지 (고객/전문가) -->
+    <% is_my_message = message.sender_id == current_user&.id %>
+    <div class="flex <%= is_my_message ? 'justify-end' : 'justify-start' %> mb-2">
+      <div class="max-w-[70%]">
+        <% unless is_my_message %>
+          <div class="text-xs text-gray-500 mb-1 ml-1"><%= message.sender_name %></div>
+        <% end %>
+
+        <div class="<%= is_my_message ? 'bg-blue-500 text-white' : 'bg-white text-gray-900' %> rounded-2xl px-4 py-2.5 shadow-sm">
+          <div class="break-words whitespace-pre-wrap"><%= message.content %></div>
+        </div>
+
+        <div class="flex items-center gap-1 mt-1 <%= is_my_message ? 'justify-end' : 'justify-start' %>">
+          <div class="text-xs text-gray-400">
+            <%= message.created_at.strftime("%H:%M") %>
+          </div>
+          <% if is_my_message && message.read? %>
+            <div class="text-xs text-gray-400">읽음</div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 <% end %>
