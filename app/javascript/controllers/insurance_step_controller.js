@@ -163,10 +163,20 @@ export default class extends Controller {
     const requiredInputs = currentStepElement.querySelectorAll('[required]')
 
     let isValid = true
+    let firstInvalidInput = null
+
     requiredInputs.forEach(input => {
-      if (!input.value.trim()) {
+      // readonly 필드는 value만 체크 (disabled는 검증 제외)
+      const shouldValidate = !input.disabled
+      const isEmpty = !input.value || input.value.trim() === ''
+
+      if (shouldValidate && isEmpty) {
         isValid = false
         input.classList.add('border-red-500')
+
+        if (!firstInvalidInput) {
+          firstInvalidInput = input
+        }
 
         // 에러 메시지 표시
         let errorMsg = input.parentElement.querySelector('.error-message')
@@ -191,6 +201,17 @@ export default class extends Controller {
       setTimeout(() => {
         currentStepElement.classList.remove('shake')
       }, 500)
+
+      // 첫 번째 오류 필드로 스크롤
+      if (firstInvalidInput) {
+        setTimeout(() => {
+          firstInvalidInput.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          // readonly가 아니면 포커스
+          if (!firstInvalidInput.readOnly) {
+            firstInvalidInput.focus()
+          }
+        }, 300)
+      }
     }
 
     return isValid
