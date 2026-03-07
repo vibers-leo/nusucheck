@@ -15,25 +15,25 @@
 
   <!-- 정산 요약 카드 -->
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+    <div class="bg-white rounded-2xl border border-gray-100 p-5">
       <p class="text-sm font-medium text-gray-500 mb-2">입금 대기</p>
       <p class="text-xl font-bold text-yellow-600"><%= number_to_currency(@total_pending, unit: "₩", precision: 0) %></p>
       <p class="text-xs text-gray-400 mt-1">deposited + held</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+    <div class="bg-white rounded-2xl border border-gray-100 p-5">
       <p class="text-sm font-medium text-gray-500 mb-2">지급 예정</p>
       <p class="text-xl font-bold text-primary-600"><%= number_to_currency(@total_released, unit: "₩", precision: 0) %></p>
       <p class="text-xs text-gray-400 mt-1">미수령 금액</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+    <div class="bg-white rounded-2xl border border-gray-100 p-5">
       <p class="text-sm font-medium text-gray-500 mb-2">이번 달 정산</p>
       <p class="text-xl font-bold text-green-600"><%= number_to_currency(@this_month_settled, unit: "₩", precision: 0) %></p>
       <p class="text-xs text-gray-400 mt-1"><%= Time.current.strftime("%Y년 %m월") %></p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+    <div class="bg-white rounded-2xl border border-gray-100 p-5">
       <p class="text-sm font-medium text-gray-500 mb-2">누적 정산</p>
       <p class="text-xl font-bold text-purple-600"><%= number_to_currency(@total_settled, unit: "₩", precision: 0) %></p>
       <p class="text-xs text-gray-400 mt-1">전체 기간</p>
@@ -41,7 +41,7 @@
   </div>
 
   <!-- 필터 탭 -->
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-1 flex space-x-1">
+  <div class="bg-white rounded-2xl border border-gray-100 p-1 flex space-x-1">
     <%
       tabs = [
         { label: "전체", value: nil },
@@ -62,7 +62,7 @@
   </div>
 
   <!-- 정산 목록 -->
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+  <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
     <% if @escrow_transactions.empty? %>
       <div class="text-center py-16">
         <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

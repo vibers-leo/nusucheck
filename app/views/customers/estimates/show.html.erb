@@ -2,7 +2,7 @@
   <%= render "shared/page_header",
       title: "견적서 ##{@estimate.id}",
       back_path: customers_request_path(@estimate.request),
-      back_text: "신고 상세로 돌아가기" %>
+      back_text: "체크 상세로 돌아가기" %>
 
   <div class="flex items-center justify-end mb-4">
     <%
@@ -19,7 +19,7 @@
     </span>
   </div>
 
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
+  <div class="bg-white rounded-2xl border border-gray-100 p-6 space-y-6">
     <!-- 기본 정보 -->
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
       <div>

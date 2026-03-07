@@ -28,7 +28,7 @@
     </div>
   </div>
 
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8" data-controller="photo-upload">
+  <div class="bg-white rounded-2xl border border-gray-100 p-8" data-controller="photo-upload">
     <%= form_with(model: @inspection, url: leak_inspections_path,
                   html: { multipart: true }, class: "space-y-6",
                   data: { controller: "form-validation", action: "submit->form-validation#submit" }) do |f| %>

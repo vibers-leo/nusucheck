@@ -3,7 +3,7 @@
     <!-- 시스템 메시지 (AI 안내) -->
     <div class="flex justify-center mb-4">
       <div class="max-w-md w-full">
-        <div class="bg-gray-100 rounded-xl px-4 py-3 shadow-sm border border-gray-200">
+        <div class="bg-gray-100 rounded-xl px-4 py-3 border border-gray-200">
           <div class="text-center text-xs text-gray-500 mb-1.5">
             <%= message.sender_name %>
           </div>
@@ -25,7 +25,7 @@
           <div class="text-xs text-gray-500 mb-1 ml-1"><%= message.sender_name %></div>
         <% end %>
 
-        <div class="<%= is_my_message ? 'bg-primary-500 text-white' : 'bg-white text-gray-900' %> rounded-2xl px-4 py-2.5 shadow-sm">
+        <div class="<%= is_my_message ? 'bg-primary-500 text-white' : 'bg-white border border-gray-100 text-gray-900' %> rounded-2xl px-4 py-2.5">
           <div class="break-words whitespace-pre-wrap"><%= message.content %></div>
         </div>
 

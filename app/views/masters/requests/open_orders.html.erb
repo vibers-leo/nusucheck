@@ -52,7 +52,7 @@
   <% end %>
 
   <!-- 필터 -->
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+  <div class="bg-white rounded-2xl border border-gray-100 p-4">
     <%= search_form_for @q, url: open_orders_masters_requests_path, html: { method: :get, class: "flex flex-col sm:flex-row gap-3" } do |f| %>
       <% if @filter_my_area %>
         <%= hidden_field_tag :my_area, "1" %>
@@ -124,7 +124,7 @@
           price_range_max = (estimated_price * 1.2).to_i
         %>
 
-        <%= link_to masters_request_path(request), class: "block bg-white rounded-2xl shadow-sm border-2 border-gray-100 hover:border-primary-200 hover:shadow-lg transition-all p-5" do %>
+        <%= link_to masters_request_path(request), class: "block bg-white rounded-2xl border-2 border-gray-100 hover:border-primary-200 hover:shadow-lg transition-all p-5" do %>
           <!-- 헤더: 시간 + 지역 뱃지 -->
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">

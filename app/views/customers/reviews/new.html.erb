@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
   <!-- 상단 헤더 -->
-  <div class="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+  <div class="bg-white border-b border-gray-200 sticky top-0 z-10">
     <div class="max-w-2xl mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
         <%= link_to customers_request_path(@request), class: "text-gray-600 hover:text-gray-900 transition" do %>
@@ -29,7 +29,7 @@
     </div>
 
     <!-- 전문가 정보 -->
-    <div class="mb-8 bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
+    <div class="mb-8 bg-white rounded-2xl p-5 border border-gray-200">
       <div class="flex items-center gap-4">
         <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
           <span class="text-2xl font-bold text-primary-700"><%= @request.master&.name&.first %></span>
@@ -49,7 +49,7 @@
 
       <%= render "shared/form_errors", resource: @review %>
 
-      <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8">
+      <div class="bg-white rounded-3xl border border-gray-200 p-8">
         <div class="mb-8">
           <h2 class="text-xl font-bold text-gray-900 mb-2 text-center">솔직한 평가를 부탁드려요</h2>
           <p class="text-sm text-gray-600 text-center">다른 고객들에게 큰 도움이 돼요</p>
@@ -100,7 +100,7 @@
       </div>
 
       <!-- 코멘트 -->
-      <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8">
+      <div class="bg-white rounded-3xl border border-gray-200 p-8">
         <div class="mb-6">
           <h2 class="text-xl font-bold text-gray-900 mb-2">한 마디 남겨주세요</h2>
           <p class="text-sm text-gray-600">어떤 점이 좋았나요? (선택사항)</p>

@@ -103,7 +103,7 @@
   </div>
 
   <!-- 정보 카드 -->
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 divide-y">
+  <div class="bg-white rounded-2xl border border-gray-100 divide-y">
     <!-- 고객 정보 -->
     <div class="p-6">
       <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -216,7 +216,7 @@
       <div class="p-6">
         <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <span>🔗</span>
-          <span>연관 누수 신고</span>
+          <span>연관 누수 체크</span>
         </h3>
         <div class="flex items-center justify-between bg-gray-50 rounded-lg p-3">
           <div class="text-sm">
@@ -240,7 +240,7 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <% @insurance_claim.supporting_documents.each do |doc| %>
             <% if doc.content_type.start_with?("image/") %>
-              <%= image_tag doc, class: "rounded-lg shadow-sm object-cover h-32 w-full" %>
+              <%= image_tag doc, class: "rounded-lg object-cover h-32 w-full" %>
             <% else %>
               <div class="bg-gray-50 rounded-lg p-4 flex items-center text-sm text-gray-600">
                 <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

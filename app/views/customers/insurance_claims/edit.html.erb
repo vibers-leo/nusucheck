@@ -19,7 +19,7 @@
     </p>
   </div>
 
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+  <div class="bg-white rounded-2xl border border-gray-100 p-6">
     <%= form_with(model: [:customers, @insurance_claim],
                   html: { multipart: true }, class: "space-y-6",
                   data: { controller: "form-validation", action: "submit->form-validation#submit" }) do |f| %>

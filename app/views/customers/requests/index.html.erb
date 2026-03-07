@@ -1,163 +1,120 @@
-<div class="space-y-6 py-8">
-  <!-- 헤더 -->
-  <div class="text-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900">🔧 내 누수 신고</h1>
-    <p class="mt-2 text-gray-600">전문가 매칭부터 수리 완료까지 한눈에 확인하세요</p>
-  </div>
+<%# 당근마켓 스타일 체크 목록 - 리스트 뷰 %>
 
-  <!-- 검색/필터 -->
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-    <%= search_form_for @q, url: customers_requests_path, html: { method: :get, class: "flex flex-col sm:flex-row gap-3" } do |f| %>
-      <div class="flex-1">
-        <%= f.select :status_eq,
-              options_for_select([
-                ["전체 상태", ""],
-                ["접수됨", "reported"],
-                ["마스터 배정", "assigned"],
-                ["방문 중", "visiting"],
-                ["탐지 중", "detecting"],
-                ["견적 대기", "estimate_pending"],
-                ["견적 제출", "estimate_submitted"],
-                ["공사 합의", "construction_agreed"],
-                ["공사 진행", "constructing"],
-                ["공사 완료", "construction_completed"],
-                ["종료", "closed"],
-                ["취소", "cancelled"]
-              ], params.dig(:q, :status_eq)),
-              {}, class: input_classes(:select) %>
-      </div>
-      <div class="flex-1">
-        <%= f.select :symptom_type_eq,
-              options_for_select([
-                ["전체 증상", ""],
-                ["벽면 누수", "wall_leak"],
-                ["천장 누수", "ceiling_leak"],
-                ["바닥 누수", "floor_leak"],
-                ["배관 누수", "pipe_leak"],
-                ["화장실 누수", "toilet_leak"],
-                ["외부 누수", "outdoor_leak"]
-              ], params.dig(:q, :symptom_type_eq)),
-              {}, class: input_classes(:select) %>
-      </div>
-      <div class="flex gap-2">
-        <%= f.submit "검색", class: btn_classes(:primary, :md) %>
-        <%= link_to "초기화", customers_requests_path, class: btn_classes(:secondary, :md) %>
-      </div>
-    <% end %>
-  </div>
+<!-- 헤더 -->
+<div class="mb-5">
+  <h1 class="text-xl font-bold text-gray-900">내 체크</h1>
+  <p class="text-sm text-gray-500 mt-0.5">전문가 매칭부터 수리 완료까지 한눈에</p>
+</div>
 
-  <!-- 카드형 목록 -->
-  <% if @requests.any? %>
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <% @requests.each do |request| %>
-        <%= link_to customers_request_path(request), class: "block bg-white rounded-xl shadow-sm border border-gray-100 card-hover fade-in" do %>
-          <div class="p-5">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-sm font-mono text-gray-500">#<%= request.id %></span>
-              <%= render "shared/status_badge", status: request.status %>
-            </div>
-
-            <h3 class="font-semibold text-gray-900 mb-2">
-              <%= symptom_label(request.symptom_type) %>
-            </h3>
-
-            <div class="space-y-1 text-sm text-gray-600">
-              <p class="flex items-center">
-                <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-                <%= truncate(request.address, length: 30) %>
-              </p>
-              <p class="flex items-center">
-                <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-                <%= l(request.created_at, format: :short) rescue request.created_at.strftime("%Y-%m-%d %H:%M") %>
-              </p>
-            </div>
-          </div>
-        <% end %>
-      <% end %>
+<!-- 필터 -->
+<div class="bg-white rounded-2xl border border-gray-100 p-4 mb-4">
+  <%= search_form_for @q, url: customers_requests_path, html: { method: :get, class: "flex flex-col sm:flex-row gap-3" } do |f| %>
+    <div class="flex-1">
+      <%= f.select :status_eq,
+            options_for_select([
+              ["전체 상태", ""],
+              ["접수됨", "reported"],
+              ["마스터 배정", "assigned"],
+              ["방문 중", "visiting"],
+              ["탐지 중", "detecting"],
+              ["견적 대기", "estimate_pending"],
+              ["견적 제출", "estimate_submitted"],
+              ["공사 합의", "construction_agreed"],
+              ["공사 진행", "constructing"],
+              ["공사 완료", "construction_completed"],
+              ["종료", "closed"],
+              ["취소", "cancelled"]
+            ], params.dig(:q, :status_eq)),
+            {}, class: input_classes(:select) %>
     </div>
-
-    <!-- 페이지네이션 -->
-    <div class="mt-6">
-      <%= paginate @requests %>
+    <div class="flex-1">
+      <%= f.select :symptom_type_eq,
+            options_for_select([
+              ["전체 증상", ""],
+              ["벽면 누수", "wall_leak"],
+              ["천장 누수", "ceiling_leak"],
+              ["바닥 누수", "floor_leak"],
+              ["배관 누수", "pipe_leak"],
+              ["화장실 누수", "toilet_leak"],
+              ["외부 누수", "outdoor_leak"]
+            ], params.dig(:q, :symptom_type_eq)),
+            {}, class: input_classes(:select) %>
     </div>
-  <% else %>
-    <%= render "shared/empty_state",
-          icon: "document",
-          title: "아직 신고 내역이 없어요",
-          description: "누수로 고민이시라면 지금 바로 신고하세요" %>
-
-    <!-- 안내 정보 -->
-    <div class="mt-8 bg-gradient-to-br from-primary-50 to-indigo-50 rounded-2xl p-6 border border-primary-100">
-      <div class="flex items-center gap-2 mb-4">
-        <span class="text-2xl">💡</span>
-        <h3 class="font-bold text-gray-900">이런 증상이 있다면 바로 신고하세요</h3>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
-        <div class="flex items-start gap-2">
-          <span class="flex-shrink-0 w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</span>
-          <span><strong>벽이나 천장에 물방울</strong>이 맺혀있어요</span>
-        </div>
-        <div class="flex items-start gap-2">
-          <span class="flex-shrink-0 w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</span>
-          <span><strong>벽지가 들뜨거나 변색</strong>되었어요</span>
-        </div>
-        <div class="flex items-start gap-2">
-          <span class="flex-shrink-0 w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</span>
-          <span><strong>곰팡이 냄새</strong>가 나요</span>
-        </div>
-        <div class="flex items-start gap-2">
-          <span class="flex-shrink-0 w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</span>
-          <span><strong>수도 요금이 갑자기</strong> 많이 나왔어요</span>
-        </div>
-        <div class="flex items-start gap-2">
-          <span class="flex-shrink-0 w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</span>
-          <span><strong>물 흐르는 소리</strong>가 계속 들려요</span>
-        </div>
-        <div class="flex items-start gap-2">
-          <span class="flex-shrink-0 w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</span>
-          <span><strong>아래층에서 누수</strong> 신고가 들어왔어요</span>
-        </div>
-      </div>
-      <div class="mt-6 pt-4 border-t border-primary-200 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-        <div>
-          <p class="font-semibold text-gray-900 mb-1">⚡ 빠른 매칭</p>
-          <p class="text-gray-600 text-xs">평균 2시간 이내 전문가 배정</p>
-        </div>
-        <div>
-          <p class="font-semibold text-gray-900 mb-1">💰 투명한 견적</p>
-          <p class="text-gray-600 text-xs">현장 확인 후 정확한 금액 안내</p>
-        </div>
-        <div>
-          <p class="font-semibold text-gray-900 mb-1">✅ 검증된 전문가</p>
-          <p class="text-gray-600 text-xs">자격증 보유 누수 전문가만 매칭</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="mt-6 text-center">
-      <%= link_to new_customers_request_path,
-            class: "inline-flex items-center gap-2 px-8 py-4 bg-primary-600 text-white rounded-xl font-bold text-lg hover:bg-primary-700 transition shadow-lg hover:shadow-xl" do %>
-        🔧 전문가 매칭받기
-      <% end %>
-      <p class="text-xs text-gray-500 mt-3">신고 접수는 3분이면 충분해요</p>
-    </div>
-  <% end %>
-
-  <!-- 신고 내역이 있을 때 버튼 -->
-  <% if @requests.any? %>
-    <div class="mt-8 text-center">
-      <%= link_to new_customers_request_path,
-            class: "inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition shadow-lg" do %>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-        </svg>
-        새 신고 접수하기
-      <% end %>
+    <div class="flex gap-2">
+      <%= f.submit "검색", class: btn_classes(:primary, :md) %>
+      <%= link_to "초기화", customers_requests_path, class: btn_classes(:secondary, :md) %>
     </div>
   <% end %>
 </div>
+
+<!-- 리스트 뷰 -->
+<% if @requests.any? %>
+  <div class="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-100">
+    <% @requests.each do |request| %>
+      <%= link_to customers_request_path(request), class: "block list-item-touch" do %>
+        <div class="px-4 py-4">
+          <div class="flex items-start justify-between">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1.5">
+                <%= render "shared/status_badge", status: request.status %>
+                <span class="text-xs text-gray-400">#<%= request.id %></span>
+              </div>
+              <h3 class="text-[15px] font-semibold text-gray-900">
+                <%= symptom_label(request.symptom_type) %>
+              </h3>
+              <div class="flex items-center gap-3 mt-1.5 text-sm text-gray-500">
+                <span class="flex items-center">
+                  <svg class="w-3.5 h-3.5 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <%= truncate(request.address, length: 20) %>
+                </span>
+                <span class="text-gray-300">|</span>
+                <span><%= l(request.created_at, format: :short) rescue request.created_at.strftime("%m/%d %H:%M") %></span>
+              </div>
+            </div>
+            <svg class="w-5 h-5 text-gray-300 flex-shrink-0 ml-2 mt-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- 페이지네이션 -->
+  <div class="mt-6">
+    <%= paginate @requests %>
+  </div>
+<% else %>
+  <%= render "shared/empty_state",
+        icon: "water",
+        title: "아직 체크 내역이 없어요",
+        description: "누수로 고민이시라면 지금 바로 체크하세요",
+        cta_text: "체크 접수하기",
+        cta_path: new_customers_request_path %>
+
+  <!-- 증상 안내 -->
+  <div class="mt-6 bg-primary-50 rounded-2xl p-5">
+    <h3 class="text-sm font-bold text-gray-900 mb-3">이런 증상이 있다면 바로 체크하세요</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 bg-primary-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0">&#10003;</div>
+        <span>벽이나 천장에 물방울이 맺혀있어요</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 bg-primary-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0">&#10003;</div>
+        <span>벽지가 들뜨거나 변색되었어요</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 bg-primary-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0">&#10003;</div>
+        <span>곰팡이 냄새가 나요</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 bg-primary-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0">&#10003;</div>
+        <span>수도 요금이 갑자기 많이 나왔어요</span>
+      </div>
+    </div>
+  </div>
+<% end %>

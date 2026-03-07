@@ -40,7 +40,7 @@
   <% if @insurance_claims.any? %>
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <% @insurance_claims.each do |claim| %>
-        <%= link_to masters_insurance_claim_path(claim), class: "block bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition" do %>
+        <%= link_to masters_insurance_claim_path(claim), class: "block bg-white rounded-2xl border border-gray-100 hover:shadow-md transition" do %>
           <div class="p-5">
             <div class="flex items-center justify-between mb-3">
               <span class="text-sm font-mono text-gray-500"><%= claim.claim_number %></span>

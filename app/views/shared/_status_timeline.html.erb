@@ -25,12 +25,12 @@
 
   current_index = all_steps.index { |s| s[:key] == current_status } || -1
 %>
-<div class="mb-6" role="progressbar" aria-label="신고 진행 상태" aria-valuenow="<%= current_index + 1 %>" aria-valuemin="1" aria-valuemax="<%= all_steps.size %>">
+<div class="mb-6" role="progressbar" aria-label="체크 진행 상태" aria-valuenow="<%= current_index + 1 %>" aria-valuemin="1" aria-valuemax="<%= all_steps.size %>">
   <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">진행 상태</h3>
 
   <% if local_assigns[:cancelled] || cancelled %>
     <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center" role="alert">
-      <span class="text-red-600 font-semibold">이 신고는 취소되었습니다.</span>
+      <span class="text-red-600 font-semibold">이 체크는 취소되었습니다.</span>
     </div>
   <% elsif local_assigns[:no_leak] || no_leak %>
     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center" role="alert">

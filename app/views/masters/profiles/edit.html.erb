@@ -4,7 +4,7 @@
       back_path: masters_profile_path,
       back_text: "프로필로 돌아가기" %>
 
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+  <div class="bg-white rounded-2xl border border-gray-100 p-6">
     <%= form_with(model: @profile, url: masters_profile_path, method: :patch, class: "space-y-6",
                   data: { controller: "form-validation", action: "submit->form-validation#submit" }) do |f| %>
 

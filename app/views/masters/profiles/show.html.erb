@@ -5,7 +5,7 @@
   </div>
 
   <!-- 기본 정보 -->
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+  <div class="bg-white rounded-2xl border border-gray-100 p-6">
     <div class="flex items-start space-x-4">
       <div class="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
         <span class="text-primary-600 font-bold text-3xl"><%= current_user.name&.first %></span>
@@ -36,7 +36,7 @@
 
   <% if @profile.present? %>
     <!-- 자격 정보 -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="bg-white rounded-2xl border border-gray-100 p-6">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">자격 정보</h2>
       <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
         <div>
@@ -51,7 +51,7 @@
     </div>
 
     <!-- 장비 -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="bg-white rounded-2xl border border-gray-100 p-6">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">보유 장비</h2>
       <% if @profile.equipment_list.any? %>
         <div class="flex flex-wrap gap-2">
@@ -65,7 +65,7 @@
     </div>
 
     <!-- 서비스 지역 -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="bg-white rounded-2xl border border-gray-100 p-6">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">서비스 지역</h2>
       <% if @profile.service_areas_list.any? %>
         <div class="flex flex-wrap gap-2">
@@ -79,7 +79,7 @@
     </div>
 
     <!-- 계좌 정보 -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="bg-white rounded-2xl border border-gray-100 p-6">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">계좌 정보</h2>
       <dl class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-4">
         <div>
@@ -99,7 +99,7 @@
 
     <!-- 자기소개 -->
     <% if @profile.respond_to?(:bio) && @profile.bio.present? %>
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="bg-white rounded-2xl border border-gray-100 p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">자기소개</h2>
         <p class="text-sm text-gray-700 whitespace-pre-wrap"><%= @profile.bio %></p>
       </div>

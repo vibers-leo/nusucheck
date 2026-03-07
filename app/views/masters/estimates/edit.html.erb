@@ -1,14 +1,14 @@
 <div class="max-w-4xl mx-auto">
   <%= render "shared/page_header",
       title: "견적 수정",
-      description: "견적 ##{@estimate.id} (신고 ##{@request.id})",
+      description: "견적 ##{@estimate.id} (체크 ##{@request.id})",
       back_path: masters_request_path(@request),
-      back_text: "신고 상세로 돌아가기" %>
+      back_text: "체크 상세로 돌아가기" %>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- 좌측: 견적 폼 -->
     <div class="lg:col-span-2">
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="bg-white rounded-2xl border border-gray-100 p-6">
         <%= form_with(model: [@request, @estimate], url: masters_request_estimate_path(@request, @estimate), method: :patch, class: "space-y-6") do |f| %>
 
           <%= render "shared/form_errors", resource: @estimate %>
@@ -107,7 +107,7 @@
     <!-- 우측: 추천 항목 -->
     <div class="space-y-6">
       <% if defined?(@recommended_items) && @recommended_items&.any? %>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
           <h2 class="text-sm font-semibold text-gray-900 mb-3">추천 항목</h2>
           <div class="space-y-2">
             <% @recommended_items.each do |item| %>
@@ -132,7 +132,7 @@
       <% end %>
 
       <% if defined?(@standard_items) && @standard_items&.any? %>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
           <h2 class="text-sm font-semibold text-gray-900 mb-3">표준 항목</h2>
           <div class="space-y-2 max-h-96 overflow-y-auto">
             <% @standard_items.each do |item| %>

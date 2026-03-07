@@ -8,7 +8,7 @@
         </svg>
         목록으로
       <% end %>
-      <h1 class="text-2xl font-bold text-gray-900 mt-2">신고 #<%= @request.id %></h1>
+      <h1 class="text-2xl font-bold text-gray-900 mt-2">체크 #<%= @request.id %></h1>
     </div>
     <div class="flex items-center gap-3">
       <%= link_to request_messages_path(@request), class: "inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium" do %>
@@ -22,7 +22,7 @@
   </div>
 
   <!-- 상태 타임라인 -->
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+  <div class="bg-white rounded-2xl border border-gray-100 p-6">
     <%= render "shared/status_timeline", request_record: @request %>
   </div>
 
@@ -30,7 +30,7 @@
     <!-- 좌측: 정보 -->
     <div class="lg:col-span-2 space-y-6">
       <!-- 고객 정보 -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="bg-white rounded-2xl border border-gray-100 p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">고객 정보</h2>
         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
           <div>
@@ -45,7 +45,7 @@
       </div>
 
       <!-- 증상/위치 정보 -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="bg-white rounded-2xl border border-gray-100 p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">증상 및 위치</h2>
         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
           <div>
@@ -94,7 +94,7 @@
 
       <!-- 견적 목록 (있을 경우) -->
       <% if @request.estimates.any? %>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
           <h2 class="text-lg font-semibold text-gray-900 mb-4">견적 목록</h2>
           <div class="space-y-3">
             <% @request.estimates.recent.each do |estimate| %>
@@ -128,7 +128,7 @@
     <!-- 우측: 액션 -->
     <div class="space-y-6">
       <!-- 상태별 액션 버튼들 -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="bg-white rounded-2xl border border-gray-100 p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">작업</h2>
         <div class="space-y-3">
           <% if @request.assigned? %>
@@ -222,7 +222,7 @@
       </div>
 
       <!-- 접수 정보 -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="bg-white rounded-2xl border border-gray-100 p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">접수 정보</h2>
         <dl class="space-y-3 text-sm">
           <div class="flex justify-between">
