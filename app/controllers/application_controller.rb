@@ -27,9 +27,9 @@ class ApplicationController < ActionController::Base
     if resource.admin?
       admin_root_path
     elsif resource.master?
-      masters_requests_path
+      expert_dashboard_path  # 전문가 대시보드
     else
-      customers_requests_path
+      customers_dashboard_path  # 고객 대시보드
     end
   end
 end

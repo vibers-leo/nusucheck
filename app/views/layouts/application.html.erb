@@ -28,28 +28,22 @@
             <span class="text-2xl font-bold">누수체크</span>
           <% end %>
 
-          <% unless controller_name == 'pages' && action_name == 'coming_soon' %>
-            <%= link_to "누수 진단하기", new_leak_inspection_path, class: "hidden sm:inline-flex ml-6 px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
-          <% end %>
-
           <% if user_signed_in? %>
             <div class="hidden md:flex ml-4 space-x-1">
               <% if current_user.customer? %>
-                <%= link_to "내 체크", customers_requests_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
-                <%= link_to "보험 신청", customers_insurance_claims_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
+                <%= link_to "홈", customers_dashboard_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
+                <%= link_to "내 요청", customers_requests_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
               <% elsif current_user.master? %>
-                <%= link_to "배정된 체크", masters_requests_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
-                <%= link_to "내 프로필", masters_profile_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
+                <%= link_to "홈", expert_dashboard_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
+                <%= link_to "공개 오더", open_orders_masters_requests_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
               <% elsif current_user.admin? %>
                 <%= link_to "대시보드", admin_root_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
                 <%= link_to "체크관리", admin_requests_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
                 <%= link_to "마스터관리", admin_masters_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
-                <%= link_to "에스크로", admin_escrow_transactions_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
-                <%= link_to "보험관리", admin_insurance_claims_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
-                <%= link_to "의견관리", admin_feedbacks_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
-                <%= link_to "설문조사", admin_surveys_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
               <% end %>
             </div>
+          <% else %>
+            <%= link_to "누수 체크하기", new_customers_request_path, class: "hidden sm:inline-flex ml-6 px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600" %>
           <% end %>
         </div>
 
@@ -138,44 +132,84 @@
     <% end %>
   <% end %>
 
-  <!-- 전문가용 하단 탭 네비게이션 (모바일) -->
-  <% if user_signed_in? && current_user.master? %>
+  <!-- 고객/전문가용 하단 탭 네비게이션 (모바일) -->
+  <% if user_signed_in? %>
     <% unless hotwire_native_app? %>
-      <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 pb-safe">
-        <div class="grid grid-cols-4 h-16">
-          <%
-            tabs = [
-              { path: expert_dashboard_path, icon: 'home', label: '홈', active: controller_name == 'dashboard' && action_name == 'index' },
-              { path: open_orders_masters_requests_path, icon: 'clipboard', label: '공개오더', active: controller_name == 'requests' && action_name == 'open_orders' },
-              { path: masters_requests_path, icon: 'folder', label: '내오더', active: controller_name == 'requests' && action_name == 'index' },
-              { path: masters_profile_path, icon: 'user', label: '프로필', active: controller_name == 'profiles' }
-            ]
-          %>
+      <% if current_user.customer? %>
+        <!-- 고객용 하단 탭 -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 pb-safe">
+          <div class="grid grid-cols-4 h-16">
+            <%
+              customer_tabs = [
+                { path: customers_dashboard_path, icon: 'home', label: '홈', active: controller_path == 'customers/dashboard' },
+                { path: new_customers_request_path, icon: 'plus', label: '체크', active: controller_path == 'customers/requests' && action_name == 'new' },
+                { path: customers_requests_path, icon: 'list', label: '내요청', active: controller_path == 'customers/requests' && action_name == 'index' },
+                { path: customers_insurance_claims_path, icon: 'document', label: '보험', active: controller_path == 'customers/insurance_claims' }
+              ]
+            %>
 
-          <% tabs.each do |tab| %>
-            <%= link_to tab[:path], class: "flex flex-col items-center justify-center gap-1 transition-colors #{tab[:active] ? 'text-blue-600' : 'text-gray-500'}" do %>
-              <% if tab[:icon] == 'home' %>
-                <svg class="w-6 h-6" fill="<%= tab[:active] ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="<%= tab[:active] ? '0' : '2' %>" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                </svg>
-              <% elsif tab[:icon] == 'clipboard' %>
-                <svg class="w-6 h-6" fill="<%= tab[:active] ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="<%= tab[:active] ? '0' : '2' %>" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                </svg>
-              <% elsif tab[:icon] == 'folder' %>
-                <svg class="w-6 h-6" fill="<%= tab[:active] ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="<%= tab[:active] ? '0' : '2' %>" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-              <% elsif tab[:icon] == 'user' %>
-                <svg class="w-6 h-6" fill="<%= tab[:active] ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="<%= tab[:active] ? '0' : '2' %>" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
+            <% customer_tabs.each do |tab| %>
+              <%= link_to tab[:path], class: "flex flex-col items-center justify-center gap-1 transition-colors #{tab[:active] ? 'text-blue-600' : 'text-gray-500'}" do %>
+                <% if tab[:icon] == 'home' %>
+                  <svg class="w-6 h-6" fill="<%= tab[:active] ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="<%= tab[:active] ? '0' : '2' %>" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                  </svg>
+                <% elsif tab[:icon] == 'plus' %>
+                  <svg class="w-6 h-6" fill="<%= tab[:active] ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="<%= tab[:active] ? '0' : '2.5' %>" d="M12 4v16m8-8H4"/>
+                  </svg>
+                <% elsif tab[:icon] == 'list' %>
+                  <svg class="w-6 h-6" fill="<%= tab[:active] ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="<%= tab[:active] ? '0' : '2' %>" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                  </svg>
+                <% elsif tab[:icon] == 'document' %>
+                  <svg class="w-6 h-6" fill="<%= tab[:active] ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="<%= tab[:active] ? '0' : '2' %>" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                <% end %>
+                <span class="text-xs font-medium"><%= tab[:label] %></span>
               <% end %>
-              <span class="text-xs font-medium"><%= tab[:label] %></span>
             <% end %>
-          <% end %>
-        </div>
-      </nav>
+          </div>
+        </nav>
+      <% elsif current_user.master? %>
+        <!-- 전문가용 하단 탭 -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 pb-safe">
+          <div class="grid grid-cols-4 h-16">
+            <%
+              master_tabs = [
+                { path: expert_dashboard_path, icon: 'home', label: '홈', active: controller_name == 'dashboard' && action_name == 'index' },
+                { path: open_orders_masters_requests_path, icon: 'clipboard', label: '공개오더', active: controller_name == 'requests' && action_name == 'open_orders' },
+                { path: masters_requests_path, icon: 'folder', label: '내오더', active: controller_name == 'requests' && action_name == 'index' },
+                { path: masters_profile_path, icon: 'user', label: '프로필', active: controller_name == 'profiles' }
+              ]
+            %>
+
+            <% master_tabs.each do |tab| %>
+              <%= link_to tab[:path], class: "flex flex-col items-center justify-center gap-1 transition-colors #{tab[:active] ? 'text-blue-600' : 'text-gray-500'}" do %>
+                <% if tab[:icon] == 'home' %>
+                  <svg class="w-6 h-6" fill="<%= tab[:active] ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="<%= tab[:active] ? '0' : '2' %>" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                  </svg>
+                <% elsif tab[:icon] == 'clipboard' %>
+                  <svg class="w-6 h-6" fill="<%= tab[:active] ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="<%= tab[:active] ? '0' : '2' %>" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                  </svg>
+                <% elsif tab[:icon] == 'folder' %>
+                  <svg class="w-6 h-6" fill="<%= tab[:active] ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="<%= tab[:active] ? '0' : '2' %>" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                <% elsif tab[:icon] == 'user' %>
+                  <svg class="w-6 h-6" fill="<%= tab[:active] ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="<%= tab[:active] ? '0' : '2' %>" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                <% end %>
+                <span class="text-xs font-medium"><%= tab[:label] %></span>
+              <% end %>
+            <% end %>
+          </div>
+        </nav>
+      <% end %>
 
       <!-- 하단 탭 높이만큼 여백 추가 (모바일) -->
       <div class="md:hidden h-16"></div>
