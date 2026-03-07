@@ -12,6 +12,9 @@ import BottomSheetController from "./bottom_sheet_controller"
 import TabController from "./tab_controller"
 import ScrollRevealController from "./scroll_reveal_controller"
 import NativeBridgeController from "./native_bridge_controller"
+import CheckWizardController from "./check_wizard_controller"
+import FileCounterController from "./file_counter_controller"
+import AddressSearchController from "./address_search_controller"
 
 application.register("estimate-items", EstimateItemsController)
 application.register("dismissible", DismissibleController)
@@ -26,3 +29,6 @@ application.register("bottom-sheet", BottomSheetController)
 application.register("tab", TabController)
 application.register("scroll-reveal", ScrollRevealController)
 application.register("native-bridge", NativeBridgeController)
+application.register("check-wizard", CheckWizardController)
+application.register("file-counter", FileCounterController)
+application.register("address-search", AddressSearchController)

@@ -1,490 +1,447 @@
-<div class="min-h-screen bg-white" data-controller="insurance-step" data-insurance-step-total-steps-value="5">
-  <!-- 상단 헤더 -->
-  <div class="bg-white border-b border-gray-100 sticky top-0 z-10">
-    <div class="max-w-2xl mx-auto px-4 py-4">
-      <div class="flex items-center justify-between">
-        <%= link_to customers_requests_path, class: "text-gray-600 hover:text-gray-900 transition" do %>
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="min-h-screen bg-white" data-controller="check-wizard" data-check-wizard-total-steps-value="7">
+  <!-- 상단 헤더 (Toss 스타일) -->
+  <div class="bg-white sticky top-0 z-20">
+    <div class="max-w-lg mx-auto px-4">
+      <div class="flex items-center justify-between h-14">
+        <button type="button" data-action="click->check-wizard#prevOrClose" class="w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-gray-100 transition">
+          <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+
+        <button type="button" data-action="click->check-wizard#close" class="w-10 h-10 flex items-center justify-center -mr-2 rounded-full hover:bg-gray-100 transition">
+          <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
-        <% end %>
-
-        <div class="flex items-center gap-2 text-sm">
-          <span id="autoSaveIndicator" class="text-gray-500">자동 저장됨</span>
-          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-          </svg>
-        </div>
+        </button>
       </div>
 
-      <!-- 프로그레스 바 -->
-      <div class="mt-4">
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-sm font-medium text-gray-700">
-            <span data-insurance-step-target="progress">1/5</span> 단계
-          </span>
-          <span class="text-xs text-gray-500">3분이면 끝나요</span>
-        </div>
-        <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-          <div data-insurance-step-target="progressBar" class="h-full bg-primary-500 progress-bar-animate rounded-full" style="width: 20%"></div>
-        </div>
+      <!-- 프로그레스 바 (Toss 스타일 - 얇고 미니멀) -->
+      <div class="h-1 bg-gray-100 rounded-full overflow-hidden -mt-1">
+        <div data-check-wizard-target="progressBar" class="h-full bg-primary-500 rounded-full transition-all duration-500 ease-out" style="width: 14%"></div>
       </div>
     </div>
   </div>
 
   <!-- 메인 콘텐츠 -->
-  <div class="max-w-2xl mx-auto px-4 py-8">
-    <!-- 인사말 -->
-    <div class="text-center mb-8 fade-in">
-      <div class="inline-block p-3 bg-primary-100 rounded-2xl mb-4">
-        <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-        </svg>
+  <%= form_with(model: @request, url: customers_requests_path,
+                html: { multipart: true, id: "check-form" },
+                data: { controller: "button-loading", action: "submit->button-loading#submit", check_wizard_target: "form" }) do |f| %>
+
+    <%= render "shared/form_errors", resource: @request %>
+
+    <!-- Step 1: 증상 선택 (버튼 스타일) -->
+    <div data-check-wizard-target="step" class="wizard-step">
+      <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
+        <div class="mb-8">
+          <p class="text-sm font-medium text-primary-600 mb-2">누수체크</p>
+          <h1 class="text-[26px] font-bold text-gray-900 leading-tight tracking-tight">
+            어떤 증상이<br>발생했나요?
+          </h1>
+        </div>
+
+        <div class="space-y-3" data-check-wizard-target="buttonGroup" data-field="symptom_type">
+          <% [
+            ["wall_leak", "💧", "벽면 누수", "벽에서 물이 배어나와요"],
+            ["ceiling_leak", "💧", "천장 누수", "천장에서 물이 떨어져요"],
+            ["floor_leak", "💧", "바닥 누수", "바닥이 축축해요"],
+            ["pipe_leak", "🔧", "배관 누수", "배관에서 새는 것 같아요"],
+            ["toilet_leak", "🚽", "화장실 누수", "화장실에서 물이 새요"],
+            ["outdoor_leak", "🏠", "외부 누수", "외벽, 창틀에서 새요"]
+          ].each do |value, icon, title, desc| %>
+            <button type="button"
+                    class="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-gray-200 bg-white hover:border-primary-300 hover:bg-primary-50/30 transition-all duration-200 text-left group select-button"
+                    data-action="click->check-wizard#selectOption"
+                    data-value="<%= value %>">
+              <span class="text-2xl flex-shrink-0"><%= icon %></span>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-900 text-[15px]"><%= title %></p>
+                <p class="text-sm text-gray-500 mt-0.5"><%= desc %></p>
+              </div>
+              <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition-all select-check">
+              </div>
+            </button>
+          <% end %>
+        </div>
+        <%= f.hidden_field :symptom_type, data: { check_wizard_target: "hiddenField" } %>
       </div>
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">누수일때, 누수체크!</h1>
-      <p class="text-gray-600">검증된 전문가를 바로 매칭해드려요</p>
     </div>
 
-    <!-- 신뢰 배지 -->
-    <div class="mb-8 bg-white rounded-2xl p-4 border border-gray-200">
-      <div class="flex items-center justify-center gap-6 text-xs text-gray-600">
-        <div class="flex items-center gap-1">
-          <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
-          <span>평균 2시간 배정</span>
+    <!-- Step 2: 건물 종류 (버튼 스타일) -->
+    <div data-check-wizard-target="step" class="wizard-step hidden">
+      <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
+        <div class="mb-8">
+          <p class="text-sm font-medium text-primary-600 mb-2">건물 정보</p>
+          <h1 class="text-[26px] font-bold text-gray-900 leading-tight tracking-tight">
+            어떤 건물에서<br>발생했나요?
+          </h1>
+          <p class="text-gray-500 text-[15px] mt-3">건물에 맞는 전문가를 매칭해드려요</p>
         </div>
-        <div class="flex items-center gap-1">
-          <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
-          <span>검증된 전문가</span>
+
+        <div class="grid grid-cols-3 gap-3" data-check-wizard-target="buttonGroup" data-field="building_type">
+          <% [
+            ["apartment", "🏢", "아파트"],
+            ["villa", "🏘️", "빌라/연립"],
+            ["house", "🏠", "단독주택"],
+            ["office", "🏬", "사무실"],
+            ["store", "🏪", "상가"],
+            ["factory", "🏭", "공장"],
+            ["other_building", "📦", "기타"]
+          ].each do |value, icon, label| %>
+            <button type="button"
+                    class="flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-gray-200 bg-white hover:border-primary-300 hover:bg-primary-50/30 transition-all duration-200 select-button"
+                    data-action="click->check-wizard#selectOption"
+                    data-value="<%= value %>">
+              <span class="text-3xl"><%= icon %></span>
+              <span class="text-sm font-medium text-gray-700"><%= label %></span>
+            </button>
+          <% end %>
         </div>
-        <div class="flex items-center gap-1">
-          <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
-          <span>투명한 견적</span>
-        </div>
+        <%= f.hidden_field :building_type, data: { check_wizard_target: "hiddenField" } %>
       </div>
     </div>
 
-    <!-- 폼 -->
-    <%= form_with(model: @request, url: customers_requests_path,
-                  html: { multipart: true, class: "space-y-6" },
-                  data: { controller: "button-loading", action: "submit->button-loading#submit" }) do |f| %>
-
-      <%= render "shared/form_errors", resource: @request %>
-
-      <!-- 단계별 인디케이터 -->
-      <div class="flex justify-between mb-8">
-        <% ["증상", "위치", "상황", "자료", "확인"].each_with_index do |label, index| %>
-          <div class="flex flex-col items-center cursor-pointer" data-step-indicator data-step="<%= index + 1 %>" data-action="click->insurance-step#goToStep">
-            <div class="step-circle w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mb-1 <%= index == 0 ? 'bg-primary-600 text-white' : 'bg-gray-300 text-gray-600' %>">
-              <%= index + 1 %>
-            </div>
-            <span class="step-label text-xs text-center <%= index == 0 ? 'text-primary-600 font-semibold' : 'text-gray-600' %>"><%= label %></span>
-          </div>
-        <% end %>
-      </div>
-
-      <!-- 단계 1: 증상 정보 -->
-      <div data-insurance-step-target="step" class="bg-white rounded-3xl border border-gray-200 p-8">
-        <div class="mb-6">
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">어떤 증상인가요?</h2>
-          <p class="text-gray-600">가장 비슷한 증상을 선택해주세요</p>
+    <!-- Step 3: 주소 입력 -->
+    <div data-check-wizard-target="step" data-controller="address-search" class="wizard-step hidden">
+      <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
+        <div class="mb-8">
+          <p class="text-sm font-medium text-primary-600 mb-2">방문 위치</p>
+          <h1 class="text-[26px] font-bold text-gray-900 leading-tight tracking-tight">
+            어디로 방문하면<br>될까요?
+          </h1>
         </div>
 
-        <div class="space-y-6">
+        <div class="space-y-5">
           <div>
-            <%= f.label :symptom_type, "증상 선택", class: "block text-sm font-semibold text-gray-900 mb-2" %>
-            <%= f.select :symptom_type,
-                  options_for_select([
-                    ["선택해 주세요", ""],
-                    ["💧 벽면 누수 (벽에서 물이 배어나와요)", "wall_leak"],
-                    ["💧 천장 누수 (천장에서 물이 떨어져요)", "ceiling_leak"],
-                    ["💧 바닥 누수 (바닥이 축축해요)", "floor_leak"],
-                    ["🔧 배관 누수 (배관에서 새는 것 같아요)", "pipe_leak"],
-                    ["🚽 화장실 누수 (화장실에서 물이 새요)", "toilet_leak"],
-                    ["🏠 외부 누수 (외벽, 창틀에서 새요)", "outdoor_leak"]
-                  ], @request.symptom_type),
-                  {},
-                  required: true,
-                  data: { action: "input->insurance-step#validateInput" },
-                  class: "w-full px-4 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" %>
-          </div>
-
-          <div>
-            <%= f.label :building_type, "건물 종류는?", class: "block text-sm font-semibold text-gray-900 mb-2" %>
-            <p class="text-xs text-gray-500 mb-2">건물에 맞는 전문가를 매칭해드려요</p>
-            <%= f.select :building_type,
-                  options_for_select([
-                    ["선택해 주세요", ""],
-                    ["🏢 아파트", "apartment"],
-                    ["🏘️ 빌라/연립", "villa"],
-                    ["🏠 단독주택", "house"],
-                    ["🏬 사무실", "office"],
-                    ["🏪 상가", "store"],
-                    ["🏭 공장", "factory"],
-                    ["📦 기타", "other_building"]
-                  ], @request.building_type),
-                  {},
-                  required: true,
-                  data: { action: "input->insurance-step#validateInput" },
-                  class: "w-full px-4 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" %>
-          </div>
-        </div>
-      </div>
-
-      <!-- 단계 2: 위치 정보 -->
-      <div data-insurance-step-target="step" data-controller="address-search" class="hidden bg-white rounded-3xl border border-gray-200 p-8">
-        <div class="mb-6">
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">어디로 방문하면 될까요?</h2>
-          <p class="text-gray-600">정확한 주소를 알려주세요</p>
-        </div>
-
-        <div class="space-y-6">
-          <!-- 주소 검색 -->
-          <div>
-            <%= f.label :address, "주소", class: "block text-sm font-semibold text-gray-900 mb-2" %>
-
+            <label class="block text-sm font-semibold text-gray-900 mb-2">주소</label>
             <div class="flex gap-2">
               <%= f.text_field :address,
-                    placeholder: "주소 검색 버튼을 눌러주세요",
+                    placeholder: "주소를 검색해주세요",
                     required: true,
                     readonly: true,
                     data: {
-                      action: "input->insurance-step#validateInput",
-                      address_search_target: "address"
+                      action: "input->check-wizard#validateStep",
+                      address_search_target: "address",
+                      check_wizard_target: "requiredInput"
                     },
-                    class: "flex-1 px-4 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition bg-gray-50" %>
-
+                    class: "flex-1 px-4 py-4 text-[15px] border-2 border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" %>
               <button type="button"
                       data-action="click->address-search#open"
-                      class="px-6 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg flex items-center gap-2 whitespace-nowrap">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                <span>주소 검색</span>
+                      class="px-5 py-4 rounded-xl font-bold text-white bg-primary-600 hover:bg-primary-700 transition-all whitespace-nowrap">
+                검색
               </button>
-            </div>
-
-            <div class="mt-3 p-3 bg-primary-50 rounded-lg border border-primary-200">
-              <p class="text-xs text-primary-900 flex items-start gap-2">
-                <svg class="w-4 h-4 text-primary-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                </svg>
-                <span><strong>정확한 주소</strong>를 입력하면 전문가가 빠르게 찾아갈 수 있어요. 주소 검색으로 오타 없이 입력하세요!</span>
-              </p>
             </div>
           </div>
 
-          <!-- 상세 주소 -->
           <div>
-            <%= f.label :detailed_address, "상세 주소 (동/호수)", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <label class="block text-sm font-semibold text-gray-900 mb-2">상세 주소</label>
             <%= f.text_field :detailed_address,
                   placeholder: "101동 502호",
                   data: { address_search_target: "detailedAddress" },
-                  class: "w-full px-4 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" %>
-            <p class="text-xs text-gray-500 mt-2">정확할수록 빠르게 찾아갈 수 있어요</p>
+                  class: "w-full px-4 py-4 text-[15px] border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" %>
           </div>
 
-          <!-- 층수 -->
           <div>
-            <%= f.label :floor, "층수 (선택)", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <label class="block text-sm font-semibold text-gray-900 mb-2">층수 <span class="text-gray-400 font-normal">(선택)</span></label>
             <%= f.text_field :floor,
                   placeholder: "5층",
-                  class: "w-full px-4 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" %>
-            <p class="text-xs text-gray-500 mt-2">층수 정보가 있으면 원인 파악에 도움이 돼요</p>
+                  class: "w-full px-4 py-4 text-[15px] border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" %>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- 단계 3: 상황 설명 -->
-      <div data-insurance-step-target="step" class="hidden bg-white rounded-3xl border border-gray-200 p-8">
-        <div class="mb-6">
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">어떤 상황인가요?</h2>
-          <p class="text-gray-600">자세히 알려주실수록 정확한 진단이 가능해요</p>
+    <!-- Step 4: 상황 설명 -->
+    <div data-check-wizard-target="step" class="wizard-step hidden">
+      <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
+        <div class="mb-8">
+          <p class="text-sm font-medium text-primary-600 mb-2">상세 정보</p>
+          <h1 class="text-[26px] font-bold text-gray-900 leading-tight tracking-tight">
+            어떤 상황인지<br>알려주세요
+          </h1>
+          <p class="text-gray-500 text-[15px] mt-3">자세할수록 정확한 진단이 가능해요</p>
         </div>
 
-        <div class="space-y-6">
+        <div class="space-y-5">
           <div>
-            <%= f.label :description, "상황 설명 (선택)", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <label class="block text-sm font-semibold text-gray-900 mb-2">상황 설명 <span class="text-gray-400 font-normal">(선택)</span></label>
             <%= f.text_area :description,
-                  rows: 6,
-                  placeholder: "예시:\n일주일 전부터 천장에 물방울이 떨어지기 시작했어요.\n처음에는 조금씩이었는데 점점 심해지고 있습니다.\n아직 벽지가 들뜨지는 않았지만 천장에 물자국이 생겼어요.",
-                  class: "w-full px-4 py-4 text-base border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition resize-none" %>
-            <p class="text-xs text-gray-500 mt-2">💡 언제부터, 얼마나 심한지 알려주세요</p>
+                  rows: 5,
+                  placeholder: "예: 일주일 전부터 천장에서 물방울이 떨어지기 시작했어요. 점점 심해지고 있습니다.",
+                  class: "w-full px-4 py-4 text-[15px] border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition resize-none leading-relaxed" %>
+            <p class="text-xs text-gray-400 mt-2">언제부터, 얼마나 심한지 알려주시면 좋아요</p>
           </div>
 
           <div>
-            <%= f.label :preferred_date, "방문 희망 일시 (선택)", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <label class="block text-sm font-semibold text-gray-900 mb-2">방문 희망일 <span class="text-gray-400 font-normal">(선택)</span></label>
             <%= f.datetime_local_field :preferred_date,
                   min: DateTime.now.strftime("%Y-%m-%dT%H:%M"),
-                  class: "w-full px-4 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" %>
-            <p class="text-xs text-gray-500 mt-2">급하시면 빈칸으로 두셔도 돼요. 최대한 빨리 연락드릴게요</p>
+                  class: "w-full px-4 py-4 text-[15px] border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" %>
+            <p class="text-xs text-gray-400 mt-2">급하시면 비워두세요. 최대한 빨리 연락드릴게요</p>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- 단계 4: 자료 첨부 -->
-      <div data-insurance-step-target="step" data-controller="file-counter" class="hidden bg-white rounded-3xl border border-gray-200 p-8">
+    <!-- Step 5: 영상 촬영/업로드 (토스 스타일) -->
+    <div data-check-wizard-target="step" data-controller="file-counter" class="wizard-step hidden">
+      <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
         <div class="mb-6">
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">사진이나 영상이 있나요?</h2>
-          <p class="text-gray-600">10초 이상 영상이 가장 효과적이에요</p>
+          <p class="text-sm font-medium text-primary-600 mb-2">영상 촬영</p>
+          <h1 class="text-[26px] font-bold text-gray-900 leading-tight tracking-tight">
+            누수 부위를<br>촬영해주세요
+          </h1>
         </div>
 
-        <div class="space-y-6">
-          <!-- 영상 업로드 (강조) -->
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-2">
-                <%= f.label :videos, "영상 업로드", class: "block text-base font-bold text-gray-900" %>
-                <span class="px-3 py-1 bg-gradient-to-r from-primary-600 to-indigo-600 text-white text-xs font-bold rounded-full shadow-md animate-pulse">✨ 가장 중요!</span>
-              </div>
-              <span data-file-counter-target="videoCount" class="text-sm text-gray-400">0/10</span>
+        <!-- 촬영 가이드 (상단) -->
+        <div class="mb-6 p-4 bg-gray-50 rounded-2xl">
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span class="text-base">🎬</span>
             </div>
-
-            <div class="mb-4 p-5 bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 border-2 border-primary-300 rounded-2xl">
-              <div class="flex items-start gap-3">
-                <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary-600 to-indigo-600 rounded-full flex items-center justify-center shadow-md">
-                  <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
-                  </svg>
-                </div>
-                <div class="flex-1">
-                  <p class="font-bold text-primary-900 text-base mb-1.5">
-                    📹 영상이 사진보다 10배 더 정확해요!
-                  </p>
-                  <p class="text-primary-800 text-sm leading-relaxed mb-2">
-                    10초 이상의 영상으로 누수 상황을 보여주시면 전문가가 <strong>현장 방문 전에도 정확한 진단</strong>이 가능합니다.
-                  </p>
-                  <div class="flex flex-wrap gap-1.5">
-                    <span class="px-2 py-1 bg-white/70 text-primary-800 text-xs font-medium rounded-full">✓ 빠른 진단</span>
-                    <span class="px-2 py-1 bg-white/70 text-primary-800 text-xs font-medium rounded-full">✓ 정확한 견적</span>
-                    <span class="px-2 py-1 bg-white/70 text-primary-800 text-xs font-medium rounded-full">✓ 출장비 절약</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="border-3 border-dashed border-primary-400 rounded-2xl p-10 text-center hover:border-primary-600 hover:bg-primary-50/50 bg-gradient-to-br from-primary-50/50 to-indigo-50/30 transition-all cursor-pointer hover:shadow-md">
-              <%= f.file_field :videos,
-                    multiple: true,
-                    accept: "video/mp4,video/quicktime,video/avi,video/webm,video/3gpp",
-                    class: "hidden",
-                    id: "video-upload",
-                    data: {
-                      file_counter_target: "videoInput",
-                      action: "change->file-counter#updateVideoCounts"
-                    } %>
-              <label for="video-upload" class="cursor-pointer">
-                <div class="inline-block p-5 bg-gradient-to-br from-primary-600 to-indigo-600 rounded-2xl mb-4 shadow-md">
-                  <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
-                  </svg>
-                </div>
-                <p class="text-xl font-bold text-gray-900 mb-2">📱 스마트폰으로 촬영해서 올려주세요</p>
-                <p class="text-base text-primary-700 font-semibold mb-1">MP4, MOV, WebM 등 모든 영상 형식 지원</p>
-                <p class="text-sm text-gray-600"><strong class="text-primary-600">최대 2GB까지</strong> 업로드 가능 · 10초 이상 권장</p>
-              </label>
-            </div>
-
-            <div class="mt-4 p-4 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl border border-yellow-200">
-              <p class="font-bold mb-2 text-gray-900 flex items-center gap-2">
-                <span class="text-lg">🎬</span>
-                이렇게 촬영하면 전문가가 더 정확히 진단해요
-              </p>
-              <ul class="space-y-1.5 text-sm text-gray-700">
-                <li class="flex items-start gap-2">
-                  <span class="text-primary-600 font-bold">1.</span>
-                  <span><strong>10초 이상</strong> 연속으로 촬영해주세요 (중간에 멈추지 마세요)</span>
+            <div>
+              <p class="font-semibold text-gray-900 text-sm mb-2">이렇게 촬영하면 좋아요</p>
+              <ul class="space-y-1 text-sm text-gray-600">
+                <li class="flex items-start gap-1.5">
+                  <span class="text-primary-500 mt-0.5">•</span>
+                  <span><strong>10초 이상</strong> 연속 촬영</span>
                 </li>
-                <li class="flex items-start gap-2">
-                  <span class="text-primary-600 font-bold">2.</span>
-                  <span>누수 부위를 <strong>천천히 클로즈업</strong>하세요</span>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-primary-500 mt-0.5">•</span>
+                  <span>누수 부위를 <strong>천천히 클로즈업</strong></span>
                 </li>
-                <li class="flex items-start gap-2">
-                  <span class="text-primary-600 font-bold">3.</span>
-                  <span>주변 환경(천장, 벽, 바닥)도 함께 보여주세요</span>
-                </li>
-                <li class="flex items-start gap-2">
-                  <span class="text-primary-600 font-bold">4.</span>
-                  <span><strong>물 떨어지는 소리</strong>도 함께 녹음되면 더욱 좋아요</span>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-primary-500 mt-0.5">•</span>
+                  <span>물 떨어지는 <strong>소리</strong>도 같이 녹음</span>
                 </li>
               </ul>
             </div>
           </div>
+        </div>
 
-          <!-- 사진 업로드 (선택사항) -->
-          <div class="mt-8 pt-6 border-t border-gray-200">
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center gap-2">
-                <%= f.label :photos, "사진 업로드 (선택)", class: "block text-sm font-semibold text-gray-700" %>
-                <span class="px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-full">선택사항</span>
-              </div>
-              <span data-file-counter-target="photoCount" class="text-sm text-gray-400">0/10</span>
+        <!-- 영상 업로드 영역 -->
+        <div class="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-primary-400 hover:bg-primary-50/30 transition-all cursor-pointer" id="video-drop-zone">
+          <%= f.file_field :videos,
+                multiple: true,
+                accept: "video/mp4,video/quicktime,video/avi,video/webm,video/3gpp",
+                capture: "environment",
+                class: "hidden",
+                id: "video-upload",
+                data: {
+                  file_counter_target: "videoInput",
+                  action: "change->file-counter#updateVideoCounts change->check-wizard#onFileChange"
+                } %>
+          <label for="video-upload" class="cursor-pointer block">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
+              <svg class="w-8 h-8 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+              </svg>
             </div>
-            <p class="text-xs text-gray-500 mb-3">💡 영상만으로도 충분하지만, 특정 부위를 강조하고 싶으시면 사진도 함께 올려주세요</p>
+            <p class="text-lg font-bold text-gray-900 mb-1">촬영하기 또는 영상 선택</p>
+            <p class="text-sm text-gray-500">MP4, MOV, WebM · 최대 2GB</p>
+          </label>
+        </div>
 
-            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-gray-400 bg-gray-50/30 transition-all cursor-pointer">
-              <%= f.file_field :photos,
-                    multiple: true,
-                    accept: "image/*",
-                    class: "hidden",
-                    id: "photo-upload",
-                    data: {
-                      file_counter_target: "photoInput",
-                      action: "change->file-counter#updatePhotoCounts"
-                    } %>
-              <label for="photo-upload" class="cursor-pointer">
-                <div class="inline-block p-3 bg-gray-200 rounded-xl mb-3">
-                  <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                  </svg>
-                </div>
-                <p class="text-base font-semibold text-gray-700 mb-1">사진 추가하기</p>
-                <p class="text-xs text-gray-500">JPG, PNG · 최대 5장 · 각 50MB</p>
-              </label>
-            </div>
+        <!-- 업로드된 파일 표시 -->
+        <div data-file-counter-target="videoCount" class="mt-4 text-center text-sm text-gray-500">
+        </div>
+
+        <!-- 사진도 추가 가능 안내 -->
+        <div class="mt-6 pt-5 border-t border-gray-100">
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-sm font-medium text-gray-700">사진도 추가하시겠어요?</p>
+            <span class="text-xs text-gray-400">선택사항</span>
           </div>
+          <div class="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center hover:border-gray-300 transition cursor-pointer">
+            <%= f.file_field :photos,
+                  multiple: true,
+                  accept: "image/*",
+                  class: "hidden",
+                  id: "photo-upload",
+                  data: {
+                    file_counter_target: "photoInput",
+                    action: "change->file-counter#updatePhotoCounts"
+                  } %>
+            <label for="photo-upload" class="cursor-pointer flex items-center justify-center gap-3">
+              <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <div class="text-left">
+                <p class="text-sm font-medium text-gray-700">사진 추가하기</p>
+                <p class="text-xs text-gray-400">JPG, PNG · 최대 5장</p>
+              </div>
+            </label>
+          </div>
+          <div data-file-counter-target="photoCount" class="mt-2 text-center text-sm text-gray-400"></div>
         </div>
       </div>
+    </div>
 
-      <!-- 단계 5: 확인 및 제출 -->
-      <div data-insurance-step-target="step" class="hidden bg-white rounded-3xl border border-gray-200 p-8">
-        <div class="mb-6 text-center">
-          <div class="inline-block p-4 bg-green-100 rounded-2xl mb-4">
-            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-          </div>
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">전문가 매칭 준비 완료!</h2>
-          <p class="text-gray-600">접수하시면 즉시 전문가를 찾아드려요</p>
+    <!-- Step 6: 연락처 확인 -->
+    <div data-check-wizard-target="step" class="wizard-step hidden">
+      <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
+        <div class="mb-8">
+          <p class="text-sm font-medium text-primary-600 mb-2">연락 정보</p>
+          <h1 class="text-[26px] font-bold text-gray-900 leading-tight tracking-tight">
+            연락받으실 정보를<br>확인해주세요
+          </h1>
         </div>
 
-        <div class="space-y-4">
-          <div class="bg-gradient-to-br from-primary-50 to-indigo-50 rounded-2xl p-6 border border-primary-100">
-            <h3 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <span class="text-xl">⚡</span>
-              이렇게 빠르게 진행돼요
-            </h3>
-            <ol class="space-y-2 text-sm text-gray-700">
-              <li class="flex gap-2">
-                <span class="font-bold text-primary-600">1.</span>
-                <span>접수하시면 <strong>즉시 전문가 매칭</strong></span>
-              </li>
-              <li class="flex gap-2">
-                <span class="font-bold text-primary-600">2.</span>
-                <span>평균 <strong>2시간 이내 전문가 배정</strong></span>
-              </li>
-              <li class="flex gap-2">
-                <span class="font-bold text-primary-600">3.</span>
-                <span><strong>24시간 이내 현장 방문</strong> 가능</span>
-              </li>
-              <li class="flex gap-2">
-                <span class="font-bold text-primary-600">4.</span>
-                <span>정밀 진단 후 <strong>투명한 견적</strong> 제공</span>
-              </li>
-            </ol>
+        <div class="space-y-5">
+          <% if current_user %>
+            <div class="bg-gray-50 rounded-2xl p-5">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                  <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-900"><%= current_user.name || current_user.email %></p>
+                  <p class="text-sm text-gray-500"><%= current_user.email %></p>
+                  <% if current_user.respond_to?(:phone) && current_user.phone.present? %>
+                    <p class="text-sm text-gray-500"><%= current_user.phone %></p>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-gray-400 text-center">전문가가 이 연락처로 연락드려요</p>
+          <% else %>
+            <div class="p-5 bg-primary-50 rounded-2xl border border-primary-200 text-center">
+              <p class="text-sm text-primary-900 mb-3">로그인하시면 더 빠르게 접수할 수 있어요</p>
+              <%= link_to "로그인하기", new_user_session_path, class: "inline-block px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 7: 최종 확인 & 제출 -->
+    <div data-check-wizard-target="step" class="wizard-step hidden">
+      <div class="max-w-lg mx-auto px-5 pt-8 pb-40">
+        <div class="mb-8 text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <h1 class="text-[26px] font-bold text-gray-900 leading-tight tracking-tight">
+            거의 다 됐어요!
+          </h1>
+          <p class="text-gray-500 text-[15px] mt-2">내용을 확인하고 요청해주세요</p>
+        </div>
+
+        <!-- 요약 카드 -->
+        <div class="space-y-3">
+          <div class="bg-gray-50 rounded-2xl p-5">
+            <div class="space-y-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-xs text-gray-400 mb-1">증상</p>
+                  <p class="font-semibold text-gray-900" data-check-wizard-target="summarySymptom">-</p>
+                </div>
+                <button type="button" data-action="click->check-wizard#goToStep" data-step="1" class="text-primary-600 text-sm font-medium">수정</button>
+              </div>
+              <div class="border-t border-gray-200"></div>
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-xs text-gray-400 mb-1">건물</p>
+                  <p class="font-semibold text-gray-900" data-check-wizard-target="summaryBuilding">-</p>
+                </div>
+                <button type="button" data-action="click->check-wizard#goToStep" data-step="2" class="text-primary-600 text-sm font-medium">수정</button>
+              </div>
+              <div class="border-t border-gray-200"></div>
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-xs text-gray-400 mb-1">주소</p>
+                  <p class="font-semibold text-gray-900" data-check-wizard-target="summaryAddress">-</p>
+                </div>
+                <button type="button" data-action="click->check-wizard#goToStep" data-step="3" class="text-primary-600 text-sm font-medium">수정</button>
+              </div>
+            </div>
           </div>
 
-          <!-- 안심 보증 박스 (당근마켓 스타일) -->
-          <div class="bg-gradient-to-br from-primary-50 to-indigo-50 rounded-2xl p-6 border-2 border-primary-200">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="flex-shrink-0 w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center">
-                <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <!-- 안심 보증 -->
+          <div class="bg-primary-50 rounded-2xl p-5 border border-primary-100">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                 </svg>
               </div>
               <div>
-                <h3 class="font-bold text-primary-900 text-lg">안심하고 의뢰하세요!</h3>
-                <p class="text-xs text-primary-700">3가지 보증으로 안전하게</p>
+                <p class="font-bold text-primary-900">누수체크 안심 보증</p>
               </div>
             </div>
-
-            <div class="space-y-3">
-              <div class="bg-white/70 rounded-xl p-4">
-                <div class="flex items-start gap-3">
-                  <div class="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
-                    <span class="text-lg">💯</span>
-                  </div>
-                  <div class="flex-1">
-                    <p class="font-bold text-gray-900 text-sm mb-1">온전 시 0원</p>
-                    <p class="text-xs text-gray-600">원인을 찾지 못하면 출장비를 받지 않습니다.</p>
-                  </div>
-                </div>
+            <div class="space-y-2 text-sm text-primary-800">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-primary-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span>원인 못 찾으면 <strong>출장비 0원</strong></span>
               </div>
-
-              <div class="bg-white/70 rounded-xl p-4">
-                <div class="flex items-start gap-3">
-                  <div class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                    <span class="text-lg">🔒</span>
-                  </div>
-                  <div class="flex-1">
-                    <p class="font-bold text-gray-900 text-sm mb-1">안전 결제</p>
-                    <p class="text-xs text-gray-600">수리가 완료된 후에 대금이 전문가에게 전달됩니다.</p>
-                  </div>
-                </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-primary-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span>에스크로 <strong>안전 결제</strong></span>
               </div>
-
-              <div class="bg-white/70 rounded-xl p-4">
-                <div class="flex items-start gap-3">
-                  <div class="flex-shrink-0 w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <span class="text-lg">🛡️</span>
-                  </div>
-                  <div class="flex-1">
-                    <p class="font-bold text-gray-900 text-sm mb-1">2년 무상 AS 보증</p>
-                    <p class="text-xs text-gray-600">작업 후 하자가 발생하면 무상으로 재시공해드립니다.</p>
-                  </div>
-                </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-primary-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span><strong>2년 무상 AS</strong> 보증</span>
               </div>
             </div>
           </div>
 
-          <div class="p-4 bg-yellow-50 rounded-2xl border border-yellow-200">
-            <p class="text-sm text-yellow-900 flex items-start gap-2">
-              <svg class="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-              </svg>
-              <span><strong>예상 비용</strong>: 탐지 10~15만원, 수리 30만원부터 (현장 상황에 따라 달라져요)</span>
+          <div class="p-4 bg-gray-50 rounded-xl">
+            <p class="text-xs text-gray-500 text-center">
+              예상 비용: 탐지 10~15만원, 수리 30만원~ (현장 상황에 따라 달라져요)
             </p>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- 네비게이션 버튼 -->
-      <div class="flex justify-between gap-3 mt-8">
+    <!-- 하단 고정 버튼 (Toss 스타일) -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-10 pb-safe">
+      <div class="max-w-lg mx-auto px-5 py-4">
+        <!-- 다음 버튼 -->
         <button type="button"
-                data-insurance-step-target="prevBtn"
-                data-action="click->insurance-step#prev"
-                class="hidden px-6 py-4 rounded-xl font-semibold text-gray-700 bg-white border-2 border-gray-300 hover:bg-gray-50 transition-all">
-          ← 이전
+                data-check-wizard-target="nextBtn"
+                data-action="click->check-wizard#next"
+                class="w-full py-4 rounded-2xl font-bold text-[17px] transition-all duration-200 bg-gray-200 text-gray-400 cursor-not-allowed"
+                disabled>
+          다음
         </button>
 
-        <button type="button"
-                data-insurance-step-target="nextBtn"
-                data-action="click->insurance-step#next"
-                class="ml-auto px-8 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl">
-          다음 →
-        </button>
+        <!-- 건너뛰기 + 다음 (선택사항 스텝용) -->
+        <div data-check-wizard-target="skipNextGroup" class="hidden space-y-2">
+          <button type="button"
+                  data-action="click->check-wizard#next"
+                  class="w-full py-4 rounded-2xl font-bold text-[17px] bg-primary-600 text-white hover:bg-primary-700 transition-all">
+            다음
+          </button>
+          <button type="button"
+                  data-action="click->check-wizard#skip"
+                  class="w-full py-3 rounded-xl font-medium text-[15px] text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition">
+            건너뛰기
+          </button>
+        </div>
 
+        <!-- 제출 버튼 -->
         <button type="submit"
-                data-insurance-step-target="submitBtn"
+                data-check-wizard-target="submitBtn"
                 data-button-loading-target="button"
-                data-button-loading-loading-text-value="매칭하는 중..."
-                class="hidden w-full px-8 py-5 rounded-2xl font-bold text-white text-lg bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 transition-all shadow-xl hover:shadow-2xl inline-flex items-center justify-center gap-2">
+                class="hidden w-full py-4 rounded-2xl font-bold text-[17px] bg-primary-600 text-white hover:bg-primary-700 transition-all shadow-lg">
           <span data-button-loading-target="spinner" class="btn-spinner hidden"></span>
-          <span data-button-loading-target="text">주변 전문가에게 요청하기</span>
+          <span data-button-loading-target="text">전문가에게 요청하기</span>
         </button>
       </div>
+    </div>
 
-      <p class="text-sm text-center text-gray-600 mt-4 flex items-center justify-center gap-2">
-        <svg class="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-        </svg>
-        평균 2시간 이내에 전문가가 배정돼요
-      </p>
-    <% end %>
-  </div>
+  <% end %>
 </div>
