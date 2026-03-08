@@ -48,18 +48,27 @@ export default class extends Controller {
     this.updateButtons()
   }
 
-  // 버튼 선택 (증상, 건물유형)
+  // 버튼 선택 (증상, 건물유형) - 토스 스타일 인터랙션
   selectOption(event) {
     event.preventDefault()
     const button = event.currentTarget
     const group = button.closest("[data-check-wizard-target='buttonGroup']")
     const field = group.dataset.field
     const value = button.dataset.value
+    const gradient = button.dataset.gradient  // 토스 스타일 그라디언트 색상
 
-    // 이전 선택 해제 (체크마크 숨기기)
+    // === 1. Ripple 효과 생성 (토스 스타일) ===
+    this.createRipple(event, button, gradient)
+
+    // === 2. 햅틱 피드백 시뮬레이션 (진동 효과) ===
+    if (navigator.vibrate) {
+      navigator.vibrate(10)  // 10ms 짧은 진동
+    }
+
+    // === 3. 이전 선택 해제 (체크마크 숨기기) ===
     group.querySelectorAll(".select-button").forEach(btn => {
-      btn.classList.remove("border-primary-500", "bg-primary-50", "ring-2", "ring-primary-200")
-      btn.classList.add("border-gray-200", "bg-white")
+      btn.classList.remove("border-primary-500", "bg-primary-50", "ring-2", "ring-primary-200", "shadow-xl", "scale-105", "selected")
+      btn.classList.add("border-gray-200", "bg-white", "shadow-md")
       btn.setAttribute("aria-checked", "false")
       const check = btn.querySelector(".select-check")
       if (check) {
@@ -67,16 +76,27 @@ export default class extends Controller {
       }
     })
 
-    // 현재 선택 활성화 (체크마크 표시)
-    button.classList.remove("border-gray-200", "bg-white")
-    button.classList.add("border-primary-500", "bg-primary-50", "ring-2", "ring-primary-200")
+    // === 4. 현재 선택 활성화 (체크마크 표시 + 토스 스타일 강조) ===
+    button.classList.remove("border-gray-200", "bg-white", "shadow-md")
+    button.classList.add("border-primary-500", "bg-primary-50", "ring-2", "ring-primary-200", "shadow-xl", "scale-105", "selected")
     button.setAttribute("aria-checked", "true")
     const check = button.querySelector(".select-check")
     if (check) {
       check.classList.remove("hidden")
     }
 
-    // hidden field에 값 설정
+    // === 5. Scale + Bounce 애니메이션 (토스 스타일) ===
+    button.animate([
+      { transform: 'scale(1)' },
+      { transform: 'scale(1.05)' },
+      { transform: 'scale(0.98)' },
+      { transform: 'scale(1.05)' }
+    ], {
+      duration: 400,
+      easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+    })
+
+    // === 6. Hidden field에 값 설정 ===
     this.hiddenFieldTargets.forEach(input => {
       if (input.name.includes(field)) {
         input.value = value
@@ -404,5 +424,51 @@ export default class extends Controller {
 
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+
+  // === 토스 스타일 Ripple 효과 생성 ===
+  createRipple(event, button, gradient) {
+    const ripple = document.createElement('span')
+    const rect = button.getBoundingClientRect()
+    const size = Math.max(rect.width, rect.height)
+    const x = event.clientX - rect.left - size / 2
+    const y = event.clientY - rect.top - size / 2
+
+    // 그라디언트별 Ripple 색상 (토스 스타일)
+    const gradientColors = {
+      blue: 'rgba(59, 130, 246, 0.4)',
+      purple: 'rgba(168, 85, 247, 0.4)',
+      teal: 'rgba(20, 184, 166, 0.4)',
+      orange: 'rgba(249, 115, 22, 0.4)',
+      pink: 'rgba(236, 72, 153, 0.4)',
+      green: 'rgba(34, 197, 94, 0.4)',
+      indigo: 'rgba(99, 102, 241, 0.4)',
+      cyan: 'rgba(6, 182, 212, 0.4)',
+      amber: 'rgba(245, 158, 11, 0.4)',
+      rose: 'rgba(244, 63, 94, 0.4)',
+      lime: 'rgba(132, 204, 22, 0.4)',
+      slate: 'rgba(100, 116, 139, 0.4)',
+      gray: 'rgba(107, 114, 128, 0.4)'
+    }
+
+    ripple.style.cssText = `
+      position: absolute;
+      border-radius: 50%;
+      background: ${gradientColors[gradient] || gradientColors.blue};
+      width: ${size}px;
+      height: ${size}px;
+      left: ${x}px;
+      top: ${y}px;
+      transform: scale(0);
+      animation: rippleEffect 600ms ease-out;
+      pointer-events: none;
+      z-index: 10;
+    `
+
+    button.style.position = 'relative'
+    button.style.overflow = 'hidden'
+    button.appendChild(ripple)
+
+    setTimeout(() => ripple.remove(), 600)
   }
 }

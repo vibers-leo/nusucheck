@@ -8,14 +8,19 @@ Rails.application.routes.draw do
     sessions: "users/sessions"
   }
 
-  # === app.nusucheck.com → 고객 앱 진입점 ===
-  # 루트만 지정, 나머지 라우트는 모든 도메인에서 공유
+  # === 멀티 테넌시 서브도메인 라우팅 ===
+
+  # app.nusucheck.com → 고객 앱 진입점
   constraints(SubdomainConstraint.new("app")) do
     root to: "customers/requests#index", as: :app_subdomain_root
   end
 
-  # === 전문가 전용 라우트 ===
-  # expert.nusucheck.com 서브도메인 또는 /expert 경로로 접근
+  # admin.nusucheck.com → 관리자 앱 진입점
+  constraints(subdomain: "admin") do
+    root to: "admin/dashboard#index", as: :admin_subdomain_root
+  end
+
+  # expert.nusucheck.com → 전문가 앱 진입점
   constraints(subdomain: "expert") do
     get "/", to: "expert/pages#index"
     devise_scope :user do

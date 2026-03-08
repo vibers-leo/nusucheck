@@ -16,9 +16,13 @@
         </button>
       </div>
 
-      <!-- 프로그레스 바 (Toss 스타일 - 얇고 미니멀) -->
-      <div class="h-1 bg-gray-100 rounded-full overflow-hidden -mt-1" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="14" aria-label="폼 작성 진행률">
-        <div data-check-wizard-target="progressBar" class="h-full bg-primary-500 rounded-full transition-all duration-500 ease-out" style="width: 14%"></div>
+      <!-- 프로그레스 바 (토스 스타일 - 그라디언트 + 펄스 + Shimmer) -->
+      <div class="relative h-3 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full overflow-hidden shadow-inner -mt-1" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="14" aria-label="폼 작성 진행률">
+        <!-- 진행 바 (그라디언트 + 펄스) -->
+        <div data-check-wizard-target="progressBar" class="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 rounded-full transition-all duration-500 ease-out shadow-lg progress-bar-pulse" style="width: 14%"></div>
+
+        <!-- 반짝임 효과 (Shimmer) -->
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-shimmer"></div>
       </div>
     </div>
   </div>
@@ -36,7 +40,7 @@
 
     <%= render "shared/form_errors", resource: @request %>
 
-    <!-- Step 1: 증상 선택 (버튼 스타일) -->
+    <!-- Step 1: 증상 선택 (토스 스타일 컬러풀 버튼) -->
     <div data-check-wizard-target="step" class="wizard-step">
       <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
         <div class="mb-8">
@@ -48,30 +52,36 @@
 
         <div class="space-y-3" data-check-wizard-target="buttonGroup" data-field="symptom_type">
           <% [
-            ["wall_leak", "💧", "벽면 누수", "벽에서 물이 배어나와요"],
-            ["ceiling_leak", "💧", "천장 누수", "천장에서 물이 떨어져요"],
-            ["floor_leak", "💧", "바닥 누수", "바닥이 축축해요"],
-            ["pipe_leak", "🔧", "배관 누수", "배관에서 새는 것 같아요"],
-            ["toilet_leak", "🚽", "화장실 누수", "화장실에서 물이 새요"],
-            ["outdoor_leak", "🏠", "외부 누수", "외벽, 창틀에서 새요"]
-          ].each do |value, icon, title, desc| %>
+            ["wall_leak", "💧", "벽면 누수", "벽에서 물이 배어나와요", "blue", "from-blue-50 to-blue-100", "border-blue-200", "from-blue-500 to-blue-600", "from-blue-600 to-blue-700"],
+            ["ceiling_leak", "💧", "천장 누수", "천장에서 물이 떨어져요", "purple", "from-purple-50 to-purple-100", "border-purple-200", "from-purple-500 to-purple-600", "from-purple-600 to-purple-700"],
+            ["floor_leak", "💧", "바닥 누수", "바닥이 축축해요", "teal", "from-teal-50 to-teal-100", "border-teal-200", "from-teal-500 to-teal-600", "from-teal-600 to-teal-700"],
+            ["pipe_leak", "🔧", "배관 누수", "배관에서 새는 것 같아요", "orange", "from-orange-50 to-orange-100", "border-orange-200", "from-orange-500 to-orange-600", "from-orange-600 to-orange-700"],
+            ["toilet_leak", "🚽", "화장실 누수", "화장실에서 물이 새요", "pink", "from-pink-50 to-pink-100", "border-pink-200", "from-pink-500 to-pink-600", "from-pink-600 to-pink-700"],
+            ["outdoor_leak", "🏠", "외부 누수", "외벽, 창틀에서 새요", "green", "from-green-50 to-green-100", "border-green-200", "from-green-500 to-green-600", "from-green-600 to-green-700"]
+          ].each do |value, icon, title, desc, gradient, bg_gradient, border_color, icon_gradient, check_gradient| %>
             <button type="button"
-                    class="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-gray-200 bg-white hover:border-primary-300 hover:bg-primary-50/30 transition-all duration-200 text-left group select-button focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                    class="option-btn w-full flex items-center gap-4 p-5 rounded-2xl border-2 <%= border_color %> bg-gradient-to-br <%= bg_gradient %> hover:shadow-xl transition-all duration-200 text-left group select-button focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 shadow-md"
                     data-action="click->check-wizard#selectOption keydown->check-wizard#handleKeydown"
                     data-value="<%= value %>"
+                    data-gradient="<%= gradient %>"
                     role="radio"
                     aria-checked="false"
                     tabindex="0">
-              <span class="text-2xl flex-shrink-0"><%= icon %></span>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 text-[15px]"><%= title %></p>
-                <p class="text-sm text-gray-500 mt-0.5"><%= desc %></p>
+              <!-- 아이콘 서클 (그라디언트) -->
+              <div class="icon-circle w-14 h-14 bg-gradient-to-br <%= icon_gradient %> rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                <span class="text-2xl"><%= icon %></span>
               </div>
-              <!-- 선택 시에만 체크마크 표시 -->
-              <div class="w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center transition-all select-check hidden">
-                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+              <div class="flex-1 min-w-0">
+                <p class="font-bold text-gray-900 text-base"><%= title %></p>
+                <p class="text-sm text-gray-600 mt-0.5"><%= desc %></p>
+              </div>
+              <!-- 선택 시에만 체크마크 표시 (그라디언트 배경) -->
+              <div class="select-check hidden">
+                <div class="w-8 h-8 bg-gradient-to-br <%= check_gradient %> rounded-full flex items-center justify-center shadow-md">
+                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
               </div>
             </button>
           <% end %>
@@ -80,7 +90,7 @@
       </div>
     </div>
 
-    <!-- Step 2: 건물 종류 (버튼 스타일) -->
+    <!-- Step 2: 건물 종류 (토스 스타일 컬러풀 버튼) -->
     <div data-check-wizard-target="step" class="wizard-step hidden">
       <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
         <div class="mb-8">
@@ -93,30 +103,36 @@
 
         <div class="grid grid-cols-3 gap-3" data-check-wizard-target="buttonGroup" data-field="building_type">
           <% [
-            ["apartment", "🏢", "아파트"],
-            ["villa", "🏘️", "빌라/연립"],
-            ["house", "🏠", "단독주택"],
-            ["office", "🏬", "사무실"],
-            ["retail_store", "🏪", "상가"],
-            ["factory", "🏭", "공장"],
-            ["other_building", "📦", "기타"]
-          ].each do |value, icon, label| %>
+            ["apartment", "🏢", "아파트", "indigo", "from-indigo-50 to-indigo-100", "border-indigo-200", "from-indigo-500 to-indigo-600", "from-indigo-600 to-indigo-700"],
+            ["villa", "🏘️", "빌라/연립", "cyan", "from-cyan-50 to-cyan-100", "border-cyan-200", "from-cyan-500 to-cyan-600", "from-cyan-600 to-cyan-700"],
+            ["house", "🏠", "단독주택", "amber", "from-amber-50 to-amber-100", "border-amber-200", "from-amber-500 to-amber-600", "from-amber-600 to-amber-700"],
+            ["office", "🏬", "사무실", "rose", "from-rose-50 to-rose-100", "border-rose-200", "from-rose-500 to-rose-600", "from-rose-600 to-rose-700"],
+            ["retail_store", "🏪", "상가", "lime", "from-lime-50 to-lime-100", "border-lime-200", "from-lime-500 to-lime-600", "from-lime-600 to-lime-700"],
+            ["factory", "🏭", "공장", "slate", "from-slate-50 to-slate-100", "border-slate-200", "from-slate-500 to-slate-600", "from-slate-600 to-slate-700"],
+            ["other_building", "📦", "기타", "gray", "from-gray-50 to-gray-100", "border-gray-200", "from-gray-500 to-gray-600", "from-gray-600 to-gray-700"]
+          ].each do |value, icon, label, gradient, bg_gradient, border_color, icon_gradient, check_gradient| %>
             <button type="button"
-                    class="relative flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-gray-200 bg-white hover:border-primary-300 hover:bg-primary-50/30 transition-all duration-200 select-button focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                    class="option-btn relative flex flex-col items-center gap-2 p-5 rounded-2xl border-2 <%= border_color %> bg-gradient-to-br <%= bg_gradient %> hover:shadow-xl transition-all duration-200 select-button focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 shadow-md"
                     data-action="click->check-wizard#selectOption keydown->check-wizard#handleKeydown"
                     data-value="<%= value %>"
+                    data-gradient="<%= gradient %>"
                     role="radio"
                     aria-checked="false"
                     aria-label="<%= label %>"
                     tabindex="0">
-              <!-- 선택 시에만 체크마크 표시 -->
-              <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center transition-all select-check hidden">
-                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+              <!-- 선택 시에만 체크마크 표시 (그라디언트 배경) -->
+              <div class="select-check absolute top-2 right-2 hidden">
+                <div class="w-7 h-7 bg-gradient-to-br <%= check_gradient %> rounded-full flex items-center justify-center shadow-md">
+                  <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
               </div>
-              <span class="text-3xl"><%= icon %></span>
-              <span class="text-sm font-medium text-gray-700"><%= label %></span>
+              <!-- 아이콘 서클 (그라디언트) -->
+              <div class="icon-circle w-14 h-14 bg-gradient-to-br <%= icon_gradient %> rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <span class="text-3xl"><%= icon %></span>
+              </div>
+              <span class="text-sm font-bold text-gray-900"><%= label %></span>
             </button>
           <% end %>
         </div>
@@ -217,19 +233,19 @@
           <p class="text-[15px] text-gray-600 mt-3">10초 이상 촬영하면 전문가가 정확히 진단해요</p>
         </div>
 
-        <!-- 영상이 중요함을 강조하는 배너 -->
-        <div class="mb-6 p-5 bg-gradient-to-br from-primary-50 via-blue-50 to-indigo-50 border-2 border-primary-300 rounded-2xl shadow-sm">
+        <!-- 영상이 중요함을 강조하는 배너 (노란색으로 더 눈에 띄게) -->
+        <div class="mb-6 p-5 bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 border-2 border-yellow-300 rounded-2xl shadow-sm">
           <div class="flex items-start gap-3">
-            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary-600 to-blue-600 rounded-full flex items-center justify-center shadow-md">
+            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center shadow-md">
               <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
               </svg>
             </div>
             <div class="flex-1">
-              <p class="font-bold text-primary-900 text-base mb-1.5">
+              <p class="font-bold text-gray-900 text-base mb-1.5">
                 📹 영상이 사진보다 10배 더 정확해요!
               </p>
-              <p class="text-primary-800 text-sm leading-relaxed">
+              <p class="text-gray-800 text-sm leading-relaxed">
                 10초 이상의 영상으로 누수 상황을 보여주시면 전문가가 <strong>현장 방문 전에도 정확한 진단</strong>이 가능합니다.
               </p>
             </div>
@@ -439,24 +455,24 @@
       </div>
     </div>
 
-    <!-- 하단 고정 버튼 (Toss 스타일) -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-10 pb-safe">
+    <!-- 하단 고정 버튼 (Toss 스타일 그라디언트) -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-10 pb-safe shadow-2xl">
       <div class="max-w-lg mx-auto px-5 py-4">
         <!-- 다음 버튼 -->
         <button type="button"
                 data-check-wizard-target="nextBtn"
                 data-action="click->check-wizard#next"
-                class="w-full py-4 rounded-2xl font-bold text-[17px] transition-all duration-200 bg-gray-200 text-gray-400 cursor-not-allowed"
+                class="w-full py-5 rounded-2xl font-bold text-lg transition-all duration-200 bg-gray-200 text-gray-400 cursor-not-allowed shadow-md"
                 disabled>
-          다음
+          다음 →
         </button>
 
         <!-- 건너뛰기 + 다음 (선택사항 스텝용) -->
         <div data-check-wizard-target="skipNextGroup" class="hidden space-y-2">
           <button type="button"
                   data-action="click->check-wizard#next"
-                  class="w-full py-4 rounded-2xl font-bold text-[17px] bg-primary-600 text-white hover:bg-primary-700 transition-all">
-            다음
+                  class="w-full py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xl hover:shadow-2xl">
+            다음 →
           </button>
           <button type="button"
                   data-action="click->check-wizard#skip"
@@ -470,7 +486,7 @@
                 data-check-wizard-target="submitBtn"
                 data-button-loading-target="button"
                 data-button-loading-loading-text-value="영상 업로드 중... 잠시만 기다려주세요"
-                class="hidden w-full py-4 rounded-2xl font-bold text-[17px] bg-primary-600 text-white hover:bg-primary-700 transition-all shadow-lg">
+                class="hidden w-full py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all shadow-xl hover:shadow-2xl inline-flex items-center justify-center gap-2">
           <span data-button-loading-target="spinner" class="btn-spinner hidden"></span>
           <span data-button-loading-target="text">전문가에게 요청하기</span>
         </button>

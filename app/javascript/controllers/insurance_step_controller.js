@@ -12,6 +12,7 @@ export default class extends Controller {
     this.showStep(this.currentStepValue)
     this.updateProgress()
     this.goToErrorStep()
+    this.restoreSelections()  // 서버 검증 실패 시 선택 상태 복원
   }
 
   // 서버 검증 오류 시 해당 단계로 자동 이동
@@ -159,6 +160,17 @@ export default class extends Controller {
   }
 
   validateCurrentStep() {
+    // 단계 1: 증상 타입과 건물 타입 검증 (hidden input)
+    if (this.currentStepValue === 1) {
+      const symptom = document.getElementById('symptom-type-input')?.value
+      const building = document.getElementById('building-type-input')?.value
+
+      if (!symptom || !building) {
+        this.showError('증상과 건물 종류를 선택해주세요')
+        return false
+      }
+    }
+
     const currentStepElement = this.stepTargets[this.currentStepValue - 1]
     const requiredInputs = currentStepElement.querySelectorAll('[required]')
 
@@ -166,6 +178,9 @@ export default class extends Controller {
     let firstInvalidInput = null
 
     requiredInputs.forEach(input => {
+      // hidden input은 건너뛰기 (위에서 이미 검증)
+      if (input.type === 'hidden') return
+
       // readonly 필드는 value만 체크 (disabled는 검증 제외)
       const shouldValidate = !input.disabled
       const isEmpty = !input.value || input.value.trim() === ''
@@ -217,6 +232,11 @@ export default class extends Controller {
     return isValid
   }
 
+  showError(message) {
+    // 에러 메시지 표시 (toast 또는 alert)
+    alert(message)
+  }
+
   autoSave() {
     // 자동 저장 표시
     const saveIndicator = document.getElementById('autoSaveIndicator')
@@ -258,6 +278,132 @@ export default class extends Controller {
       const errorMsg = input.parentElement.querySelector('.error-message')
       if (errorMsg) {
         errorMsg.remove()
+      }
+    }
+  }
+
+  // ===== 토스 스타일 버튼 선택 기능 =====
+
+  // 버튼 선택 시 호출 (Ripple + 햅틱 피드백)
+  selectOption(event) {
+    event.preventDefault()
+
+    const button = event.currentTarget
+    const field = button.dataset.field
+    const value = button.dataset.value
+    const gradient = button.dataset.gradient  // 그라디언트 색상
+
+    // === 1. Ripple 효과 생성 ===
+    this.createRipple(event, button, gradient)
+
+    // === 2. 햅틱 피드백 시뮬레이션 (진동 효과) ===
+    if (navigator.vibrate) {
+      navigator.vibrate(10)  // 10ms 짧은 진동
+    }
+
+    // === 3. 같은 그룹의 다른 버튼 선택 해제 ===
+    const group = button.closest('[data-option-group]')
+    group.querySelectorAll('.option-btn').forEach(btn => {
+      // 선택 해제
+      btn.classList.remove('shadow-xl', 'scale-105', 'selected')
+      btn.classList.add('shadow-md')
+
+      // 체크 아이콘 숨김
+      btn.querySelector('.check-icon')?.classList.add('hidden')
+      btn.setAttribute('aria-checked', 'false')
+    })
+
+    // === 4. 현재 버튼 선택 표시 ===
+    button.classList.remove('shadow-md')
+    button.classList.add('shadow-xl', 'scale-105', 'selected')
+    button.querySelector('.check-icon')?.classList.remove('hidden')
+    button.setAttribute('aria-checked', 'true')
+
+    // === 5. Scale + Bounce 애니메이션 ===
+    button.animate([
+      { transform: 'scale(1)' },
+      { transform: 'scale(1.05)' },
+      { transform: 'scale(0.98)' },
+      { transform: 'scale(1.05)' }
+    ], {
+      duration: 400,
+      easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+    })
+
+    // === 6. Hidden input 업데이트 ===
+    const input = document.getElementById(`${field}-input`)
+    if (input) {
+      input.value = value
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+    }
+  }
+
+  // Ripple 효과 생성 (토스 스타일)
+  createRipple(event, button, gradient) {
+    const ripple = document.createElement('span')
+    const rect = button.getBoundingClientRect()
+    const size = Math.max(rect.width, rect.height)
+    const x = event.clientX - rect.left - size / 2
+    const y = event.clientY - rect.top - size / 2
+
+    // 그라디언트별 Ripple 색상
+    const gradientColors = {
+      blue: 'rgba(59, 130, 246, 0.4)',
+      purple: 'rgba(168, 85, 247, 0.4)',
+      teal: 'rgba(20, 184, 166, 0.4)',
+      orange: 'rgba(249, 115, 22, 0.4)',
+      pink: 'rgba(236, 72, 153, 0.4)',
+      green: 'rgba(34, 197, 94, 0.4)',
+      indigo: 'rgba(99, 102, 241, 0.4)',
+      cyan: 'rgba(6, 182, 212, 0.4)',
+      amber: 'rgba(245, 158, 11, 0.4)',
+      rose: 'rgba(244, 63, 94, 0.4)',
+      lime: 'rgba(132, 204, 22, 0.4)',
+      slate: 'rgba(100, 116, 139, 0.4)',
+      gray: 'rgba(107, 114, 128, 0.4)'
+    }
+
+    ripple.style.cssText = `
+      position: absolute;
+      border-radius: 50%;
+      background: ${gradientColors[gradient] || gradientColors.blue};
+      width: ${size}px;
+      height: ${size}px;
+      left: ${x}px;
+      top: ${y}px;
+      transform: scale(0);
+      animation: rippleEffect 600ms ease-out;
+      pointer-events: none;
+      z-index: 10;
+    `
+
+    button.style.position = 'relative'
+    button.style.overflow = 'hidden'
+    button.appendChild(ripple)
+
+    setTimeout(() => ripple.remove(), 600)
+  }
+
+  // 서버 검증 실패 시 선택 상태 복원
+  restoreSelections() {
+    const symptomInput = document.getElementById('symptom-type-input')
+    if (symptomInput?.value) {
+      const btn = document.querySelector(`[data-field="symptom_type"][data-value="${symptomInput.value}"]`)
+      if (btn) {
+        // 애니메이션 없이 선택 상태만 적용
+        btn.classList.add('shadow-xl', 'scale-105', 'selected')
+        btn.querySelector('.check-icon')?.classList.remove('hidden')
+        btn.setAttribute('aria-checked', 'true')
+      }
+    }
+
+    const buildingInput = document.getElementById('building-type-input')
+    if (buildingInput?.value) {
+      const btn = document.querySelector(`[data-field="building_type"][data-value="${buildingInput.value}"]`)
+      if (btn) {
+        btn.classList.add('shadow-xl', 'scale-105', 'selected')
+        btn.querySelector('.check-icon')?.classList.remove('hidden')
+        btn.setAttribute('aria-checked', 'true')
       }
     }
   }

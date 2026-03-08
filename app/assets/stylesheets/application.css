@@ -609,28 +609,194 @@ turbo-frame[busy]::after {
   transform: scale(0.98);
 }
 
-/* ===== 영상 업로드 박스 펄스 (당근마켓 스타일) ===== */
+/* ===== 토스 스타일 UI 컴포넌트 ===== */
+
+/* 한글 최적화 커닝 (당근마켓 스타일) */
+body {
+  letter-spacing: -0.3px;
+}
+
+/* 진행 바 그라디언트 + 펄스 */
+@keyframes progressPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5),
+                0 0 30px rgba(168, 85, 247, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.7),
+                0 0 45px rgba(59, 130, 246, 0.5);
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.progress-bar-pulse {
+  animation: progressPulse 1.5s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* 토스 스타일 버튼 애니메이션 */
+.option-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.option-btn:hover {
+  transform: translateY(-6px) scale(1.02); /* 당근마켓 + 토스 스타일 */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.option-btn:active {
+  transform: scale(0.98);
+}
+
+/* 선택된 버튼 강조 */
+.option-btn.selected {
+  transform: scale(1.05);
+  box-shadow: 0 10px 40px -10px currentColor;
+}
+
+/* 아이콘 서클 호버 효과 */
+.icon-circle {
+  transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.option-btn:hover .icon-circle {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.option-btn.selected .icon-circle {
+  animation: iconBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes iconBounce {
+  0% { transform: scale(1) rotate(0deg); }
+  30% { transform: scale(1.2) rotate(-10deg); }
+  60% { transform: scale(0.95) rotate(5deg); }
+  100% { transform: scale(1.1) rotate(0deg); }
+}
+
+/* 체크 아이콘 등장 애니메이션 */
+.check-icon {
+  animation: checkAppear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes checkAppear {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Ripple 효과 */
+@keyframes rippleEffect {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* 영상 업로드 박스 펄스 (토스 스타일 그라디언트) */
 .video-upload-box {
-  animation: videoPulse 2s ease-in-out infinite;
+  animation: videoPulseGradient 3s ease-in-out infinite;
   transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 
-@keyframes videoPulse {
+@keyframes videoPulseGradient {
   0%, 100% {
-    border-color: rgb(20, 184, 166); /* primary-500 */
+    border-color: rgb(59, 130, 246);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
   }
-  50% {
-    border-color: rgb(99, 102, 241); /* indigo-500 */
+  33% {
+    border-color: rgb(168, 85, 247);
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+  }
+  66% {
+    border-color: rgb(99, 102, 241);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
   }
 }
 
 .video-upload-box:hover {
   animation: none;
+  transform: scale(1.02);
+  box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.5);
 }
 
-/* 드래그 시 확대 효과 (드래그 앤 드롭 피드백) */
+/* 드래그 시 확대 효과 */
 .video-upload-box.scale-105 {
   transform: scale(1.05);
   animation: none;
+}
+
+/* 모바일 하단 고정 버튼 */
+@media (max-width: 767px) {
+  .mobile-fixed-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    z-index: 20;
+    box-shadow: 0 -4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+
+  .step-content {
+    padding-bottom: 6rem;
+  }
+}
+
+/* 다크 모드 대응 (선택적) */
+@media (prefers-color-scheme: dark) {
+  .mobile-fixed-bottom {
+    background: #1f2937;
+    border-top-color: #374151;
+  }
+}
+
+/* 로딩 애니메이션 강화 */
+.btn-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 페이드인 애니메이션 (단계 전환) */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-content {
+  animation: fadeInUp 0.5s ease-out;
 }
 
