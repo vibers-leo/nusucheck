@@ -81,15 +81,77 @@
           <%= f.text_field :incident_detail_address, class: input_classes(:text) %>
         </div>
         <div>
-          <%= f.label :damage_type, "피해 유형", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.select :damage_type,
-                options_for_select([
-                  ["재산 피해", "property_damage"],
-                  ["인적 피해", "personal_injury"],
-                  ["재산 + 인적 피해", "both"]
-                ], @insurance_claim.damage_type),
-                { include_blank: "선택해 주세요" },
-                class: input_classes(:select) %>
+          <%= f.label :damage_type, "피해 유형", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.hidden_field :damage_type, id: "damage-type-input" %>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button type="button"
+                    class="damage-type-btn relative p-5 rounded-xl border-2 border-gray-200 hover:border-primary-400 hover:bg-primary-50 transition-all text-center"
+                    data-value="property_damage"
+                    onclick="selectDamageType(this, 'property_damage')">
+              <div class="text-3xl mb-2">🏠</div>
+              <p class="font-semibold text-gray-900 mb-1">재산 피해</p>
+              <p class="text-xs text-gray-500">물건, 집기 등</p>
+              <div class="damage-type-check hidden absolute top-2 right-2">
+                <svg class="w-6 h-6 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+            </button>
+
+            <button type="button"
+                    class="damage-type-btn relative p-5 rounded-xl border-2 border-gray-200 hover:border-primary-400 hover:bg-primary-50 transition-all text-center"
+                    data-value="personal_injury"
+                    onclick="selectDamageType(this, 'personal_injury')">
+              <div class="text-3xl mb-2">🤕</div>
+              <p class="font-semibold text-gray-900 mb-1">인적 피해</p>
+              <p class="text-xs text-gray-500">부상, 질병 등</p>
+              <div class="damage-type-check hidden absolute top-2 right-2">
+                <svg class="w-6 h-6 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+            </button>
+
+            <button type="button"
+                    class="damage-type-btn relative p-5 rounded-xl border-2 border-gray-200 hover:border-primary-400 hover:bg-primary-50 transition-all text-center"
+                    data-value="both"
+                    onclick="selectDamageType(this, 'both')">
+              <div class="text-3xl mb-2">🏠🤕</div>
+              <p class="font-semibold text-gray-900 mb-1">재산 + 인적 피해</p>
+              <p class="text-xs text-gray-500">둘 다 해당</p>
+              <div class="damage-type-check hidden absolute top-2 right-2">
+                <svg class="w-6 h-6 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+            </button>
+          </div>
+
+          <script>
+            function selectDamageType(button, value) {
+              // 모든 버튼 선택 해제
+              document.querySelectorAll('.damage-type-btn').forEach(btn => {
+                btn.classList.remove('border-primary-600', 'bg-primary-50');
+                btn.classList.add('border-gray-200');
+                btn.querySelector('.damage-type-check').classList.add('hidden');
+              });
+              // 현재 버튼 선택
+              button.classList.remove('border-gray-200');
+              button.classList.add('border-primary-600', 'bg-primary-50');
+              button.querySelector('.damage-type-check').classList.remove('hidden');
+              // Hidden input 업데이트
+              document.getElementById('damage-type-input').value = value;
+            }
+            // 페이지 로드 시 기존 값 복원
+            window.addEventListener('DOMContentLoaded', function() {
+              const currentValue = '<%= @insurance_claim.damage_type %>';
+              if (currentValue) {
+                const button = document.querySelector(`.damage-type-btn[data-value="${currentValue}"]`);
+                if (button) selectDamageType(button, currentValue);
+              }
+            });
+          </script>
         </div>
         <div>
           <%= f.label :estimated_damage_amount, "예상 피해 금액 (원)", class: "block text-sm font-medium text-gray-700 mb-1" %>

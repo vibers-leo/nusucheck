@@ -65,7 +65,8 @@
       "Read(//c/**)",
       "Bash(fly ips list:*)",
       "Bash(fly certs check:*)",
-      "Bash(\"c:\\\\Users\\\\desig\\\\Documents\\\\nusucheck\\\\app\\\\controllers\\\\customers\\\\pages_controller.rb\" << 'EOF'\nclass Customers::PagesController < ApplicationController\n  # 비로그인 사용자를 위한 랜딩페이지\n  def landing\n    # 이미 로그인한 사용자는 대시보드로 리다이렉트\n    redirect_to customers_dashboard_path if user_signed_in?\n  end\nend\nEOF)"
+      "Bash(\"c:\\\\Users\\\\desig\\\\Documents\\\\nusucheck\\\\app\\\\controllers\\\\customers\\\\pages_controller.rb\" << 'EOF'\nclass Customers::PagesController < ApplicationController\n  # 비로그인 사용자를 위한 랜딩페이지\n  def landing\n    # 이미 로그인한 사용자는 대시보드로 리다이렉트\n    redirect_to customers_dashboard_path if user_signed_in?\n  end\nend\nEOF)",
+      "Bash(bin/rails runner:*)"
     ],
     "additionalDirectories": [
       "d:\\dev\\nusucheck"
