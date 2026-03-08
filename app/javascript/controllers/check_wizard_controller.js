@@ -60,6 +60,7 @@ export default class extends Controller {
     group.querySelectorAll(".select-button").forEach(btn => {
       btn.classList.remove("border-primary-500", "bg-primary-50", "ring-2", "ring-primary-200")
       btn.classList.add("border-gray-200", "bg-white")
+      btn.setAttribute("aria-checked", "false")
       const check = btn.querySelector(".select-check")
       if (check) {
         check.classList.add("hidden")
@@ -69,6 +70,7 @@ export default class extends Controller {
     // 현재 선택 활성화 (체크마크 표시)
     button.classList.remove("border-gray-200", "bg-white")
     button.classList.add("border-primary-500", "bg-primary-50", "ring-2", "ring-primary-200")
+    button.setAttribute("aria-checked", "true")
     const check = button.querySelector(".select-check")
     if (check) {
       check.classList.remove("hidden")
@@ -88,6 +90,41 @@ export default class extends Controller {
     setTimeout(() => {
       this.next({ preventDefault: () => {} })
     }, 400)
+  }
+
+  // 키보드 네비게이션 처리
+  handleKeydown(event) {
+    const button = event.currentTarget
+
+    // Enter 또는 Space로 선택
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault()
+      this.selectOption(event)
+    }
+
+    // Escape로 폼 닫기
+    if (event.key === "Escape") {
+      event.preventDefault()
+      this.close(event)
+    }
+
+    // 화살표 키로 버튼 간 이동
+    if (event.key === "ArrowDown" || event.key === "ArrowRight" ||
+        event.key === "ArrowUp" || event.key === "ArrowLeft") {
+      event.preventDefault()
+      const group = button.closest("[data-check-wizard-target='buttonGroup']")
+      const buttons = Array.from(group.querySelectorAll(".select-button"))
+      const currentIndex = buttons.indexOf(button)
+      let nextIndex
+
+      if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+        nextIndex = (currentIndex + 1) % buttons.length
+      } else {
+        nextIndex = (currentIndex - 1 + buttons.length) % buttons.length
+      }
+
+      buttons[nextIndex].focus()
+    }
   }
 
   next(event) {
@@ -168,11 +205,32 @@ export default class extends Controller {
           step.style.transition = "opacity 0.3s ease, transform 0.3s ease"
           step.style.opacity = "1"
           step.style.transform = "translateY(0)"
+
+          // 애니메이션 후 포커스 이동
+          setTimeout(() => {
+            this.focusFirstElement(step)
+          }, 300)
         })
       } else {
         step.classList.add("hidden")
       }
     })
+  }
+
+  // 단계의 첫 번째 포커스 가능한 요소에 포커스
+  focusFirstElement(step) {
+    // 버튼 그룹의 첫 번째 버튼
+    const firstButton = step.querySelector(".select-button")
+    if (firstButton) {
+      firstButton.focus()
+      return
+    }
+
+    // 또는 첫 번째 입력 필드
+    const firstInput = step.querySelector("input:not([type='hidden']), textarea")
+    if (firstInput && !firstInput.readOnly) {
+      firstInput.focus()
+    }
   }
 
   updateProgress() {

@@ -50,9 +50,12 @@
             ["outdoor_leak", "🏠", "외부 누수", "외벽, 창틀에서 새요"]
           ].each do |value, icon, title, desc| %>
             <button type="button"
-                    class="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-gray-200 bg-white hover:border-primary-300 hover:bg-primary-50/30 transition-all duration-200 text-left group select-button"
-                    data-action="click->check-wizard#selectOption"
-                    data-value="<%= value %>">
+                    class="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-gray-200 bg-white hover:border-primary-300 hover:bg-primary-50/30 transition-all duration-200 text-left group select-button focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                    data-action="click->check-wizard#selectOption keydown->check-wizard#handleKeydown"
+                    data-value="<%= value %>"
+                    role="radio"
+                    aria-checked="false"
+                    tabindex="0">
               <span class="text-2xl flex-shrink-0"><%= icon %></span>
               <div class="flex-1 min-w-0">
                 <p class="font-semibold text-gray-900 text-[15px]"><%= title %></p>
@@ -93,9 +96,13 @@
             ["other_building", "📦", "기타"]
           ].each do |value, icon, label| %>
             <button type="button"
-                    class="relative flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-gray-200 bg-white hover:border-primary-300 hover:bg-primary-50/30 transition-all duration-200 select-button"
-                    data-action="click->check-wizard#selectOption"
-                    data-value="<%= value %>">
+                    class="relative flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-gray-200 bg-white hover:border-primary-300 hover:bg-primary-50/30 transition-all duration-200 select-button focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                    data-action="click->check-wizard#selectOption keydown->check-wizard#handleKeydown"
+                    data-value="<%= value %>"
+                    role="radio"
+                    aria-checked="false"
+                    aria-label="<%= label %>"
+                    tabindex="0">
               <!-- 선택 시에만 체크마크 표시 -->
               <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center transition-all select-check hidden">
                 <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
