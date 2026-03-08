@@ -815,3 +815,130 @@ body {
   animation: fadeInUp 0.5s ease-out;
 }
 
+/* ===== 버튼 시인성 개선 (전역) ===== */
+/* 모든 버튼과 링크의 최소 대비 보장 */
+button,
+a[role="button"],
+input[type="submit"],
+input[type="button"] {
+  min-height: 44px; /* WCAG 터치 최소 크기 */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 흰 배경 버튼은 항상 어두운 텍스트와 테두리 */
+button.bg-white,
+a.bg-white,
+.bg-white.btn,
+.bg-white button,
+.bg-white a[role="button"] {
+  color: #111827 !important; /* gray-900 */
+  border: 2px solid #d1d5db !important; /* gray-300 */
+}
+
+button.bg-white:hover,
+a.bg-white:hover {
+  background-color: #f9fafb !important; /* gray-50 */
+  border-color: #9ca3af !important; /* gray-400 */
+}
+
+/* 주요 액션 버튼 (Submit, CTA) 스타일 강화 */
+button[type="submit"]:not([class*="bg-"]):not([class*="border-"]),
+.btn-primary:not([class*="bg-"]) {
+  background: linear-gradient(135deg, #0d9488, #0f766e); /* teal-600 to teal-700 */
+  color: white !important;
+  padding: 0.875rem 2rem;
+  border-radius: 1rem;
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+button[type="submit"]:hover:not([disabled]),
+.btn-primary:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(13, 148, 136, 0.4);
+}
+
+button[type="submit"]:disabled,
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 그라디언트 배경 버튼은 항상 흰 텍스트 보장 */
+[class*="bg-gradient-to"] button,
+[class*="bg-gradient-to"] a,
+button[class*="bg-gradient-to"],
+a[class*="bg-gradient-to"] {
+  color: white !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+}
+
+/* 링크 버튼 시인성 */
+a[class*="inline-flex"][class*="bg-"] {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* 보조 버튼 (Secondary) */
+button[class*="bg-gray"],
+a[class*="bg-gray"] {
+  border: 2px solid #e5e7eb;
+}
+
+button[class*="bg-gray"]:hover,
+a[class*="bg-gray"]:hover {
+  background-color: #f3f4f6 !important;
+  border-color: #d1d5db;
+}
+
+/* 텍스트 링크 강조 */
+a:not([class*="bg-"]):not([class*="text-"]) {
+  color: #0d9488; /* teal-600 */
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:not([class*="bg-"]):not([class*="text-"]):hover {
+  color: #0f766e; /* teal-700 */
+  text-decoration-thickness: 2px;
+}
+
+/* Focus 상태 시인성 (접근성) */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid #0d9488 !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.2) !important;
+}
+
+/* 모바일 터치 피드백 */
+@media (hover: none) and (pointer: coarse) {
+  button:active:not([disabled]),
+  a[role="button"]:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+/* 다크 배경 위 버튼 (예: 히어로 섹션) */
+[class*="bg-gray-"][class*="00"] button:not([class*="bg-"]),
+[class*="bg-gradient-"] button:not([class*="bg-white"]),
+[class*="bg-primary-"][class*="00"] button:not([class*="bg-"]) {
+  background: white;
+  color: #0d9488 !important; /* teal-600 */
+  border: 2px solid white;
+}
+
+[class*="bg-gray-"][class*="00"] button:not([class*="bg-"]):hover,
+[class*="bg-gradient-"] button:not([class*="bg-white"]):hover,
+[class*="bg-primary-"][class*="00"] button:not([class*="bg-"]):hover {
+  background: #f0fdfa; /* teal-50 */
+  transform: translateY(-2px);
+}
+

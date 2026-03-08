@@ -306,6 +306,16 @@ admin = User.find_or_create_by!(email: "admin@nusucheck.kr") do |u|
 end
 puts "  -> 관리자: admin@nusucheck.kr / password123"
 
+# 실제 관리자 계정 (designd)
+designd_admin = User.find_or_create_by!(email: "designd@designd.co.kr") do |u|
+  u.name = "DesignD"
+  u.password = "designd2024!"
+  u.phone = "010-0000-0001"
+  u.role = :admin
+  u.type = "Customer"
+end
+puts "  -> 실제 관리자: designd@designd.co.kr (admin 권한)"
+
 # 3. 데모 고객 계정
 customer = Customer.find_or_create_by!(email: "customer@example.com") do |u|
   u.name = "김철수"
