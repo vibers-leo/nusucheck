@@ -200,44 +200,38 @@
       </div>
     </div>
 
-    <!-- Step 5: 영상 촬영/업로드 (토스 스타일) -->
+    <!-- Step 5: 영상 촬영/업로드 (영상만, 토스 스타일) -->
     <div data-check-wizard-target="step" data-controller="file-counter" class="wizard-step hidden">
       <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
-        <div class="mb-6">
+        <div class="mb-6 text-center">
           <p class="text-sm font-medium text-primary-600 mb-2">영상 촬영</p>
           <h1 class="text-[26px] font-bold text-gray-900 leading-tight tracking-tight">
-            누수 부위를<br>촬영해주세요
+            📹 영상을 찍어주세요
           </h1>
+          <p class="text-[15px] text-gray-600 mt-3">10초 이상 촬영하면 전문가가 정확히 진단해요</p>
         </div>
 
-        <!-- 촬영 가이드 (상단) -->
-        <div class="mb-6 p-4 bg-gray-50 rounded-2xl">
+        <!-- 영상이 중요함을 강조하는 배너 -->
+        <div class="mb-6 p-5 bg-gradient-to-br from-primary-50 via-blue-50 to-indigo-50 border-2 border-primary-300 rounded-2xl shadow-sm">
           <div class="flex items-start gap-3">
-            <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span class="text-base">🎬</span>
+            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary-600 to-blue-600 rounded-full flex items-center justify-center shadow-md">
+              <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+              </svg>
             </div>
-            <div>
-              <p class="font-semibold text-gray-900 text-sm mb-2">이렇게 촬영하면 좋아요</p>
-              <ul class="space-y-1 text-sm text-gray-600">
-                <li class="flex items-start gap-1.5">
-                  <span class="text-primary-500 mt-0.5">•</span>
-                  <span><strong>10초 이상</strong> 연속 촬영</span>
-                </li>
-                <li class="flex items-start gap-1.5">
-                  <span class="text-primary-500 mt-0.5">•</span>
-                  <span>누수 부위를 <strong>천천히 클로즈업</strong></span>
-                </li>
-                <li class="flex items-start gap-1.5">
-                  <span class="text-primary-500 mt-0.5">•</span>
-                  <span>물 떨어지는 <strong>소리</strong>도 같이 녹음</span>
-                </li>
-              </ul>
+            <div class="flex-1">
+              <p class="font-bold text-primary-900 text-base mb-1.5">
+                📹 영상이 사진보다 10배 더 정확해요!
+              </p>
+              <p class="text-primary-800 text-sm leading-relaxed">
+                10초 이상의 영상으로 누수 상황을 보여주시면 전문가가 <strong>현장 방문 전에도 정확한 진단</strong>이 가능합니다.
+              </p>
             </div>
           </div>
         </div>
 
-        <!-- 영상 업로드 영역 -->
-        <div class="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-primary-400 hover:bg-primary-50/30 transition-all cursor-pointer" id="video-drop-zone">
+        <!-- 영상 업로드 영역 (더 크고 눈에 띄게) -->
+        <div class="border-4 border-dashed border-primary-500 rounded-3xl p-12 text-center hover:border-primary-600 hover:bg-primary-50 bg-gradient-to-br from-primary-50/50 to-blue-50/30 transition-all cursor-pointer shadow-sm hover:shadow-md video-upload-box" id="video-drop-zone">
           <%= f.file_field :videos,
                 multiple: true,
                 accept: "video/mp4,video/quicktime,video/avi,video/webm,video/3gpp",
@@ -249,49 +243,45 @@
                   action: "change->file-counter#updateVideoCounts change->check-wizard#onFileChange"
                 } %>
           <label for="video-upload" class="cursor-pointer block">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
-              <svg class="w-8 h-8 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+            <div class="inline-block p-8 bg-gradient-to-br from-primary-600 to-blue-600 rounded-3xl mb-6 shadow-lg">
+              <svg class="w-16 h-16 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
               </svg>
             </div>
-            <p class="text-lg font-bold text-gray-900 mb-1">촬영하기 또는 영상 선택</p>
-            <p class="text-sm text-gray-500">MP4, MOV, WebM · 최대 2GB</p>
+            <p class="text-2xl font-bold text-gray-900 mb-3">📱 촬영하거나 기존 영상 선택</p>
+            <p class="text-lg text-primary-700 font-semibold mb-2">10초 이상 권장</p>
+            <p class="text-base text-gray-600"><strong class="text-primary-600">최대 2GB까지</strong> 업로드 가능 · MP4, MOV, WebM</p>
           </label>
         </div>
 
         <!-- 업로드된 파일 표시 -->
-        <div data-file-counter-target="videoCount" class="mt-4 text-center text-sm text-gray-500">
+        <div data-file-counter-target="videoCount" class="mt-4 text-center text-sm font-medium text-gray-500">
         </div>
 
-        <!-- 사진도 추가 가능 안내 -->
-        <div class="mt-6 pt-5 border-t border-gray-100">
-          <div class="flex items-center justify-between mb-3">
-            <p class="text-sm font-medium text-gray-700">사진도 추가하시겠어요?</p>
-            <span class="text-xs text-gray-400">선택사항</span>
-          </div>
-          <div class="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center hover:border-gray-300 transition cursor-pointer">
-            <%= f.file_field :photos,
-                  multiple: true,
-                  accept: "image/*",
-                  class: "hidden",
-                  id: "photo-upload",
-                  data: {
-                    file_counter_target: "photoInput",
-                    action: "change->file-counter#updatePhotoCounts"
-                  } %>
-            <label for="photo-upload" class="cursor-pointer flex items-center justify-center gap-3">
-              <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-              </div>
-              <div class="text-left">
-                <p class="text-sm font-medium text-gray-700">사진 추가하기</p>
-                <p class="text-xs text-gray-400">JPG, PNG · 최대 5장</p>
-              </div>
-            </label>
-          </div>
-          <div data-file-counter-target="photoCount" class="mt-2 text-center text-sm text-gray-400"></div>
+        <!-- 촬영 팁 (노란색 박스로 눈에 띄게) -->
+        <div class="mt-6 p-4 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border border-yellow-200 shadow-sm">
+          <p class="font-bold mb-2 text-gray-900 flex items-center gap-2">
+            <span class="text-lg">🎬</span>
+            이렇게 촬영하면 전문가가 더 정확히 진단해요
+          </p>
+          <ul class="space-y-1.5 text-sm text-gray-700">
+            <li class="flex items-start gap-2">
+              <span class="text-primary-600 font-bold">1.</span>
+              <span><strong>10초 이상</strong> 연속으로 촬영해주세요 (중간에 멈추지 마세요)</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-600 font-bold">2.</span>
+              <span>누수 부위를 <strong>천천히 클로즈업</strong>하세요</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-600 font-bold">3.</span>
+              <span>주변 환경(천장, 벽, 바닥)도 함께 보여주세요</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-600 font-bold">4.</span>
+              <span><strong>물 떨어지는 소리</strong>도 함께 녹음되면 더욱 좋아요</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

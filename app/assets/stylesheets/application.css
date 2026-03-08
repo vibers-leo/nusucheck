@@ -609,3 +609,21 @@ turbo-frame[busy]::after {
   transform: scale(0.98);
 }
 
+/* ===== 영상 업로드 박스 펄스 (당근마켓 스타일) ===== */
+.video-upload-box {
+  animation: videoPulse 2s ease-in-out infinite;
+}
+
+@keyframes videoPulse {
+  0%, 100% {
+    border-color: rgb(20, 184, 166); /* primary-500 */
+  }
+  50% {
+    border-color: rgb(99, 102, 241); /* indigo-500 */
+  }
+}
+
+.video-upload-box:hover {
+  animation: none;
+}
+
