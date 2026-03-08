@@ -35,7 +35,7 @@ export default class extends Controller {
       villa: "빌라/연립",
       house: "단독주택",
       office: "사무실",
-      store: "상가",
+      retail_store: "상가",
       factory: "공장",
       other_building: "기타"
     }

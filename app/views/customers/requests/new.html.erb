@@ -84,7 +84,7 @@
             ["villa", "🏘️", "빌라/연립"],
             ["house", "🏠", "단독주택"],
             ["office", "🏬", "사무실"],
-            ["store", "🏪", "상가"],
+            ["retail_store", "🏪", "상가"],
             ["factory", "🏭", "공장"],
             ["other_building", "📦", "기타"]
           ].each do |value, icon, label| %>
@@ -143,7 +143,7 @@
 
           <div>
             <label class="block text-sm font-semibold text-gray-900 mb-2">층수 <span class="text-gray-400 font-normal">(선택)</span></label>
-            <%= f.text_field :floor,
+            <%= f.text_field :floor_info,
                   placeholder: "5층",
                   class: "w-full px-4 py-4 text-[15px] border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" %>
           </div>
