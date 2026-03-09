@@ -1,4 +1,4 @@
-class CreateCoupons < ActiveRecord::Migration[7.2]
+class CreateCoupons < ActiveRecord::Migration[7.1]
   def change
     create_table :coupons do |t|
       t.string :code, null: false, index: { unique: true }
