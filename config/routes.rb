@@ -5,8 +5,9 @@ Rails.application.routes.draw do
   # === Devise (고객 전용 회원가입) ===
   devise_for :users, controllers: {
     registrations: "users/registrations",
-    sessions: "users/sessions",
-    omniauth_callbacks: "users/omniauth_callbacks"
+    sessions: "users/sessions"
+    # 카카오 로그인 (나중에 추가 예정)
+    # omniauth_callbacks: "users/omniauth_callbacks"
   }
 
   # === 멀티 테넌시 서브도메인 라우팅 ===

@@ -17,8 +17,9 @@ gem "image_processing", "~> 1.2"
 
 # Authentication & Authorization
 gem "devise"
-gem "omniauth-kakao"
-gem "omniauth-rails_csrf_protection"
+# 카카오 로그인 (나중에 추가 예정)
+# gem "omniauth-kakao"
+# gem "omniauth-rails_csrf_protection"
 gem "pundit"
 
 # State Machine
