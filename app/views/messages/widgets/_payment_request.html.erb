@@ -1,0 +1,60 @@
+<% is_my_message = message.sender_id == current_user&.id %>
+<div class="my-4 flex <%= is_my_message ? 'justify-end' : 'justify-start' %>">
+  <div class="max-w-md w-full">
+    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-xl p-5 shadow-md">
+      <div class="flex items-center gap-2 mb-3">
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+        </svg>
+        <h3 class="font-bold text-lg text-blue-900">결제 요청</h3>
+      </div>
+
+      <p class="text-2xl font-bold text-blue-900 mb-2"><%= number_to_currency(message.metadata['amount'], unit: '', precision: 0) %>원</p>
+
+      <div class="mb-4 text-sm text-blue-700">
+        <%= message.metadata['payment_method'] == 'escrow' ? '✅ 에스크로 안전결제' : '💳 직접 결제' %>
+      </div>
+
+      <% if message.metadata['status'] == 'pending' && request.customer == current_user %>
+        <!-- 결제 방법 선택 -->
+        <div class="space-y-2">
+          <p class="text-sm font-semibold text-gray-700 mb-2">결제 방법을 선택하세요</p>
+          <%= button_to pay_customers_request_path(request, payment_method: "escrow"),
+                method: :post,
+                class: "w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2" do %>
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+            </svg>
+            에스크로 결제 (안전)
+          <% end %>
+          <%= button_to pay_customers_request_path(request, payment_method: "direct"),
+                method: :post,
+                class: "w-full py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors" do %>
+            직접 결제
+          <% end %>
+        </div>
+
+        <!-- Toss-like 안내 메시지 -->
+        <div class="mt-3 p-3 bg-white/70 rounded-lg border border-blue-200">
+          <p class="text-xs text-gray-700">
+            <strong>💡 에스크로 결제란?</strong><br>
+            플랫폼이 결제금을 보관하다가 공사 완료 후 전문가에게 지급하는 안전한 결제 방식이에요.
+          </p>
+        </div>
+
+      <% elsif message.metadata['status'] == 'completed' %>
+        <div class="flex items-center gap-2 text-green-700 bg-white/70 rounded-lg p-3">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="font-semibold">결제 완료</span>
+        </div>
+      <% end %>
+
+      <!-- 타임스탬프 -->
+      <div class="mt-3 text-xs text-gray-500 text-center">
+        <%= message.created_at.strftime("%Y년 %m월 %d일 %H:%M") %>
+      </div>
+    </div>
+  </div>
+</div>

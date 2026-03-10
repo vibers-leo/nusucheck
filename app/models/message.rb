@@ -13,8 +13,20 @@ class Message < ApplicationRecord
     admin: 2
   }
 
+  # 메시지 카테고리 (채팅방 안에서 다양한 기능)
+  enum message_category: {
+    text: 0,              # 일반 텍스트
+    estimate: 1,          # 견적서
+    schedule: 2,          # 일정 제안
+    payment_request: 3,   # 결제 요청
+    payment_complete: 4,  # 결제 완료
+    insurance_claim: 5,   # 보험청구서
+    system_notice: 6      # 시스템 알림
+  }
+
   validates :content, presence: true, length: { minimum: 1, maximum: 1000 }
   validates :message_type, presence: true
+  validates :metadata, presence: true, if: :structured_message?
 
   scope :recent, -> { order(created_at: :asc) }
   scope :unread, -> { where(read_at: nil) }
@@ -48,6 +60,89 @@ class Message < ApplicationRecord
 
   def system_message?
     system? || admin?
+  end
+
+  def structured_message?
+    !text? && !system_notice?
+  end
+
+  # 견적서 메시지 생성 헬퍼
+  def self.create_estimate_message!(request:, estimate:, sender:)
+    create!(
+      request: request,
+      sender: sender,
+      message_type: :user,
+      message_category: :estimate,
+      content: "견적서를 보냈습니다.",
+      metadata: {
+        estimate_id: estimate.id,
+        amount: estimate.total_amount,
+        breakdown: estimate.items.map { |item| { name: item.name, price: item.price } }
+      }
+    )
+  end
+
+  # 일정 제안 메시지 생성
+  def self.create_schedule_message!(request:, proposed_date:, time_slot:, sender:)
+    create!(
+      request: request,
+      sender: sender,
+      message_type: :user,
+      message_category: :schedule,
+      content: "방문 일정을 제안했습니다.",
+      metadata: {
+        proposed_date: proposed_date,
+        time_slot: time_slot,
+        status: "pending"
+      }
+    )
+  end
+
+  # 결제 요청 메시지 생성
+  def self.create_payment_request!(request:, amount:, payment_method:, sender:)
+    create!(
+      request: request,
+      sender: sender,
+      message_type: :user,
+      message_category: :payment_request,
+      content: "#{amount.to_s(:delimited)}원 결제를 요청합니다.",
+      metadata: {
+        amount: amount,
+        payment_method: payment_method,  # "direct" or "escrow"
+        status: "pending"
+      }
+    )
+  end
+
+  # 결제 완료 메시지 생성
+  def self.create_payment_complete!(request:, amount:, transaction_id:)
+    create!(
+      request: request,
+      sender: nil,
+      message_type: :system,
+      message_category: :payment_complete,
+      content: "결제가 완료되었습니다.",
+      metadata: {
+        amount: amount,
+        transaction_id: transaction_id,
+        completed_at: Time.current.iso8601
+      }
+    )
+  end
+
+  # 보험청구서 메시지 생성
+  def self.create_insurance_claim_message!(request:, insurance_claim:, sender:)
+    create!(
+      request: request,
+      sender: sender,
+      message_type: :user,
+      message_category: :insurance_claim,
+      content: "보험청구서가 준비되었습니다.",
+      metadata: {
+        claim_id: insurance_claim.id,
+        document_url: Rails.application.routes.url_helpers.download_pdf_customers_insurance_claim_path(insurance_claim)
+      }
+    )
   end
 
   private

@@ -1,5 +1,25 @@
 <%= turbo_frame_tag dom_id(message) do %>
-  <% if message.system_message? %>
+  <% if message.estimate? %>
+    <!-- 견적서 위젯 -->
+    <%= render "messages/widgets/estimate", message: message, request: message.request %>
+
+  <% elsif message.payment_request? %>
+    <!-- 결제 요청 위젯 -->
+    <%= render "messages/widgets/payment_request", message: message, request: message.request %>
+
+  <% elsif message.payment_complete? %>
+    <!-- 결제 완료 위젯 -->
+    <%= render "messages/widgets/payment_complete", message: message %>
+
+  <% elsif message.schedule? %>
+    <!-- 일정 제안 위젯 -->
+    <%= render "messages/widgets/schedule", message: message, request: message.request %>
+
+  <% elsif message.insurance_claim? %>
+    <!-- 보험청구서 위젯 -->
+    <%= render "messages/widgets/insurance_claim", message: message %>
+
+  <% elsif message.system_message? %>
     <!-- 시스템 메시지 (AI 안내) -->
     <div class="flex justify-center mb-4">
       <div class="max-w-md w-full">

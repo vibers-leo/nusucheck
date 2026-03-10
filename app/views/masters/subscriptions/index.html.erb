@@ -1,0 +1,214 @@
+<div class="max-w-6xl mx-auto py-8 px-4">
+  <!-- 헤더 -->
+  <div class="text-center mb-12">
+    <h1 class="text-4xl font-bold text-gray-900 mb-3">💼 구독 플랜</h1>
+    <p class="text-lg text-gray-600">더 많은 고객을 만나고, 수익을 늘리세요</p>
+
+    <!-- 현재 플랜 표시 -->
+    <div class="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-50 to-indigo-50 border-2 border-primary-200 rounded-xl">
+      <svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="font-semibold text-gray-900">현재 플랜: <strong class="text-primary-700"><%= @subscription.features_for_tier[:display_name] %></strong></span>
+      <% if @subscription.premium? || @subscription.basic? %>
+        <span class="text-sm text-gray-600">· 만료일: <%= @subscription.expires_on.strftime("%Y.%m.%d") %></span>
+      <% end %>
+    </div>
+
+    <!-- 남은 클레임 건수 (Free 플랜만) -->
+    <% if @subscription.free? %>
+      <div class="mt-3 text-sm text-gray-600">
+        📊 이번 달 남은 클레임: <strong class="text-primary-700"><%= @subscription.remaining_claims %>건</strong> / 5건
+      </div>
+    <% end %>
+  </div>
+
+  <!-- 플랜 비교표 -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+    <!-- Free Tier -->
+    <div class="bg-white border-2 <%= @subscription.free? ? 'border-primary-400' : 'border-gray-200' %> rounded-2xl p-6 <%= @subscription.free? ? 'shadow-lg' : 'shadow-sm' %> hover:shadow-lg transition-shadow">
+      <% if @subscription.free? %>
+        <div class="absolute top-4 right-4 bg-primary-500 text-white px-3 py-1 text-xs font-bold rounded-full">
+          현재 플랜
+        </div>
+      <% end %>
+
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">무료 플랜</h2>
+      <p class="text-sm text-gray-500 mb-4">누수체크를 시작해보세요</p>
+
+      <div class="mb-6">
+        <span class="text-4xl font-bold text-gray-900">₩0</span>
+        <span class="text-gray-500">/월</span>
+      </div>
+
+      <ul class="space-y-3 mb-6">
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm text-gray-700">월 <strong>5건</strong> 클레임 가능</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm text-gray-700">일반 매칭</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-gray-300 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm text-gray-400 line-through">광고 제거</span>
+        </li>
+      </ul>
+
+      <% if @subscription.free? %>
+        <button disabled class="w-full py-3 bg-gray-200 text-gray-500 font-bold rounded-lg cursor-not-allowed">
+          현재 사용 중
+        </button>
+      <% else %>
+        <%= button_to "무료로 전환", downgrade_masters_subscriptions_path, method: :patch,
+              class: "w-full py-3 bg-gray-500 text-white font-bold rounded-lg hover:bg-gray-600 transition-colors",
+              data: { turbo_confirm: "무료 플랜으로 다운그레이드하시겠습니까?" } %>
+      <% end %>
+    </div>
+
+    <!-- Basic Tier -->
+    <div class="bg-white border-2 <%= @subscription.basic? ? 'border-primary-400' : 'border-gray-200' %> rounded-2xl p-6 <%= @subscription.basic? ? 'shadow-lg' : 'shadow-sm' %> hover:shadow-lg transition-shadow relative">
+      <% if @subscription.basic? %>
+        <div class="absolute top-4 right-4 bg-primary-500 text-white px-3 py-1 text-xs font-bold rounded-full">
+          현재 플랜
+        </div>
+      <% end %>
+
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">베이직 플랜</h2>
+      <p class="text-sm text-gray-500 mb-4">무제한으로 고객을 만나보세요</p>
+
+      <div class="mb-6">
+        <span class="text-4xl font-bold text-primary-600">₩20,000</span>
+        <span class="text-gray-500">/월</span>
+      </div>
+
+      <ul class="space-y-3 mb-6">
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm text-gray-700"><strong>무제한</strong> 클레임</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm text-gray-700">일반 매칭</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm text-gray-700">광고 제거</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-gray-300 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm text-gray-400 line-through">우선 매칭</span>
+        </li>
+      </ul>
+
+      <% if @subscription.basic? %>
+        <button disabled class="w-full py-3 bg-gray-200 text-gray-500 font-bold rounded-lg cursor-not-allowed">
+          현재 사용 중
+        </button>
+      <% else %>
+        <%= button_to "베이직 시작", upgrade_masters_subscriptions_path(tier: "basic"), method: :patch,
+              class: "w-full py-3 bg-primary-600 text-white font-bold rounded-lg hover:bg-primary-700 transition-colors" %>
+      <% end %>
+    </div>
+
+    <!-- Premium Tier -->
+    <div class="bg-gradient-to-br from-purple-600 to-indigo-600 text-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-shadow relative overflow-hidden">
+      <div class="absolute top-0 right-0 bg-yellow-400 text-gray-900 px-4 py-1.5 text-xs font-bold rounded-bl-2xl">
+        인기 🔥
+      </div>
+
+      <% if @subscription.premium? %>
+        <div class="absolute top-4 left-4 bg-white/20 backdrop-blur-sm text-white px-3 py-1 text-xs font-bold rounded-full">
+          현재 플랜
+        </div>
+      <% end %>
+
+      <h2 class="text-2xl font-bold mb-2 mt-6">프리미엄 플랜</h2>
+      <p class="text-sm opacity-90 mb-4">우선 매칭으로 더 많은 기회를</p>
+
+      <div class="mb-6">
+        <span class="text-4xl font-bold">₩50,000</span>
+        <span class="opacity-80">/월</span>
+      </div>
+
+      <ul class="space-y-3 mb-6">
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm"><strong>무제한</strong> 클레임</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm"><strong class="text-yellow-400">⚡ 우선 매칭</strong> (5분 선행 알림)</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm"><strong class="text-yellow-400">⭐ 프로필 상단 노출</strong></span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm">광고 제거</span>
+        </li>
+      </ul>
+
+      <% if @subscription.premium? %>
+        <button disabled class="w-full py-3 bg-white/20 text-white font-bold rounded-lg cursor-not-allowed">
+          현재 사용 중
+        </button>
+      <% else %>
+        <%= button_to "프리미엄 시작", upgrade_masters_subscriptions_path(tier: "premium"), method: :patch,
+              class: "w-full py-3 bg-yellow-400 text-gray-900 font-bold rounded-lg hover:bg-yellow-500 transition-colors shadow-lg" %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Toss-like 안내 박스 -->
+  <div class="max-w-3xl mx-auto bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6">
+    <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
+      <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+      </svg>
+      💡 구독 플랜 안내
+    </h3>
+    <ul class="space-y-2 text-sm text-gray-700">
+      <li class="flex items-start gap-2">
+        <span class="text-blue-600 font-bold">•</span>
+        <span><strong>무료 플랜</strong>: 매달 5건까지 무료로 클레임할 수 있어요. 누수체크를 처음 시작하시는 분께 추천해요!</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-blue-600 font-bold">•</span>
+        <span><strong>베이직 플랜</strong>: 월 2만원으로 무제한 클레임! 광고도 없어져서 깔끔하게 일할 수 있어요.</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-blue-600 font-bold">•</span>
+        <span><strong>프리미엄 플랜</strong>: 신규 체크가 올라오면 5분 먼저 알림을 받아요. 프로필도 상단에 노출돼서 더 많은 고객을 만날 수 있어요! 🚀</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-blue-600 font-bold">•</span>
+        <span>언제든지 플랜 변경이 가능해요. 부담 없이 시작하세요!</span>
+      </li>
+    </ul>
+  </div>
+</div>

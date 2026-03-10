@@ -5,7 +5,8 @@ Rails.application.routes.draw do
   # === Devise (고객 전용 회원가입) ===
   devise_for :users, controllers: {
     registrations: "users/registrations",
-    sessions: "users/sessions"
+    sessions: "users/sessions",
+    omniauth_callbacks: "users/omniauth_callbacks"
   }
 
   # === 멀티 테넌시 서브도메인 라우팅 ===
@@ -83,6 +84,8 @@ Rails.application.routes.draw do
       member do
         post :cancel
         post :accept_estimate
+        post :pay                    # 채팅 위젯: 결제 처리
+        patch :confirm_schedule      # 채팅 위젯: 일정 확정
         post :deposit_trip_fee       # 1단계: 출장비
         post :deposit_detection_fee  # 2단계: 검사비
         post :deposit_escrow         # 3단계: 공사비
@@ -134,6 +137,14 @@ Rails.application.routes.draw do
       member do
         post :send_to_customer
         get  :download_pdf
+      end
+    end
+
+    # 구독 관리
+    resources :subscriptions, only: [:index] do
+      collection do
+        patch :upgrade      # 플랜 업그레이드
+        patch :downgrade    # 플랜 다운그레이드 (Free로)
       end
     end
   end

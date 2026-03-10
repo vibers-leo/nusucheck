@@ -1,0 +1,44 @@
+<div class="my-4 flex justify-center">
+  <div class="max-w-md w-full">
+    <div class="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl p-5 shadow-md">
+      <div class="flex flex-col items-center text-center">
+        <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mb-3">
+          <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+
+        <h3 class="font-bold text-xl text-green-900 mb-2">결제가 완료되었어요!</h3>
+
+        <div class="text-2xl font-bold text-green-700 mb-4">
+          <%= number_to_currency(message.metadata['amount'], unit: '', precision: 0) %>원
+        </div>
+
+        <div class="w-full bg-white/70 rounded-lg p-3 mb-3">
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-gray-600">거래 번호</span>
+            <span class="font-mono text-gray-900"><%= message.metadata['transaction_id'] %></span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">결제 시각</span>
+            <span class="text-gray-900"><%= Time.parse(message.metadata['completed_at']).strftime("%Y.%m.%d %H:%M") %></span>
+          </div>
+        </div>
+
+        <!-- Toss-like 친절한 안내 -->
+        <div class="w-full bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <p class="text-xs text-gray-700 text-left">
+            <strong>💡 다음 단계</strong><br>
+            전문가가 공사를 완료하면 작업 확인 후 결제금이 전문가에게 전달돼요.
+            만약 문제가 있다면 환불 요청도 가능합니다!
+          </p>
+        </div>
+      </div>
+
+      <!-- 타임스탬프 -->
+      <div class="mt-3 text-xs text-gray-500 text-center">
+        <%= message.created_at.strftime("%Y년 %m월 %d일 %H:%M") %>
+      </div>
+    </div>
+  </div>
+</div>

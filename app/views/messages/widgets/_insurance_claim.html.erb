@@ -1,0 +1,58 @@
+<% is_my_message = message.sender_id == current_user&.id %>
+<div class="my-4 flex <%= is_my_message ? 'justify-end' : 'justify-start' %>">
+  <div class="max-w-md w-full">
+    <div class="bg-gradient-to-br from-green-50 to-teal-50 border-2 border-green-300 rounded-xl p-5 shadow-md">
+      <div class="flex items-center gap-2 mb-3">
+        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <h3 class="font-bold text-lg text-green-900">보험청구서 준비 완료</h3>
+      </div>
+
+      <div class="mb-4">
+        <p class="text-sm text-gray-700 mb-3">
+          보험청구에 필요한 서류가 모두 준비되었어요.
+          아래 PDF를 다운로드해서 보험사에 제출하시면 됩니다!
+        </p>
+
+        <div class="bg-white/70 rounded-lg p-3 mb-3 border border-green-200">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+            </svg>
+            <span class="font-semibold text-gray-900">포함된 서류</span>
+          </div>
+          <ul class="text-xs text-gray-600 space-y-1 ml-7">
+            <li>✓ 누수 탐지 보고서</li>
+            <li>✓ 공사 견적서 및 계산서</li>
+            <li>✓ 현장 사진 (Before/After)</li>
+            <li>✓ 전문가 자격증 사본</li>
+          </ul>
+        </div>
+      </div>
+
+      <%= link_to message.metadata['document_url'], target: "_blank",
+            class: "block w-full py-3 bg-green-600 text-white font-bold text-center rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2" do %>
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+        📄 보험청구서 PDF 다운로드
+      <% end %>
+
+      <!-- Toss-like 친절한 안내 -->
+      <div class="mt-3 p-3 bg-white/70 rounded-lg border border-green-200">
+        <p class="text-xs text-gray-700">
+          <strong>💡 보험청구 팁</strong><br>
+          • 보험사마다 청구 절차가 조금씩 달라요<br>
+          • 추가 서류 요청 시 채팅으로 말씀해주세요<br>
+          • 보통 1~2주 안에 처리된답니다
+        </p>
+      </div>
+
+      <!-- 타임스탬프 -->
+      <div class="mt-3 text-xs text-gray-500 text-center">
+        <%= message.created_at.strftime("%Y년 %m월 %d일 %H:%M") %>
+      </div>
+    </div>
+  </div>
+</div>

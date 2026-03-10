@@ -23,4 +23,9 @@ Devise.setup do |config|
   config.responder.redirect_status = :see_other
 
   config.navigational_formats = ["*/*", :html, :turbo_stream]
+
+  # OmniAuth 설정 (카카오 로그인)
+  config.omniauth :kakao,
+    ENV['KAKAO_CLIENT_ID'],
+    scope: 'profile_nickname,account_email'
 end

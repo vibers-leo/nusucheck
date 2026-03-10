@@ -1,0 +1,71 @@
+<% is_my_message = message.sender_id == current_user&.id %>
+<div class="my-4 flex <%= is_my_message ? 'justify-end' : 'justify-start' %>">
+  <div class="max-w-md w-full">
+    <div class="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-300 rounded-xl p-5 shadow-md">
+      <div class="flex items-center gap-2 mb-3">
+        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <h3 class="font-bold text-lg text-purple-900">방문 일정 제안</h3>
+      </div>
+
+      <div class="mb-4">
+        <div class="flex items-center gap-2 mb-2">
+          <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span class="text-lg font-semibold text-purple-900">
+            <%= Date.parse(message.metadata['proposed_date']).strftime("%Y년 %m월 %d일 (%a)") %>
+          </span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="text-lg font-semibold text-purple-900">
+            <%= message.metadata['time_slot'] %>
+          </span>
+        </div>
+      </div>
+
+      <% if message.metadata['status'] == 'pending' && request.customer == current_user %>
+        <div class="space-y-2">
+          <%= button_to confirm_schedule_customers_request_path(request, message_id: message.id),
+                method: :patch,
+                class: "w-full py-3 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition-colors" do %>
+            ✅ 이 일정으로 확정하기
+          <% end %>
+          <button type="button" class="w-full py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors">
+            다른 일정 제안하기
+          </button>
+        </div>
+
+        <!-- Toss-like 친절한 안내 -->
+        <div class="mt-3 p-3 bg-white/70 rounded-lg border border-purple-200">
+          <p class="text-xs text-gray-700">
+            <strong>💡 일정 확정 후</strong><br>
+            전문가가 약속된 시간에 방문해요. 방문 전 다시 한번 연락드릴게요!
+          </p>
+        </div>
+
+      <% elsif message.metadata['status'] == 'confirmed' %>
+        <div class="bg-white/70 rounded-lg p-3">
+          <div class="flex items-center gap-2 text-green-700 mb-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span class="font-semibold">일정 확정 완료</span>
+          </div>
+          <p class="text-xs text-gray-600">
+            📅 방문 하루 전에 알림을 보내드릴게요!
+          </p>
+        </div>
+      <% end %>
+
+      <!-- 타임스탬프 -->
+      <div class="mt-3 text-xs text-gray-500 text-center">
+        <%= message.created_at.strftime("%Y년 %m월 %d일 %H:%M") %>
+      </div>
+    </div>
+  </div>
+</div>
