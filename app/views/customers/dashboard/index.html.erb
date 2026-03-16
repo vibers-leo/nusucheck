@@ -164,7 +164,7 @@
                   ✓ 완료
                 </span>
                 <span class="text-xs text-gray-500">
-                  <%= request.closed_at.strftime("%m/%d") %>
+                  <%= request.closed_at&.strftime("%m/%d") %>
                 </span>
               </div>
               <h3 class="font-semibold text-gray-900 mb-1 text-sm">
