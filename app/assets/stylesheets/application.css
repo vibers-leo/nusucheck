@@ -5,10 +5,10 @@
 
 /* ===== CSS Custom Properties (Design Tokens) ===== */
 :root {
-  --color-brand: #0d9488;       /* teal-600 (primary) */
-  --color-brand-dark: #0f766e;  /* teal-700 */
-  --color-brand-light: #ccfbf1; /* teal-100 */
-  --color-brand-50: #f0fdfa;    /* teal-50 */
+  --color-brand: #14d4c0;       /* primary-500 (bright mint) */
+  --color-brand-dark: #0eb8a4;  /* primary-600 */
+  --color-brand-light: #ccfbf7; /* primary-100 */
+  --color-brand-50: #f0fffe;    /* primary-50 */
   --color-accent: #f97316;      /* carrot orange (secondary) */
   --radius-sm: 0.375rem;   /* 6px */
   --radius-md: 0.5rem;     /* 8px */

@@ -1,0 +1,252 @@
+<%# 당근마켓 마이당근 스타일 - 관리자 마이페이지 %>
+<% content_for :title, "마이페이지" %>
+
+<div class="max-w-lg mx-auto pb-24">
+
+  <!-- ① 프로필 히어로 카드 (관리자 = 보라색 그라데이션) -->
+  <div class="bg-gradient-to-br from-violet-600 to-purple-800 rounded-3xl mb-4 p-6 text-white shadow-xl">
+    <div class="flex items-center gap-4">
+      <div class="relative flex-shrink-0">
+        <div class="w-[72px] h-[72px] rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-3xl font-bold border-2 border-white/30">
+          <%= current_user.name&.first || "관" %>
+        </div>
+        <span class="absolute -bottom-1 -right-1 text-lg">👑</span>
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <h1 class="text-xl font-bold truncate mb-1"><%= current_user.name || "관리자" %></h1>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white/20 backdrop-blur rounded-full text-xs font-bold">
+            👑 최고 관리자
+          </span>
+        </div>
+        <p class="text-xs text-white/60 mt-1.5 truncate"><%= current_user.email %></p>
+      </div>
+    </div>
+
+    <!-- 관리자 상태 바 -->
+    <div class="mt-5 grid grid-cols-2 gap-3">
+      <div class="bg-white/15 rounded-xl p-3 text-center">
+        <p class="text-xl font-bold"><%= @pending_requests %></p>
+        <p class="text-xs text-white/70 mt-0.5">승인 대기 체크</p>
+      </div>
+      <div class="bg-white/15 rounded-xl p-3 text-center">
+        <p class="text-xl font-bold"><%= @pending_insurance %></p>
+        <p class="text-xs text-white/70 mt-0.5">검토 대기 보험</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 플랫폼 통계 -->
+  <div class="grid grid-cols-3 gap-2.5 mb-4">
+    <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center shadow-sm">
+      <p class="text-2xl font-bold text-gray-900"><%= @total_requests %></p>
+      <p class="text-[11px] text-gray-500 mt-0.5">전체 체크</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center shadow-sm">
+      <p class="text-2xl font-bold text-green-600"><%= @verified_masters %></p>
+      <p class="text-[11px] text-gray-500 mt-0.5">인증 전문가</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center shadow-sm">
+      <p class="text-2xl font-bold text-purple-600"><%= number_to_currency(@total_revenue.to_i, unit: "", precision: 0) %></p>
+      <p class="text-[11px] text-gray-500 mt-0.5">총수익(원)</p>
+    </div>
+  </div>
+
+  <!-- ③ 추가 통계 -->
+  <div class="grid grid-cols-2 gap-2.5 mb-4">
+    <div class="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="text-lg">👥</span>
+        <p class="text-xs text-gray-500">전체 고객</p>
+      </div>
+      <p class="text-2xl font-bold text-gray-900"><%= @total_customers %></p>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="text-lg">🔧</span>
+        <p class="text-xs text-gray-500">전체 전문가</p>
+      </div>
+      <p class="text-2xl font-bold text-gray-900"><%= @total_masters %></p>
+    </div>
+  </div>
+
+  <!-- ④ 관리 메뉴 -->
+  <div class="bg-white rounded-2xl border border-gray-100 mb-4 shadow-sm overflow-hidden">
+    <h2 class="px-4 pt-4 pb-2 text-sm font-bold text-gray-500">관리 메뉴</h2>
+    <div class="divide-y divide-gray-50">
+
+      <%= link_to admin_root_path, class: "flex items-center justify-between px-4 py-3.5 active:bg-gray-50 transition-colors" do %>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-violet-50 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-[15px] font-medium text-gray-900">관리자 대시보드</p>
+            <p class="text-xs text-gray-400">플랫폼 현황 한눈에 보기</p>
+          </div>
+        </div>
+        <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <% end %>
+
+      <%= link_to admin_requests_path, class: "flex items-center justify-between px-4 py-3.5 active:bg-gray-50 transition-colors" do %>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-[15px] font-medium text-gray-900">체크 관리</p>
+            <% if @pending_requests > 0 %>
+              <p class="text-xs text-orange-500 font-medium">승인 대기 <%= @pending_requests %>건</p>
+            <% else %>
+              <p class="text-xs text-gray-400">접수된 체크 관리</p>
+            <% end %>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <% if @pending_requests > 0 %>
+            <span class="inline-flex items-center justify-center w-5 h-5 bg-orange-500 text-white text-[10px] font-bold rounded-full"><%= @pending_requests %></span>
+          <% end %>
+          <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </div>
+      <% end %>
+
+      <%= link_to admin_masters_path, class: "flex items-center justify-between px-4 py-3.5 active:bg-gray-50 transition-colors" do %>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-[15px] font-medium text-gray-900">전문가 관리</p>
+            <p class="text-xs text-gray-400">인증 및 승인 관리</p>
+          </div>
+        </div>
+        <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <% end %>
+
+      <%= link_to admin_insurance_claims_path, class: "flex items-center justify-between px-4 py-3.5 active:bg-gray-50 transition-colors" do %>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-purple-50 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-[15px] font-medium text-gray-900">보험청구 관리</p>
+            <% if @pending_insurance > 0 %>
+              <p class="text-xs text-purple-500 font-medium">검토 대기 <%= @pending_insurance %>건</p>
+            <% else %>
+              <p class="text-xs text-gray-400">보험청구서 관리</p>
+            <% end %>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <% if @pending_insurance > 0 %>
+            <span class="inline-flex items-center justify-center w-5 h-5 bg-purple-500 text-white text-[10px] font-bold rounded-full"><%= @pending_insurance %></span>
+          <% end %>
+          <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </div>
+      <% end %>
+
+      <%= link_to admin_escrow_transactions_path, class: "flex items-center justify-between px-4 py-3.5 active:bg-gray-50 transition-colors" do %>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-amber-50 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-[15px] font-medium text-gray-900">에스크로 정산</p>
+            <p class="text-xs text-gray-400">결제 및 정산 관리</p>
+          </div>
+        </div>
+        <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <% end %>
+
+      <%= link_to admin_feedbacks_path, class: "flex items-center justify-between px-4 py-3.5 active:bg-gray-50 transition-colors" do %>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-[15px] font-medium text-gray-900">의견 관리</p>
+            <p class="text-xs text-gray-400">사용자 피드백 및 설문</p>
+          </div>
+        </div>
+        <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <% end %>
+
+    </div>
+  </div>
+
+  <!-- ⑤ 관리자 정보 -->
+  <div class="bg-white rounded-2xl border border-gray-100 mb-4 shadow-sm overflow-hidden">
+    <h2 class="px-4 pt-4 pb-2 text-sm font-bold text-gray-500">내 정보</h2>
+    <div class="divide-y divide-gray-50">
+      <div class="px-4 py-3 flex items-center justify-between">
+        <span class="text-sm text-gray-500">이름</span>
+        <span class="text-sm font-medium text-gray-900"><%= current_user.name || "-" %></span>
+      </div>
+      <div class="px-4 py-3 flex items-center justify-between">
+        <span class="text-sm text-gray-500">이메일</span>
+        <span class="text-sm font-medium text-gray-900"><%= current_user.email %></span>
+      </div>
+      <div class="px-4 py-3 flex items-center justify-between">
+        <span class="text-sm text-gray-500">역할</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-violet-100 text-violet-800 rounded-full text-xs font-bold">👑 관리자</span>
+      </div>
+      <div class="px-4 py-3 flex items-center justify-between">
+        <span class="text-sm text-gray-500">가입일</span>
+        <span class="text-sm font-medium text-gray-900"><%= current_user.created_at.strftime("%Y.%m.%d") %></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ 설정 -->
+  <div class="bg-white rounded-2xl border border-gray-100 mb-4 shadow-sm overflow-hidden">
+    <h2 class="px-4 pt-4 pb-2 text-sm font-bold text-gray-500">설정</h2>
+    <div class="divide-y divide-gray-50">
+      <%= link_to notifications_path, class: "flex items-center justify-between px-4 py-3.5 active:bg-gray-50 transition-colors" do %>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          </div>
+          <span class="text-[15px] font-medium text-gray-900">알림 내역</span>
+        </div>
+        <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <% end %>
+      <%= link_to edit_user_registration_path, class: "flex items-center justify-between px-4 py-3.5 active:bg-gray-50 transition-colors" do %>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <span class="text-[15px] font-medium text-gray-900">비밀번호 변경</span>
+        </div>
+        <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- ⑦ 로그아웃 -->
+  <div class="bg-white rounded-2xl border border-gray-100 mb-4 shadow-sm overflow-hidden">
+    <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "flex items-center justify-between px-4 py-4 active:bg-red-50 transition-colors" do %>
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center">
+          <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        </div>
+        <span class="text-[15px] font-medium text-red-600">로그아웃</span>
+      </div>
+    <% end %>
+  </div>
+
+  <p class="text-center text-xs text-gray-300 pb-2">누수체크 v1.0 · 관리자</p>
+
+</div>

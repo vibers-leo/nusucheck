@@ -150,7 +150,8 @@
       <% if @insurance_claim.may_start_review? %>
         <%= button_to "심사 시작", start_review_admin_insurance_claim_path(@insurance_claim),
               method: :post,
-              class: btn_classes(:warning, :md) %>
+              class: btn_classes(:warning, :md),
+              data: { turbo_confirm: "보험청구 심사를 시작하시겠습니까?" } %>
       <% end %>
 
       <% if @insurance_claim.may_approve? %>
@@ -170,7 +171,8 @@
       <% if @insurance_claim.may_complete? %>
         <%= button_to "처리 완료", complete_admin_insurance_claim_path(@insurance_claim),
               method: :post,
-              class: btn_classes(:primary, :md) %>
+              class: btn_classes(:primary, :md),
+              data: { turbo_confirm: "보험청구를 최종 처리 완료하시겠습니까?" } %>
       <% end %>
     </div>
   </div>

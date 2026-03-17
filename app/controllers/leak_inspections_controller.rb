@@ -12,6 +12,11 @@ class LeakInspectionsController < ApplicationController
     @inspection.customer = current_user_or_guest
 
     if @inspection.save
+      # 영상인 경우 백그라운드에서 압축 처리
+      if @inspection.photo.attached? && @inspection.photo.content_type.to_s.start_with?("video/")
+        VideoOptimizationJob.perform_later(@inspection.id)
+      end
+
       # AI 분석 시작 (백그라운드)
       begin
         LeakInspectionService.new(@inspection).analyze!

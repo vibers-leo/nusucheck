@@ -14,6 +14,8 @@ class MessagesController < ApplicationController
   def create
     @message = @request.messages.build(message_params)
     @message.sender = current_user
+    @message.message_type ||= :user
+    @message.message_category ||= :text
 
     if @message.save
       # ActionCable을 통해 실시간 전송 (Message 모델의 after_create_commit에서 처리)

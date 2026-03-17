@@ -11,7 +11,7 @@
           영상 하나로 AI가 진단하고,<br class="md:hidden"/>
           검증된 전문가가 24시간 내 견적을 드려요
         </p>
-        <%= link_to "지금 바로 시작하기", new_user_registration_path, class: "inline-flex items-center gap-2 px-8 py-4 bg-white text-primary-700 rounded-2xl hover:shadow-2xl transition-all font-bold text-lg" do %>
+        <%= link_to new_user_registration_path, class: "inline-flex items-center gap-2 px-8 py-4 bg-white text-primary-700 rounded-2xl hover:shadow-2xl transition-all font-bold text-lg" do %>
           <span>무료로 시작하기</span>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
@@ -229,7 +229,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
           </svg>
         <% end %>
-        <%= link_to "전문가 둘러보기", customers_masters_path, class: "w-full sm:w-auto inline-flex items-center justify-center gap-2 px-10 py-5 bg-transparent text-white rounded-2xl border-2 border-white hover:bg-white hover:text-primary-700 transition-all font-bold text-lg" do %>
+        <%= link_to customers_masters_path, class: "w-full sm:w-auto inline-flex items-center justify-center gap-2 px-10 py-5 bg-transparent text-white rounded-2xl border-2 border-white hover:bg-white hover:text-primary-700 transition-all font-bold text-lg" do %>
           <span>전문가 둘러보기</span>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>

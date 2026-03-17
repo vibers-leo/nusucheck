@@ -4,6 +4,45 @@
     <p class="text-sm text-gray-500"><%= Time.current.strftime("%Y년 %m월 %d일 %H:%M") %></p>
   </div>
 
+  <!-- 승인 대기 전문가 (있을 때만 표시) -->
+  <% if @pending_masters.any? %>
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <span class="flex w-2.5 h-2.5 bg-amber-500 rounded-full animate-pulse"></span>
+          <h2 class="text-base font-bold text-amber-900">승인 대기 중인 전문가 (<%= @pending_masters.size %>명)</h2>
+        </div>
+        <%= link_to "전체 보기", admin_masters_path, class: "text-sm text-amber-700 hover:text-amber-900 font-medium" %>
+      </div>
+      <div class="space-y-2">
+        <% @pending_masters.each do |master| %>
+          <div class="bg-white rounded-xl border border-amber-100 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 font-bold text-sm flex-shrink-0">
+                <%= master.name&.first %>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900"><%= master.name %></p>
+                <p class="text-xs text-gray-500"><%= master.email %> · 가입 <%= time_ago_in_words(master.created_at) %> 전</p>
+                <% profile = master.master_profile %>
+                <% if profile %>
+                  <p class="text-xs text-gray-400 mt-0.5">경력 <%= profile.experience_years || "-" %>년 · <%= profile.bio&.truncate(30) %></p>
+                <% end %>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0 ml-4">
+              <%= link_to "프로필", admin_master_path(master), class: "px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors" %>
+              <%= button_to "승인", verify_admin_master_path(master), method: :post,
+                    class: "px-3 py-1.5 text-xs font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors",
+                    data: { turbo_confirm: "#{master.name} 전문가를 승인하시겠습니까?" },
+                    form: { class: "inline" } %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
   <!-- 통계 카드 -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
     <!-- 전체 체크 -->

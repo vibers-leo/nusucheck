@@ -3,6 +3,8 @@ class Review < ApplicationRecord
   belongs_to :customer, class_name: "Customer", inverse_of: :reviews
   belongs_to :master, class_name: "Master", inverse_of: :reviews
 
+  alias_attribute :rating, :overall_rating
+
   validates :request_id, uniqueness: true
   validates :overall_rating, presence: true, numericality: { in: 1..5 }
   validates :punctuality_rating, :skill_rating, :kindness_rating,

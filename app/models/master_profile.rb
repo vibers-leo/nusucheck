@@ -12,11 +12,11 @@ class MasterProfile < ApplicationRecord
   scope :unverified, -> { where(verified: false) }
 
   def verify!
-    update!(verified: true, verified_at: Time.current)
+    update_columns(verified: true, verified_at: Time.current)
   end
 
   def reject!
-    update!(verified: false, verified_at: nil)
+    update_columns(verified: false, verified_at: nil)
   end
 
   def equipment_list

@@ -365,8 +365,11 @@
   </div>
 <% end %>
 
+<!-- 하단 고정 버튼 + 탭바 높이 여백 -->
+<div class="h-36 md:h-20"></div>
+
 <!-- 하단 고정 액션 영역 -->
-<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 pb-safe z-40">
+<div class="fixed bottom-16 md:bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 pb-safe z-30">
   <div class="max-w-screen-sm mx-auto">
     <%# 출장비 결제 %>
     <% if @request.assigned? && @request.trip_escrow.nil? && @request.trip_fee.to_d > 0 %>

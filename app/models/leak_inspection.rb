@@ -4,6 +4,10 @@ class LeakInspection < ApplicationRecord
   has_one_attached :photo
 
   validates :photo, presence: true
+  validate :photo_size_and_type, if: -> { photo.attached? }
+
+  ALLOWED_CONTENT_TYPES = %w[image/jpeg image/png image/gif image/webp video/mp4 video/quicktime video/x-msvideo video/avi video/mov].freeze
+  MAX_FILE_SIZE = 100.megabytes
   validates :session_token, presence: true, uniqueness: true
 
   before_validation :generate_session_token, on: :create
@@ -51,6 +55,15 @@ class LeakInspection < ApplicationRecord
   end
 
   private
+
+  def photo_size_and_type
+    if photo.blob.byte_size > MAX_FILE_SIZE
+      errors.add(:photo, "파일 크기는 100MB를 초과할 수 없습니다")
+    end
+    unless ALLOWED_CONTENT_TYPES.include?(photo.blob.content_type)
+      errors.add(:photo, "이미지(JPG, PNG) 또는 영상(MP4, MOV, AVI) 파일만 업로드할 수 있습니다")
+    end
+  end
 
   def generate_session_token
     self.session_token ||= SecureRandom.urlsafe_base64(32)

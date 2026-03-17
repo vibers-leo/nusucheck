@@ -135,6 +135,7 @@ Rails.application.routes.draw do
   namespace :admin do
     root to: "dashboard#index"
     resources :dashboard, only: [:index]
+    resource :profile, only: [:show], controller: "profiles"
     resources :requests, only: [:index, :show] do
       member do
         post :publish        # 공개 오더 풀에 등록

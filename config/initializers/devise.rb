@@ -1,5 +1,5 @@
 Devise.setup do |config|
-  config.mailer_sender = "noreply@nusucheck.kr"
+  config.mailer_sender = ENV.fetch("SMTP_USERNAME", "noreply@nusucheck.kr")
   require "devise/orm/active_record"
 
   config.case_insensitive_keys = [:email]

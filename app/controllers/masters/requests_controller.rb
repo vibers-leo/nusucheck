@@ -167,8 +167,8 @@ class Masters::RequestsController < ApplicationController
   private
 
   def set_request
-    # apply, claim 액션은 아직 배정 전이므로 전체 오더에서 찾음
-    if action_name.in?(["apply", "claim"])
+    # show, apply, claim 액션은 공개 오더도 볼 수 있으므로 전체에서 찾음
+    if action_name.in?(["show", "apply", "claim"])
       @request = Request.find(params[:id])
     else
       @request = current_user.assigned_requests.find(params[:id])

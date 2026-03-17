@@ -15,6 +15,16 @@ import NativeBridgeController from "./native_bridge_controller"
 import CheckWizardController from "./check_wizard_controller"
 import FileCounterController from "./file_counter_controller"
 import AddressSearchController from "./address_search_controller"
+import ChatController from "./chat_controller"
+import LoadingController from "./loading_controller"
+import NotificationsController from "./notifications_controller"
+import ErrorTrackingController from "./error_tracking_controller"
+import InsuranceStepController from "./insurance_step_controller"
+import ButtonLoadingController from "./button_loading_controller"
+import UploadProgressController from "./upload_progress_controller"
+import VideoCompressorController from "./video_compressor_controller"
+import OnboardingController from "./onboarding_controller"
+import ButtonSelectController from "./button_select_controller"
 
 application.register("estimate-items", EstimateItemsController)
 application.register("dismissible", DismissibleController)
@@ -32,3 +42,13 @@ application.register("native-bridge", NativeBridgeController)
 application.register("check-wizard", CheckWizardController)
 application.register("file-counter", FileCounterController)
 application.register("address-search", AddressSearchController)
+application.register("chat", ChatController)
+application.register("loading", LoadingController)
+application.register("notifications", NotificationsController)
+application.register("error-tracking", ErrorTrackingController)
+application.register("insurance-step", InsuranceStepController)
+application.register("button-loading", ButtonLoadingController)
+application.register("upload-progress", UploadProgressController)
+application.register("video-compressor", VideoCompressorController)
+application.register("onboarding", OnboardingController)
+application.register("button-select", ButtonSelectController)

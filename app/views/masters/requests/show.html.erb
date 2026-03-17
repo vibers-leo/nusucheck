@@ -1,90 +1,254 @@
-<div class="space-y-6">
-  <!-- 뒤로가기 + 헤더 -->
+<% is_open_order = @request.open? && @request.master_id != current_user.id %>
+<% already_applied = @request.master_applications.exists?(master_id: current_user.id) %>
+
+<div class="space-y-4">
+  <!-- 헤더 -->
   <div class="flex items-center justify-between">
-    <div>
+    <% if is_open_order %>
+      <%= link_to open_orders_masters_requests_path, class: "text-sm text-primary-600 hover:text-primary-800 flex items-center" do %>
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        오더 피드로
+      <% end %>
+    <% else %>
       <%= link_to masters_requests_path, class: "text-sm text-primary-600 hover:text-primary-800 flex items-center" do %>
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
         목록으로
       <% end %>
-      <h1 class="text-2xl font-bold text-gray-900 mt-2">체크 #<%= @request.id %></h1>
-    </div>
+    <% end %>
     <div class="flex items-center gap-3">
-      <%= link_to request_messages_path(@request), class: "inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium" do %>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-        </svg>
-        채팅하기
+      <% unless is_open_order %>
+        <%= link_to request_messages_path(@request), class: "inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium text-sm" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+          </svg>
+          채팅하기
+        <% end %>
       <% end %>
       <%= render "shared/status_badge", status: @request.status %>
     </div>
   </div>
 
-  <!-- 상태 타임라인 -->
-  <div class="bg-white rounded-2xl border border-gray-100 p-6">
-    <%= render "shared/status_timeline", request_record: @request %>
-  </div>
+  <% if is_open_order %>
+    <!-- ====== 공개 오더 상세 뷰 ====== -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- 좌측: 오더 정보 -->
+      <div class="lg:col-span-2 space-y-4">
+        <!-- 증상/위치 -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-5">
+          <h2 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            오더 정보
+          </h2>
+          <dl class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <dt class="text-gray-400 mb-1">증상</dt>
+              <dd class="font-semibold text-gray-900"><%= symptom_label(@request.symptom_type) %></dd>
+            </div>
+            <div>
+              <dt class="text-gray-400 mb-1">건물 유형</dt>
+              <dd class="font-semibold text-gray-900"><%= building_label(@request.building_type) || "-" %></dd>
+            </div>
+            <div class="col-span-2">
+              <dt class="text-gray-400 mb-1">위치</dt>
+              <dd class="font-semibold text-gray-900 flex items-center gap-1">
+                <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <%= @request.address %>
+              </dd>
+            </div>
+            <% if @request.floor_info.present? %>
+              <div>
+                <dt class="text-gray-400 mb-1">층수</dt>
+                <dd class="font-semibold text-gray-900"><%= @request.floor_info %></dd>
+              </div>
+            <% end %>
+            <% if @request.preferred_date.present? %>
+              <div>
+                <dt class="text-gray-400 mb-1">희망 방문일</dt>
+                <dd class="font-semibold text-gray-900"><%= @request.preferred_date.strftime("%m/%d %H:%M") %></dd>
+              </div>
+            <% end %>
+            <% if @request.description.present? %>
+              <div class="col-span-2">
+                <dt class="text-gray-400 mb-1">상세 설명</dt>
+                <dd class="text-gray-700 leading-relaxed"><%= @request.description %></dd>
+              </div>
+            <% end %>
+          </dl>
+        </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- 좌측: 정보 -->
-    <div class="lg:col-span-2 space-y-6">
-      <!-- 고객 정보 -->
-      <div class="bg-white rounded-2xl border border-gray-100 p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">고객 정보</h2>
-        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-          <div>
-            <dt class="text-sm font-medium text-gray-500">고객명</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @request.customer&.name || "-" %></dd>
+        <!-- 사진/영상 -->
+        <% if @request.photos.attached? %>
+          <div class="bg-white rounded-2xl border border-gray-100 p-5">
+            <h3 class="text-sm font-semibold text-gray-700 mb-3">첨부 자료</h3>
+            <div class="grid grid-cols-3 gap-2">
+              <% @request.photos.each do |photo| %>
+                <div class="aspect-square rounded-xl overflow-hidden bg-gray-100">
+                  <%= image_tag photo, class: "w-full h-full object-cover" rescue nil %>
+                </div>
+              <% end %>
+            </div>
           </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500">연락처</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @request.customer&.phone || "-" %></dd>
+        <% end %>
+
+        <!-- 신청 현황 -->
+        <% applicant_count = @request.master_applications.count %>
+        <% if applicant_count > 0 %>
+          <div class="bg-amber-50 rounded-2xl border border-amber-100 p-4 flex items-center gap-3">
+            <svg class="w-5 h-5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <p class="text-sm text-amber-700 font-medium">현재 <strong><%= applicant_count %>명</strong>의 전문가가 신청했습니다</p>
           </div>
-        </dl>
+        <% end %>
       </div>
 
-      <!-- 증상/위치 정보 -->
-      <div class="bg-white rounded-2xl border border-gray-100 p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">증상 및 위치</h2>
-        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-          <div>
-            <dt class="text-sm font-medium text-gray-500">증상 유형</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= symptom_label(@request.symptom_type) %></dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500">건물 유형</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= building_label(@request.building_type) || "-" %></dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500">주소</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @request.address %></dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500">상세 주소</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @request.detailed_address.presence || "-" %></dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500">층수</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @request.floor_info.presence || "-" %></dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500">희망 방문 일시</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @request.preferred_date&.strftime("%Y-%m-%d %H:%M") || "-" %></dd>
-          </div>
-          <div class="sm:col-span-2">
-            <dt class="text-sm font-medium text-gray-500">상세 설명</dt>
-            <dd class="mt-1 text-sm text-gray-900 whitespace-pre-wrap"><%= @request.description.presence || "-" %></dd>
-          </div>
-        </dl>
+      <!-- 우측: 신청 패널 -->
+      <div class="space-y-4">
+        <div class="bg-white rounded-2xl border border-gray-100 p-5">
+          <% if already_applied %>
+            <div class="text-center py-4">
+              <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <p class="font-bold text-gray-900 mb-1">신청 완료</p>
+              <p class="text-sm text-gray-500">고객이 전문가를 선택하면<br>알림을 드릴게요</p>
+            </div>
+          <% else %>
+            <h3 class="text-base font-bold text-gray-900 mb-1">이 오더에 신청하기</h3>
+            <p class="text-sm text-gray-500 mb-4">고객이 신청 목록을 보고 전문가를 선택합니다</p>
 
-        <% if @request.photos.attached? %>
-          <div class="mt-6">
-            <h3 class="text-sm font-medium text-gray-500 mb-3">첨부 사진</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <% @request.photos.each do |photo| %>
-                <div class="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                  <%= image_tag photo, class: "w-full h-full object-cover" %>
+            <%= form_with url: apply_masters_request_path(@request), method: :post do |f| %>
+              <%= f.text_area :intro_message,
+                    placeholder: "예: 안녕하세요! 해당 지역 방문 가능합니다. 빠른 처리 자신 있어요.",
+                    class: "w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:border-primary-500 focus:outline-none resize-none mb-1",
+                    rows: 3,
+                    maxlength: 300 %>
+              <p class="text-xs text-gray-400 text-right mb-4">최대 300자 (선택)</p>
+              <%= f.submit "신청하기",
+                    class: "w-full py-3.5 bg-primary-600 text-white rounded-xl font-bold text-sm hover:bg-primary-700 cursor-pointer transition-colors" %>
+            <% end %>
+          <% end %>
+        </div>
+
+        <!-- 접수 정보 -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-5">
+          <h3 class="text-sm font-semibold text-gray-700 mb-3">접수 정보</h3>
+          <dl class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <dt class="text-gray-400">접수번호</dt>
+              <dd class="font-mono text-gray-900">#<%= @request.id %></dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-gray-400">접수일</dt>
+              <dd class="text-gray-900"><%= @request.created_at.strftime("%m/%d %H:%M") %></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+  <% else %>
+    <!-- ====== 배정된 오더 상세 뷰 ====== -->
+
+    <!-- 상태 타임라인 -->
+    <div class="bg-white rounded-2xl border border-gray-100 p-6">
+      <%= render "shared/status_timeline", request_record: @request %>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- 좌측: 정보 -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- 고객 정보 -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">고객 정보</h2>
+          <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">고객명</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @request.customer&.name || "-" %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">연락처</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @request.customer&.phone || "-" %></dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- 증상/위치 정보 -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">증상 및 위치</h2>
+          <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">증상 유형</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= symptom_label(@request.symptom_type) %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">건물 유형</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= building_label(@request.building_type) || "-" %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">주소</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @request.address %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">상세 주소</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @request.detailed_address.presence || "-" %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">층수</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @request.floor_info.presence || "-" %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">희망 방문 일시</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @request.preferred_date&.strftime("%Y-%m-%d %H:%M") || "-" %></dd>
+            </div>
+            <div class="sm:col-span-2">
+              <dt class="text-sm font-medium text-gray-500">상세 설명</dt>
+              <dd class="mt-1 text-sm text-gray-900 whitespace-pre-wrap"><%= @request.description.presence || "-" %></dd>
+            </div>
+          </dl>
+
+          <% if @request.photos.attached? %>
+            <div class="mt-6">
+              <h3 class="text-sm font-medium text-gray-500 mb-3">첨부 사진</h3>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <% @request.photos.each do |photo| %>
+                  <div class="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                    <%= image_tag photo, class: "w-full h-full object-cover" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- 견적 목록 -->
+        <% if @request.estimates.any? %>
+          <div class="bg-white rounded-2xl border border-gray-100 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">견적 목록</h2>
+            <div class="space-y-3">
+              <% @request.estimates.recent.each do |estimate| %>
+                <div class="border rounded-lg p-4 flex items-center justify-between">
+                  <div>
+                    <span class="font-medium text-gray-900">견적 #<%= estimate.id %></span>
+                    <span class="ml-2 text-sm text-gray-500"><%= estimate.created_at.strftime("%Y-%m-%d") %></span>
+                    <span class="ml-2 text-lg font-semibold text-primary-600"><%= number_to_currency(estimate.total_amount, unit: "₩", precision: 0) %></span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <%
+                      est_badge = case estimate.status
+                        when "pending"  then "bg-yellow-100 text-yellow-800"
+                        when "accepted" then "bg-green-100 text-green-800"
+                        when "rejected" then "bg-red-100 text-red-800"
+                        else "bg-gray-100 text-gray-800"
+                      end
+                    %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= est_badge %>" role="status">
+                      <%= estimate.status_label %>
+                    </span>
+                    <%= link_to "수정", edit_masters_request_estimate_path(@request, estimate), class: "text-sm text-primary-600 hover:text-primary-800" if estimate.pending? %>
+                  </div>
                 </div>
               <% end %>
             </div>
@@ -92,173 +256,138 @@
         <% end %>
       </div>
 
-      <!-- 견적 목록 (있을 경우) -->
-      <% if @request.estimates.any? %>
+      <!-- 우측: 액션 -->
+      <div class="space-y-6">
         <div class="bg-white rounded-2xl border border-gray-100 p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">견적 목록</h2>
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">작업</h2>
           <div class="space-y-3">
-            <% @request.estimates.recent.each do |estimate| %>
-              <div class="border rounded-lg p-4 flex items-center justify-between">
-                <div>
-                  <span class="font-medium text-gray-900">견적 #<%= estimate.id %></span>
-                  <span class="ml-2 text-sm text-gray-500"><%= estimate.created_at.strftime("%Y-%m-%d") %></span>
-                  <span class="ml-2 text-lg font-semibold text-primary-600"><%= number_to_currency(estimate.total_amount, unit: "₩", precision: 0) %></span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <%
-                    est_badge = case estimate.status
-                      when "pending"  then "bg-yellow-100 text-yellow-800"
-                      when "accepted" then "bg-green-100 text-green-800"
-                      when "rejected" then "bg-red-100 text-red-800"
-                      else "bg-gray-100 text-gray-800"
-                    end
-                  %>
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= est_badge %>" role="status">
-                    <%= estimate.status_label %>
-                  </span>
-                  <%= link_to "수정", edit_masters_request_estimate_path(@request, estimate), class: "text-sm text-primary-600 hover:text-primary-800" if estimate.pending? %>
-                </div>
+            <% if @request.assigned? %>
+              <%= button_to "방문 시작",
+                    visit_masters_request_path(@request),
+                    method: :post,
+                    class: "#{btn_classes(:primary, :md)} w-full",
+                    data: { turbo_confirm: "방문을 시작하시겠습니까?" } %>
+            <% end %>
+
+            <% if @request.visiting? %>
+              <%= button_to "현장 도착",
+                    arrive_masters_request_path(@request),
+                    method: :post,
+                    class: "#{btn_classes(:primary, :md)} w-full",
+                    data: { turbo_confirm: "현장에 도착하셨습니까?" } %>
+            <% end %>
+
+            <% if @request.detecting? %>
+              <div class="space-y-3">
+                <%= form_with url: detection_complete_masters_request_path(@request), method: :post, class: "space-y-2" do |f| %>
+                  <%= f.text_area :detection_notes,
+                        rows: 3,
+                        placeholder: "탐지 결과 메모 (누수 위치, 원인 등)",
+                        class: input_classes(:textarea) %>
+                  <%= f.submit "누수 확인 완료",
+                        class: "#{btn_classes(:success, :md)} w-full",
+                        data: { turbo_confirm: "누수가 확인되었습니까?" } %>
+                <% end %>
+
+                <%= button_to "누수 미확인",
+                      detection_fail_masters_request_path(@request),
+                      method: :post,
+                      class: "#{btn_classes(:warning, :md)} w-full",
+                      data: { turbo_confirm: "누수가 확인되지 않았습니까?" } %>
               </div>
             <% end %>
-          </div>
-        </div>
-      <% end %>
-    </div>
 
-    <!-- 우측: 액션 -->
-    <div class="space-y-6">
-      <!-- 상태별 액션 버튼들 -->
-      <div class="bg-white rounded-2xl border border-gray-100 p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">작업</h2>
-        <div class="space-y-3">
-          <% if @request.assigned? %>
-            <%= button_to "방문 시작",
-                  visit_masters_request_path(@request),
-                  method: :post,
-                  class: "#{btn_classes(:primary, :md)} w-full",
-                  data: { turbo_confirm: "방문을 시작하시겠습니까?" } %>
-          <% end %>
-
-          <% if @request.visiting? %>
-            <%= button_to "현장 도착",
-                  arrive_masters_request_path(@request),
-                  method: :post,
-                  class: "#{btn_classes(:primary, :md)} w-full",
-                  data: { turbo_confirm: "현장에 도착하셨습니까?" } %>
-          <% end %>
-
-          <% if @request.detecting? %>
-            <div class="space-y-3">
-              <!-- 누수 확인 (detection_notes 입력) -->
-              <%= form_with url: detection_complete_masters_request_path(@request), method: :post, class: "space-y-2" do |f| %>
-                <%= f.text_area :detection_notes,
-                      rows: 3,
-                      placeholder: "탐지 결과 메모 (누수 위치, 원인 등)",
-                      class: input_classes(:textarea) %>
-                <%= f.submit "누수 확인 완료",
+            <% if @request.estimate_pending? %>
+              <% if @request.estimates.empty? %>
+                <%= link_to "견적 작성",
+                      new_masters_request_estimate_path(@request),
+                      class: "block w-full #{btn_classes(:primary, :md)} text-center" %>
+              <% else %>
+                <%= link_to "견적 추가 작성",
+                      new_masters_request_estimate_path(@request),
+                      class: "block w-full #{btn_classes(:outline, :md)} text-center" %>
+                <%= button_to "견적 제출",
+                      submit_estimate_masters_request_path(@request),
+                      method: :post,
                       class: "#{btn_classes(:success, :md)} w-full",
-                      data: { turbo_confirm: "누수가 확인되었습니까?" } %>
+                      data: { turbo_confirm: "견적을 고객에게 제출하시겠습니까?" } %>
               <% end %>
+            <% end %>
 
-              <%= button_to "누수 미확인",
-                    detection_fail_masters_request_path(@request),
+            <% if @request.escrow_deposited? %>
+              <%= button_to "공사 시작",
+                    start_construction_masters_request_path(@request),
                     method: :post,
-                    class: "#{btn_classes(:warning, :md)} w-full",
-                    data: { turbo_confirm: "누수가 확인되지 않았습니까? 이 작업은 되돌릴 수 없습니다." } %>
-            </div>
-          <% end %>
+                    class: "#{btn_classes(:primary, :md)} w-full bg-purple-600 hover:bg-purple-700",
+                    data: { turbo_confirm: "공사를 시작하시겠습니까?" } %>
+            <% end %>
 
-          <% if @request.estimate_pending? %>
-            <% if @request.estimates.empty? %>
-              <%= link_to "견적 작성",
-                    new_masters_request_estimate_path(@request),
-                    class: "block w-full #{btn_classes(:primary, :md)} text-center" %>
-            <% else %>
-              <%= link_to "견적 추가 작성",
-                    new_masters_request_estimate_path(@request),
-                    class: "block w-full #{btn_classes(:outline, :md)} text-center" %>
-
-              <%= button_to "견적 제출",
-                    submit_estimate_masters_request_path(@request),
+            <% if @request.constructing? %>
+              <%= button_to "공사 완료",
+                    complete_construction_masters_request_path(@request),
                     method: :post,
                     class: "#{btn_classes(:success, :md)} w-full",
-                    data: { turbo_confirm: "견적을 고객에게 제출하시겠습니까?" } %>
+                    data: { turbo_confirm: "공사가 완료되었습니까?" } %>
             <% end %>
-          <% end %>
 
-          <% if @request.escrow_deposited? %>
-            <%= button_to "공사 시작",
-                  start_construction_masters_request_path(@request),
-                  method: :post,
-                  class: "#{btn_classes(:primary, :md)} w-full bg-purple-600 hover:bg-purple-700",
-                  data: { turbo_confirm: "공사를 시작하시겠습니까?" } %>
-          <% end %>
-
-          <% if @request.constructing? %>
-            <%= button_to "공사 완료",
-                  complete_construction_masters_request_path(@request),
-                  method: :post,
-                  class: "#{btn_classes(:success, :md)} w-full",
-                  data: { turbo_confirm: "공사가 완료되었습니까?" } %>
-          <% end %>
-
-          <% if @request.construction_completed? %>
-            <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100 mb-3">
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-lg">💼</span>
-                <p class="text-sm font-semibold text-gray-900">보험청구 도움</p>
+            <% if @request.construction_completed? %>
+              <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100 mb-3">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-lg">💼</span>
+                  <p class="text-sm font-semibold text-gray-900">보험청구 도움</p>
+                </div>
+                <p class="text-xs text-gray-700 mb-3">고객을 위해 보험청구서를 작성해드릴 수 있어요</p>
+                <%= link_to "보험청구서 작성하기",
+                      new_masters_request_insurance_claim_path(@request),
+                      class: "block w-full text-center #{btn_classes(:primary, :md)} bg-purple-600 hover:bg-purple-700" %>
               </div>
-              <p class="text-xs text-gray-700 mb-3">고객을 위해 보험청구서를 작성해드릴 수 있어요</p>
-              <%= link_to "보험청구서 작성하기",
-                    new_masters_request_insurance_claim_path(@request),
-                    class: "block w-full text-center #{btn_classes(:primary, :md)} bg-purple-600 hover:bg-purple-700" %>
-            </div>
-          <% end %>
+            <% end %>
 
-          <% if @request.status.in?(%w[closed cancelled no_leak_found estimate_submitted construction_agreed]) %>
-            <p class="text-sm text-gray-500 text-center">현재 상태에서 가능한 작업이 없습니다.</p>
-          <% end %>
+            <% if @request.status.in?(%w[closed cancelled no_leak_found estimate_submitted construction_agreed]) %>
+              <p class="text-sm text-gray-500 text-center">현재 상태에서 가능한 작업이 없습니다.</p>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- 접수 정보 -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">접수 정보</h2>
+          <dl class="space-y-3 text-sm">
+            <div class="flex justify-between">
+              <dt class="text-gray-500">접수번호</dt>
+              <dd class="font-mono text-gray-900">#<%= @request.id %></dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-gray-500">접수일</dt>
+              <dd class="text-gray-900"><%= @request.created_at.strftime("%Y-%m-%d %H:%M") %></dd>
+            </div>
+            <% if @request.assigned_at.present? %>
+              <div class="flex justify-between">
+                <dt class="text-gray-500">배정일</dt>
+                <dd class="text-gray-900"><%= @request.assigned_at.strftime("%Y-%m-%d %H:%M") %></dd>
+              </div>
+            <% end %>
+            <% if @request.detection_started_at.present? %>
+              <div class="flex justify-between">
+                <dt class="text-gray-500">탐지 시작</dt>
+                <dd class="text-gray-900"><%= @request.detection_started_at.strftime("%Y-%m-%d %H:%M") %></dd>
+              </div>
+            <% end %>
+            <% if @request.construction_started_at.present? %>
+              <div class="flex justify-between">
+                <dt class="text-gray-500">공사 시작</dt>
+                <dd class="text-gray-900"><%= @request.construction_started_at.strftime("%Y-%m-%d %H:%M") %></dd>
+              </div>
+            <% end %>
+            <% if @request.construction_completed_at.present? %>
+              <div class="flex justify-between">
+                <dt class="text-gray-500">공사 완료</dt>
+                <dd class="text-gray-900"><%= @request.construction_completed_at.strftime("%Y-%m-%d %H:%M") %></dd>
+              </div>
+            <% end %>
+          </dl>
         </div>
       </div>
-
-      <!-- 접수 정보 -->
-      <div class="bg-white rounded-2xl border border-gray-100 p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">접수 정보</h2>
-        <dl class="space-y-3 text-sm">
-          <div class="flex justify-between">
-            <dt class="text-gray-500">접수번호</dt>
-            <dd class="font-mono text-gray-900">#<%= @request.id %></dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="text-gray-500">접수일</dt>
-            <dd class="text-gray-900"><%= @request.created_at.strftime("%Y-%m-%d %H:%M") %></dd>
-          </div>
-          <% if @request.assigned_at.present? %>
-            <div class="flex justify-between">
-              <dt class="text-gray-500">배정일</dt>
-              <dd class="text-gray-900"><%= @request.assigned_at.strftime("%Y-%m-%d %H:%M") %></dd>
-            </div>
-          <% end %>
-          <% if @request.detection_started_at.present? %>
-            <div class="flex justify-between">
-              <dt class="text-gray-500">탐지 시작</dt>
-              <dd class="text-gray-900"><%= @request.detection_started_at.strftime("%Y-%m-%d %H:%M") %></dd>
-            </div>
-          <% end %>
-          <% if @request.construction_started_at.present? %>
-            <div class="flex justify-between">
-              <dt class="text-gray-500">공사 시작</dt>
-              <dd class="text-gray-900"><%= @request.construction_started_at.strftime("%Y-%m-%d %H:%M") %></dd>
-            </div>
-          <% end %>
-          <% if @request.construction_completed_at.present? %>
-            <div class="flex justify-between">
-              <dt class="text-gray-500">공사 완료</dt>
-              <dd class="text-gray-900"><%= @request.construction_completed_at.strftime("%Y-%m-%d %H:%M") %></dd>
-            </div>
-          <% end %>
-        </dl>
-      </div>
     </div>
-  </div>
+  <% end %>
 </div>

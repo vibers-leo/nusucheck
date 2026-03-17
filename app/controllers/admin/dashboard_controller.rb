@@ -67,8 +67,8 @@ class Admin::DashboardController < ApplicationController
         status: ["released", "settled"],
         created_at: 6.months.ago..Time.current
       )
-      .group("TO_CHAR(created_at, 'YYYY-MM')")
-      .order("TO_CHAR(created_at, 'YYYY-MM')")
+      .group(Arel.sql("TO_CHAR(created_at, 'YYYY-MM')"))
+      .order(Arel.sql("TO_CHAR(created_at, 'YYYY-MM')"))
       .sum(:platform_fee)
     end
 
@@ -80,5 +80,9 @@ class Admin::DashboardController < ApplicationController
     # 관리자가 즉시 확인해야 하는 최신 데이터
     @recent_requests = Request.recent.limit(10)
     @recent_insurance_claims = InsuranceClaim.recent.limit(5)
+    @pending_masters = Master.joins(:master_profile)
+                             .where(master_profiles: { verified: false })
+                             .includes(:master_profile)
+                             .order(created_at: :desc)
   end
 end

@@ -37,5 +37,7 @@ module NotificationsHelper
     else
       "#"
     end
+  rescue ActiveRecord::RecordNotFound, NoMethodError
+    "#"
   end
 end

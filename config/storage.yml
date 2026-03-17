@@ -24,3 +24,14 @@ amazon_s3:
   secret_access_key: <%= ENV["AWS_SECRET_ACCESS_KEY"] %>
   region: <%= ENV.fetch("AWS_REGION", "ap-northeast-2") %>
   bucket: <%= ENV["AWS_BUCKET_NAME"] %>
+
+# Oracle Cloud Object Storage (S3 호환)
+# Endpoint 형식: https://{namespace}.compat.objectstorage.{region}.oraclecloud.com
+oracle_cloud:
+  service: S3
+  access_key_id: <%= ENV["OCI_ACCESS_KEY_ID"] %>
+  secret_access_key: <%= ENV["OCI_SECRET_ACCESS_KEY"] %>
+  endpoint: <%= ENV["OCI_ENDPOINT"] %>
+  bucket: <%= ENV["OCI_BUCKET_NAME"] %>
+  region: <%= ENV.fetch("OCI_REGION", "ap-tokyo-1") %>
+  force_path_style: true

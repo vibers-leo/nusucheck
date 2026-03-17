@@ -1,7 +1,7 @@
 <%# 카카오톡/당근마켓 스타일 채팅 - 모바일 최적화 %>
 <% content_for :title, "채팅" %>
 
-<div class="h-screen flex flex-col bg-gray-100" data-controller="chat" data-chat-request-id-value="<%= @request.id %>">
+<div class="h-screen flex flex-col bg-gray-100" data-controller="chat" data-chat-request-id-value="<%= @request.id %>" data-chat-current-user-id-value="<%= current_user.id %>">
 
   <!-- 상단 헤더 -->
   <div class="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 flex-shrink-0">
@@ -80,6 +80,10 @@
   <div class="flex-1 overflow-y-auto px-4 py-4 space-y-1" data-chat-target="messagesContainer" id="messages">
     <%= turbo_stream_from "chat_#{@request.id}" %>
     <%= render @messages %>
+    <!-- 타이핑 인디케이터 -->
+    <div class="hidden flex justify-start mb-1.5" data-chat-target="typingIndicator">
+      <div class="bg-white rounded-2xl rounded-bl-md border border-gray-200 px-4 py-2.5 text-xs text-gray-500 italic shadow-sm"></div>
+    </div>
   </div>
 
   <!-- 전문가 액션 버튼 (채팅창 위 빠른 액션) -->
@@ -173,7 +177,7 @@
               placeholder: "메시지를 입력하세요...",
               data: {
                 chat_target: "input",
-                action: "keydown->chat#handleKeydown input->chat#autoResize"
+                action: "keydown->chat#handleKeydown input->chat#adjustTextareaHeight"
               },
               class: "w-full px-4 py-2.5 bg-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-primary-400 focus:outline-none resize-none text-sm leading-relaxed",
               autofocus: true %>

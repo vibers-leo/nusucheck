@@ -29,6 +29,7 @@
               <% end %>
               <%= button_to publish_admin_request_path(req), method: :post,
                     class: "px-3 py-1.5 text-xs text-white bg-primary-600 rounded-lg hover:bg-primary-700 font-bold",
+                    data: { turbo_confirm: "##{req.id} 체크를 공개 승인하시겠습니까?" },
                     form: { class: "inline" } do %>
                 ✓ 승인
               <% end %>

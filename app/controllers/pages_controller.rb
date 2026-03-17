@@ -26,7 +26,7 @@ class PagesController < ApplicationController
 
     # 필터
     if params[:rating].present?
-      @reviews = @reviews.where(rating: params[:rating])
+      @reviews = @reviews.where(overall_rating: params[:rating])
     end
 
     if params[:symptom_type].present?

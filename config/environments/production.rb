@@ -7,8 +7,14 @@ Rails.application.configure do
   config.action_controller.perform_caching = true
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
   config.assets.compile = false
-  # R2_ENDPOINT 환경변수가 설정된 경우 Cloudflare R2 사용, 아니면 로컬
-  config.active_storage.service = ENV["R2_ENDPOINT"].present? ? :cloudflare_r2 : :local
+  # 스토리지 우선순위: OCI > R2 > 로컬 디스크
+  config.active_storage.service = if ENV["OCI_ENDPOINT"].present?
+    :oracle_cloud
+  elsif ENV["R2_ENDPOINT"].present?
+    :cloudflare_r2
+  else
+    :local
+  end
   config.force_ssl = true
   # /up 헬스체크는 SSL 리디렉션에서 제외 (Fly.io 내부 HTTP 체크용)
   config.ssl_options = { redirect: { exclude: -> request { request.path == "/up" } } }

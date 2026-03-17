@@ -1,5 +1,5 @@
 // 누수체크 Service Worker - 오프라인 지원 & 캐싱
-const CACHE_NAME = "nusucheck-v1"
+const CACHE_NAME = "nusucheck-v2"
 const OFFLINE_URL = "/offline.html"
 
 // 정적 자산 프리캐시

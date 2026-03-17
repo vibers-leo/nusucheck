@@ -96,4 +96,29 @@ module ApplicationHelper
   def format_datetime(datetime)
     datetime&.strftime("%Y-%m-%d %H:%M") || "-"
   end
+
+  # 알림의 notifiable 객체 → 적절한 경로 반환
+  def notifiable_path(notifiable)
+    case notifiable
+    when Request
+      if current_user&.master?
+        masters_request_path(notifiable)
+      else
+        customers_request_path(notifiable)
+      end
+    when Master
+      masters_profile_path
+    when Customer
+      customers_profile_path
+    else
+      root_path
+    end
+  rescue
+    root_path
+  end
+
+  # 유저 타입에 따른 관리자 경로
+  def admin_user_path(user)
+    user.is_a?(Master) ? admin_master_path(user) : "#"
+  end
 end
