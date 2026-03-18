@@ -217,9 +217,9 @@
             <%= render "shared/notifications_dropdown" %>
 
             <!-- 유저 드롭다운 -->
-            <div class="relative" data-controller="user-menu">
+            <div class="relative">
               <button type="button"
-                      data-action="click->user-menu#toggle"
+                      onclick="toggleUserDropdown(event)"
                       class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
                 <span class="max-w-[80px] truncate"><%= current_user.name %></span>
                 <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,8 +227,8 @@
                 </svg>
               </button>
 
-              <div data-user-menu-target="dropdown"
-                   class="hidden w-44 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-[999]" style="position:fixed;top:60px;right:16px">
+              <div id="user-nav-dropdown"
+                   class="hidden w-44 bg-white rounded-xl shadow-xl border border-gray-100 py-1" style="position:fixed;top:60px;right:16px;z-index:9999">
                 <% profile_path = current_user.customer? ? customers_profile_path : (current_user.master? ? masters_profile_path : admin_root_path) %>
                 <%= link_to profile_path, class: "flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors" do %>
                   <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,15 +262,15 @@
 
           <!-- 햄버거 버튼: 고객/전문가/관리자/비로그인 모두 (모바일 전용) -->
           <button type="button"
+                  id="hamburger-btn"
                   class="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors relative"
-                  data-action="mobile-menu#toggle"
-                  data-mobile-menu-target="button"
+                  onclick="toggleMobileMenu(event)"
                   aria-expanded="false"
                   aria-label="메뉴 열기">
-            <svg class="h-5 w-5" data-mobile-menu-target="iconOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <svg id="hamburger-icon-open" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
-            <svg class="h-5 w-5 hidden" data-mobile-menu-target="iconClose" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <svg id="hamburger-icon-close" class="h-5 w-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
             <% if unread_chat_count > 0 %>
@@ -283,7 +283,7 @@
   </nav>
 
   <!-- ═══ 모바일 전체 메뉴 패널 (역할별 분기) ═══ -->
-  <div class="md:hidden hidden fixed top-14 left-0 right-0 bottom-0 bg-white z-50 overflow-y-auto" data-mobile-menu-target="panel">
+  <div id="mobile-nav-panel" class="md:hidden hidden fixed top-14 left-0 right-0 bottom-0 bg-white z-50 overflow-y-auto">
       <% if user_signed_in? %>
         <!-- 프로필 헤더 -->
         <div class="px-5 py-4 bg-gray-50 border-b border-gray-100">
@@ -701,5 +701,87 @@
     </div>
   </footer>
   <% end %>
+
+  <script>
+    // ── 햄버거 메뉴 ──
+    function toggleMobileMenu(event) {
+      event.stopPropagation();
+      var panel = document.getElementById('mobile-nav-panel');
+      var iconOpen = document.getElementById('hamburger-icon-open');
+      var iconClose = document.getElementById('hamburger-icon-close');
+      if (!panel) return;
+      var isOpen = !panel.classList.contains('hidden');
+      if (isOpen) {
+        panel.classList.add('hidden');
+        if (iconOpen) iconOpen.classList.remove('hidden');
+        if (iconClose) iconClose.classList.add('hidden');
+        document.body.style.overflow = '';
+      } else {
+        panel.classList.remove('hidden');
+        if (iconOpen) iconOpen.classList.add('hidden');
+        if (iconClose) iconClose.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    // ── 드롭다운 포지셔닝 ──
+    function positionDropdown(trigger, dropdown) {
+      var rect = trigger.getBoundingClientRect();
+      dropdown.style.position = 'fixed';
+      dropdown.style.top = (rect.bottom + 4) + 'px';
+      dropdown.style.right = (window.innerWidth - rect.right) + 'px';
+      dropdown.style.left = 'auto';
+      dropdown.style.zIndex = '9999';
+    }
+
+    // ── 유저 드롭다운 ──
+    function toggleUserDropdown(event) {
+      event.stopPropagation();
+      var dd = document.getElementById('user-nav-dropdown');
+      var notifDd = document.getElementById('notifications-dropdown');
+      if (!dd) return;
+      if (notifDd) notifDd.classList.add('hidden');
+      if (dd.classList.contains('hidden')) {
+        positionDropdown(event.currentTarget, dd);
+        dd.classList.remove('hidden');
+      } else {
+        dd.classList.add('hidden');
+      }
+    }
+
+    // ── 알림 드롭다운 ──
+    function toggleNotifications(event) {
+      event.stopPropagation();
+      var dd = document.getElementById('notifications-dropdown');
+      var userDd = document.getElementById('user-nav-dropdown');
+      if (!dd) return;
+      if (userDd) userDd.classList.add('hidden');
+      if (dd.classList.contains('hidden')) {
+        positionDropdown(event.currentTarget, dd);
+        dd.classList.remove('hidden');
+      } else {
+        dd.classList.add('hidden');
+      }
+    }
+
+    // ── 외부 클릭 시 드롭다운 닫기 ──
+    document.addEventListener('click', function() {
+      var userDd = document.getElementById('user-nav-dropdown');
+      var notifDd = document.getElementById('notifications-dropdown');
+      if (userDd) userDd.classList.add('hidden');
+      if (notifDd) notifDd.classList.add('hidden');
+    });
+
+    // ── Turbo 페이지 이동 시 모바일 메뉴 닫기 ──
+    document.addEventListener('turbo:before-visit', function() {
+      var panel = document.getElementById('mobile-nav-panel');
+      var iconOpen = document.getElementById('hamburger-icon-open');
+      var iconClose = document.getElementById('hamburger-icon-close');
+      if (panel) panel.classList.add('hidden');
+      if (iconOpen) iconOpen.classList.remove('hidden');
+      if (iconClose) iconClose.classList.add('hidden');
+      document.body.style.overflow = '';
+    });
+  </script>
 </body>
 </html>
