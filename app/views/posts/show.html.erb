@@ -1,0 +1,89 @@
+<%# 게시글 상세 %>
+<% content_for :title, @post.title %>
+
+<div class="max-w-2xl mx-auto px-4 pb-24">
+
+  <!-- 헤더 -->
+  <div class="flex items-center gap-3 pt-4 pb-2">
+    <%= link_to community_path, class: "w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition -ml-2" do %>
+      <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    <% end %>
+    <span class="text-sm font-medium text-gray-500">커뮤니티</span>
+  </div>
+
+  <!-- 카드 본문 -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+
+    <!-- 이미지 (있을 때) -->
+    <% if @post.image.attached? %>
+      <div class="aspect-video bg-gray-100">
+        <%= image_tag @post.image, class: "w-full h-full object-cover", alt: @post.title %>
+      </div>
+    <% end %>
+
+    <div class="p-5">
+      <!-- 카테고리 + 작성일 -->
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-semibold px-2.5 py-1 rounded-full <%= @post.category_color %>">
+          <%= @post.category_label %>
+        </span>
+        <span class="text-xs text-gray-400">
+          <%= @post.created_at.strftime("%Y.%m.%d %H:%M") %>
+        </span>
+      </div>
+
+      <!-- 제목 -->
+      <h1 class="text-xl font-bold text-gray-900 leading-snug mb-2">
+        <%= @post.title %>
+      </h1>
+
+      <!-- 작성자 정보 -->
+      <div class="flex items-center gap-2 mb-4 pb-4 border-b border-gray-100">
+        <div class="w-8 h-8 bg-gradient-to-br from-primary-400 to-teal-500 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+          <%= @post.user.name&.first || "?" %>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gray-800">
+            <%= @post.user.name&.first&.then { |c| "#{c}*" } || "익명" %>
+          </p>
+          <p class="text-xs text-gray-400"><%= time_ago_in_words(@post.created_at) %> 전</p>
+        </div>
+        <div class="ml-auto flex items-center gap-1 text-xs text-gray-400">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+          </svg>
+          <%= @post.views_count %>
+        </div>
+      </div>
+
+      <!-- 본문 -->
+      <div class="text-gray-700 text-[15px] leading-relaxed whitespace-pre-wrap">
+        <%= @post.content %>
+      </div>
+    </div>
+  </div>
+
+  <!-- 수정/삭제 버튼 (작성자 or 관리자) -->
+  <% if user_signed_in? && (@post.user == current_user || current_user.admin?) %>
+    <div class="flex gap-2 mt-3">
+      <%= link_to edit_post_path(@post), class: "flex-1 text-center py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50 transition" do %>
+        수정
+      <% end %>
+      <%= button_to post_path(@post), method: :delete,
+            form: { data: { turbo_confirm: "정말 삭제할까요?" } },
+            class: "flex-1 py-2.5 bg-white border border-red-200 text-red-500 rounded-xl text-sm font-semibold hover:bg-red-50 transition" do %>
+        삭제
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- 다른 글 보기 CTA -->
+  <div class="mt-4 p-4 bg-gray-50 rounded-2xl text-center">
+    <%= link_to community_path, class: "text-sm text-primary-600 font-semibold hover:text-primary-700 transition" do %>
+      ← 커뮤니티 목록으로
+    <% end %>
+  </div>
+
+</div>

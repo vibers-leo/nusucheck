@@ -47,7 +47,25 @@ export default class extends Controller {
 
   toggle(event) {
     event.preventDefault()
-    this.dropdownTarget.classList.toggle("hidden")
+    event.stopPropagation()
+    const isHidden = this.dropdownTarget.classList.contains("hidden")
+    if (isHidden) {
+      this._positionDropdown(event.currentTarget)
+      this.dropdownTarget.classList.remove("hidden")
+    } else {
+      this.dropdownTarget.classList.add("hidden")
+    }
+  }
+
+  _positionDropdown(trigger) {
+    const rect = trigger.getBoundingClientRect()
+    const dropdown = this.dropdownTarget
+    // fixed 포지셔닝으로 stacking context 탈출
+    dropdown.style.position = "fixed"
+    dropdown.style.top = `${rect.bottom + 4}px`
+    const rightOffset = window.innerWidth - rect.right
+    dropdown.style.right = `${rightOffset}px`
+    dropdown.style.left = "auto"
   }
 
   close(event) {

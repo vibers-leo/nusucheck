@@ -26,6 +26,7 @@ import VideoCompressorController from "./video_compressor_controller"
 import OnboardingController from "./onboarding_controller"
 import ButtonSelectController from "./button_select_controller"
 import UserMenuController from "./user_menu_controller"
+import EmojiPickerController from "./emoji_picker_controller"
 
 application.register("estimate-items", EstimateItemsController)
 application.register("dismissible", DismissibleController)
@@ -54,3 +55,4 @@ application.register("video-compressor", VideoCompressorController)
 application.register("onboarding", OnboardingController)
 application.register("button-select", ButtonSelectController)
 application.register("user-menu", UserMenuController)
+application.register("emoji-picker", EmojiPickerController)

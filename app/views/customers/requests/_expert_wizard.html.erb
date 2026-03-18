@@ -1,0 +1,345 @@
+<%# 전문가 진단 요청 마법사 (5단계: 영상→증상→건물→주소→확인) %>
+<div class="min-h-screen bg-white"
+     data-controller="check-wizard"
+     data-check-wizard-total-steps-value="5"
+     data-check-wizard-step-types-value='["optional","button","button","form","submit"]'>
+  <!-- 상단 헤더 -->
+  <div class="bg-white sticky top-0 z-20">
+    <div class="max-w-lg mx-auto px-4">
+      <div class="flex items-center justify-between h-14">
+        <button type="button" data-action="click->check-wizard#prevOrClose" class="w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-gray-100 transition">
+          <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <div class="text-center">
+          <p class="text-sm font-bold text-gray-900">전문가 진단 요청</p>
+        </div>
+        <%= link_to new_customers_request_path, class: "w-10 h-10 flex items-center justify-center -mr-2 rounded-full hover:bg-gray-100 transition", data: { turbo: false } do %>
+          <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        <% end %>
+      </div>
+      <!-- 프로그레스 바 -->
+      <div class="relative h-2 bg-gray-100 rounded-full overflow-hidden shadow-inner -mt-1 mb-1">
+        <div data-check-wizard-target="progressBar" class="absolute inset-y-0 left-0 bg-gradient-to-r from-primary-500 to-teal-500 rounded-full transition-all duration-500 ease-out" style="width: 20%"></div>
+      </div>
+    </div>
+  </div>
+
+  <%= form_with(model: f_request, url: customers_requests_path,
+                html: { multipart: true, id: "expert-check-form" },
+                data: {
+                  controller: "button-loading upload-progress",
+                  action: "submit->button-loading#submit submit->upload-progress#handleSubmit",
+                  upload_progress_target: "form",
+                  check_wizard_target: "form"
+                }) do |f| %>
+
+    <%= render "shared/form_errors", resource: f_request %>
+    <%= f.hidden_field :request_source, value: "expert" %>
+
+    <!-- Step 1: 영상 업로드 (첫 화면) -->
+    <div data-check-wizard-target="step" class="wizard-step" data-controller="file-counter video-compressor">
+      <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
+        <div class="mb-6">
+          <p class="text-sm font-medium text-primary-600 mb-2">1단계 (선택)</p>
+          <h1 class="text-[26px] font-bold text-gray-900 leading-tight">누수 부위를<br>촬영해주세요</h1>
+          <p class="text-gray-500 mt-2">영상이 있으면 전문가가 훨씬 빠르게 판단해요</p>
+        </div>
+
+        <div class="border-4 border-dashed border-primary-500 rounded-3xl p-10 text-center hover:border-primary-600 hover:bg-primary-50 bg-gradient-to-br from-primary-50/50 to-teal-50/30 transition-all cursor-pointer shadow-sm hover:shadow-md video-upload-box"
+             id="expert-video-drop-zone" role="button" tabindex="0">
+          <%= f.file_field :videos,
+                multiple: true,
+                accept: "video/mp4,video/quicktime,video/avi,video/webm,video/3gpp",
+                capture: "environment",
+                class: "hidden",
+                id: "expert-video-upload",
+                data: {
+                  file_counter_target: "videoInput",
+                  video_compressor_target: "input",
+                  action: "change->file-counter#updateVideoCounts change->check-wizard#onFileChange"
+                } %>
+          <label for="expert-video-upload" class="cursor-pointer block">
+            <div class="inline-block p-6 bg-gradient-to-br from-primary-600 to-teal-600 rounded-3xl mb-4 shadow-lg">
+              <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+              </svg>
+            </div>
+            <p class="text-xl font-bold text-gray-900 mb-2">📱 촬영하거나 영상 선택</p>
+            <p class="text-base text-primary-700 font-semibold mb-1">10초 이상 권장</p>
+            <p class="text-sm text-gray-500">최대 2GB · MP4, MOV, WebM</p>
+          </label>
+        </div>
+
+        <div data-file-counter-target="videoCount" class="mt-4 text-center text-sm font-medium text-gray-500" role="status" aria-live="polite"></div>
+        <div data-file-counter-target="videoPreview" class="mt-4 hidden">
+          <div data-file-counter-target="videoPreviewContainer" class="grid grid-cols-1 gap-3"></div>
+        </div>
+
+        <div class="mt-5 p-4 bg-amber-50 rounded-xl border border-amber-200">
+          <p class="font-bold text-gray-900 flex items-center gap-2 mb-2 text-sm">🎬 이렇게 촬영하면 정확해요</p>
+          <ul class="space-y-1 text-xs text-gray-600">
+            <li>• <strong>10초 이상</strong> 연속 촬영 (중간에 멈추지 마세요)</li>
+            <li>• 누수 부위를 <strong>천천히 클로즈업</strong></li>
+            <li>• 주변 환경(천장, 벽, 바닥)도 함께 보여주세요</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: 증상 선택 -->
+    <div data-check-wizard-target="step" class="wizard-step hidden">
+      <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
+        <div class="mb-8">
+          <p class="text-sm font-medium text-primary-600 mb-2">2단계</p>
+          <h1 class="text-[26px] font-bold text-gray-900 leading-tight">어떤 증상이<br>발생했나요?</h1>
+        </div>
+        <div class="space-y-3" data-check-wizard-target="buttonGroup" data-field="symptom_type">
+          <% [
+            ["wall_leak", "💧", "벽면 누수", "벽에서 물이 배어나와요"],
+            ["ceiling_leak", "💧", "천장 누수", "천장에서 물이 떨어져요"],
+            ["floor_leak", "💧", "바닥 누수", "바닥이 축축해요"],
+            ["pipe_leak", "🔧", "배관 누수", "배관에서 새는 것 같아요"],
+            ["toilet_leak", "🚽", "화장실 누수", "화장실에서 물이 새요"],
+            ["outdoor_leak", "🏠", "외부 누수", "외벽, 창틀에서 새요"]
+          ].each do |value, icon, title, desc| %>
+            <button type="button"
+                    class="option-btn w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-primary-200 bg-gradient-to-br from-primary-50 to-teal-50 hover:shadow-lg transition-all duration-200 text-left group select-button focus:outline-none shadow-sm"
+                    data-action="click->check-wizard#selectOption"
+                    data-value="<%= value %>"
+                    role="radio" aria-checked="false" tabindex="0">
+              <div class="icon-circle w-12 h-12 bg-gradient-to-br from-primary-500 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform">
+                <span class="text-xl"><%= icon %></span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-bold text-gray-900 text-base"><%= title %></p>
+                <p class="text-sm text-gray-500 mt-0.5"><%= desc %></p>
+              </div>
+              <div class="select-check hidden">
+                <div class="w-7 h-7 bg-gradient-to-br from-primary-500 to-teal-600 rounded-full flex items-center justify-center shadow-md">
+                  <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+              </div>
+            </button>
+          <% end %>
+        </div>
+        <%= f.hidden_field :symptom_type, data: { check_wizard_target: "hiddenField" } %>
+      </div>
+    </div>
+
+    <!-- Step 3: 건물 종류 -->
+    <div data-check-wizard-target="step" class="wizard-step hidden">
+      <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
+        <div class="mb-8">
+          <p class="text-sm font-medium text-primary-600 mb-2">3단계</p>
+          <h1 class="text-[26px] font-bold text-gray-900 leading-tight">어떤 건물인가요?</h1>
+        </div>
+        <div class="grid grid-cols-3 gap-3" data-check-wizard-target="buttonGroup" data-field="building_type">
+          <% [
+            ["apartment", "🏢", "아파트"],
+            ["villa", "🏘️", "빌라"],
+            ["house", "🏠", "단독주택"],
+            ["office", "🏬", "사무실"],
+            ["retail_store", "🏪", "상가"],
+            ["other_building", "🏗️", "기타"]
+          ].each do |value, icon, title| %>
+            <button type="button"
+                    class="option-btn flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-gray-200 bg-white hover:border-primary-400 hover:bg-primary-50 hover:shadow-lg transition-all duration-200 select-button focus:outline-none shadow-sm"
+                    data-action="click->check-wizard#selectOption"
+                    data-value="<%= value %>"
+                    role="radio" aria-checked="false" tabindex="0">
+              <span class="text-2xl"><%= icon %></span>
+              <p class="text-xs font-semibold text-gray-800"><%= title %></p>
+              <div class="select-check hidden w-5 h-5 bg-primary-500 rounded-full flex items-center justify-center">
+                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              </div>
+            </button>
+          <% end %>
+        </div>
+        <%= f.hidden_field :building_type, data: { check_wizard_target: "hiddenField" } %>
+      </div>
+    </div>
+
+    <!-- Step 4: 주소 입력 -->
+    <div data-check-wizard-target="step" class="wizard-step hidden">
+      <div class="max-w-lg mx-auto px-5 pt-8 pb-32">
+        <div class="mb-8">
+          <p class="text-sm font-medium text-primary-600 mb-2">4단계</p>
+          <h1 class="text-[26px] font-bold text-gray-900 leading-tight">어디에 계신가요?</h1>
+          <p class="text-gray-500 mt-2">전문가가 방문할 주소를 알려주세요</p>
+        </div>
+        <div class="space-y-4" data-controller="address-search">
+          <div>
+            <%= f.text_field :address,
+                  placeholder: "도로명 주소 검색",
+                  class: "w-full px-4 py-4 bg-gray-50 rounded-2xl border-2 border-gray-200 focus:border-primary-500 focus:bg-white focus:outline-none text-base font-medium transition-all",
+                  data: {
+                    address_search_target: "input",
+                    check_wizard_target: "requiredField",
+                    action: "input->check-wizard#validateStep"
+                  },
+                  autocomplete: "off",
+                  required: true %>
+          </div>
+          <%= f.text_field :detailed_address,
+                placeholder: "상세주소 (동/호수, 층수 등)",
+                class: "w-full px-4 py-4 bg-gray-50 rounded-2xl border-2 border-gray-200 focus:border-primary-500 focus:bg-white focus:outline-none text-base transition-all" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: 확인 & 제출 -->
+    <div data-check-wizard-target="step" class="wizard-step hidden">
+      <div class="max-w-lg mx-auto px-5 pt-8 pb-40">
+        <div class="mb-8 text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
+            <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <h1 class="text-[24px] font-bold text-gray-900">전문가에게<br>바로 요청할게요!</h1>
+          <p class="text-gray-500 mt-2 text-sm">영상을 확인한 전문가가 채팅으로 연결돼요</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="bg-gray-50 rounded-2xl p-5 space-y-3">
+            <div class="flex justify-between items-center">
+              <p class="text-xs text-gray-400">증상</p>
+              <p class="font-semibold text-gray-900 text-sm" data-check-wizard-target="summarySymptom">-</p>
+            </div>
+            <div class="border-t border-gray-200"></div>
+            <div class="flex justify-between items-center">
+              <p class="text-xs text-gray-400">건물</p>
+              <p class="font-semibold text-gray-900 text-sm" data-check-wizard-target="summaryBuilding">-</p>
+            </div>
+            <div class="border-t border-gray-200"></div>
+            <div class="flex justify-between items-center">
+              <p class="text-xs text-gray-400">주소</p>
+              <p class="font-semibold text-gray-900 text-sm truncate ml-4 text-right" data-check-wizard-target="summaryAddress">-</p>
+            </div>
+          </div>
+
+          <!-- 진행 과정 안내 -->
+          <div class="bg-primary-50 rounded-2xl p-4 border border-primary-100">
+            <p class="font-bold text-primary-900 text-sm mb-3">접수 후 진행 과정</p>
+            <div class="space-y-2.5">
+              <div class="flex items-start gap-3">
+                <div class="w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">1</div>
+                <div>
+                  <p class="text-sm font-semibold text-gray-900">영상 업로드 완료</p>
+                  <p class="text-xs text-gray-500">채팅방이 생성돼요</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <div class="w-6 h-6 rounded-full bg-primary-500 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">2</div>
+                <div>
+                  <p class="text-sm font-semibold text-gray-900">전문가 영상 확인</p>
+                  <p class="text-xs text-gray-500">기다리는 동안 사전진단을 완성해두면 더 빨리 진행돼요</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <div class="w-6 h-6 rounded-full bg-gray-300 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">3</div>
+                <div>
+                  <p class="text-sm font-semibold text-gray-900">전문가 채팅 연결</p>
+                  <p class="text-xs text-gray-500">직접 대화하고 방문 일정을 잡아요</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 하단 여백 -->
+    <div class="h-32"></div>
+
+    <!-- 하단 고정 버튼 -->
+    <div class="fixed bottom-16 md:bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-30 pb-safe shadow-2xl">
+      <div class="max-w-lg mx-auto px-5 py-4">
+        <button type="button"
+                data-check-wizard-target="nextBtn"
+                data-action="click->check-wizard#next"
+                class="w-full py-5 rounded-2xl font-bold text-lg transition-all duration-200 bg-gray-200 text-gray-400 cursor-not-allowed shadow-md"
+                disabled>
+          다음 →
+        </button>
+        <div data-check-wizard-target="skipNextGroup" class="hidden space-y-2">
+          <button type="button"
+                  data-action="click->check-wizard#next"
+                  class="w-full py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-primary-600 to-teal-600 text-white hover:from-primary-700 hover:to-teal-700 transition-all shadow-xl">
+            다음 →
+          </button>
+          <button type="button"
+                  data-action="click->check-wizard#skip"
+                  class="w-full py-3 rounded-xl font-medium text-[15px] text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition">
+            영상 없이 계속하기
+          </button>
+        </div>
+        <button type="submit"
+                data-check-wizard-target="submitBtn"
+                data-button-loading-target="button"
+                data-button-loading-loading-text-value="업로드 중... 잠시만 기다려주세요"
+                class="hidden w-full py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-primary-600 to-teal-600 text-white hover:from-primary-700 hover:to-teal-700 transition-all shadow-xl inline-flex items-center justify-center gap-2">
+          <span data-button-loading-target="spinner" class="btn-spinner hidden"></span>
+          <span data-button-loading-target="text">전문가에게 요청하기 🚀</span>
+        </button>
+      </div>
+    </div>
+
+  <% end %>
+
+  <!-- 업로드 진행률 모달 -->
+  <div data-upload-progress-target="progressModal"
+       class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl text-center">
+      <div class="w-16 h-16 mx-auto mb-4 bg-primary-100 rounded-full flex items-center justify-center">
+        <svg class="w-8 h-8 text-primary-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+        </svg>
+      </div>
+      <h3 class="text-xl font-bold text-gray-900 mb-2">영상 업로드 중</h3>
+      <p class="text-sm text-gray-500 mb-6">잠시만 기다려주세요...</p>
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm text-gray-600">진행률</span>
+          <span data-upload-progress-target="progressText" class="text-sm font-bold text-primary-600">0%</span>
+        </div>
+        <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+          <div data-upload-progress-target="progressBar" class="h-full bg-gradient-to-r from-primary-500 to-teal-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+      <div data-upload-progress-target="errorMessage" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700"></div>
+      <button type="button" data-upload-progress-target="cancelButton" data-action="click->upload-progress#cancel"
+              class="w-full py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition text-sm">업로드 취소</button>
+    </div>
+  </div>
+
+  <!-- 영상 압축 모달 -->
+  <div data-video-compressor-target="compressionModal"
+       class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl text-center">
+      <div class="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
+        <svg class="w-8 h-8 text-purple-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+      </div>
+      <h3 class="text-xl font-bold text-gray-900 mb-2">영상 압축 중</h3>
+      <p class="text-sm text-gray-500 mb-6">업로드 속도를 최적화하고 있어요</p>
+      <div class="mb-6">
+        <div class="flex justify-between mb-2">
+          <span class="text-sm text-gray-600">진행률</span>
+          <span data-video-compressor-target="compressionText" class="text-sm font-bold text-purple-600">0%</span>
+        </div>
+        <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+          <div data-video-compressor-target="compressionProgress" class="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+      <p data-video-compressor-target="statusMessage" class="text-xs text-gray-500 mb-4">준비 중...</p>
+      <button type="button" data-video-compressor-target="skipButton" data-action="click->video-compressor#skip"
+              class="w-full py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition text-sm">압축 건너뛰기 (원본 사용)</button>
+    </div>
+  </div>
+</div>

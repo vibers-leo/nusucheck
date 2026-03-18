@@ -12,6 +12,8 @@
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= javascript_importmap_tags %>
   <%= action_cable_meta_tag %>
+  <!-- Font Awesome 6 Free -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Sentry Error Tracking (프로덕션/스테이징만) -->
   <% if Rails.env.production? || Rails.env.staging? %>
@@ -80,7 +82,13 @@
 
   <!-- Navigation (네이티브 앱에서는 숨김 - 앱 자체 네비게이션 사용) -->
   <% unless hotwire_native_app? %>
-  <nav class="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20" aria-label="주 메뉴" data-controller="mobile-menu">
+  <%# 읽지 않은 채팅 수 (전역 - 모바일 메뉴 + 하단 탭 공용) %>
+  <% unread_chat_count = user_signed_in? ? (begin
+       reqs = current_user.master? ? current_user.assigned_requests : current_user.requests
+       Message.where(request: reqs).where.not(sender_id: current_user.id).unread.count
+     rescue; 0; end) : 0 %>
+  <div data-controller="mobile-menu">
+  <nav class="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20" aria-label="주 메뉴">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-14">
 
@@ -220,7 +228,7 @@
               </button>
 
               <div data-user-menu-target="dropdown"
-                   class="hidden absolute right-0 top-full mt-1.5 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-30">
+                   class="hidden w-44 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-[999]" style="position:fixed;top:60px;right:16px">
                 <% profile_path = current_user.customer? ? customers_profile_path : (current_user.master? ? masters_profile_path : admin_root_path) %>
                 <%= link_to profile_path, class: "flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors" do %>
                   <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -250,45 +258,240 @@
                   class: "hidden sm:inline-flex px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors" %>
             <%= link_to "시작하기", new_user_registration_path,
                   class: "hidden sm:inline-flex px-4 py-1.5 rounded-lg text-sm font-semibold bg-primary-500 text-white hover:bg-primary-600 transition-colors shadow-sm" %>
-
-            <button type="button"
-                    class="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-                    data-action="mobile-menu#toggle"
-                    data-mobile-menu-target="button"
-                    aria-expanded="false"
-                    aria-label="메뉴 열기">
-              <svg class="h-5 w-5" data-mobile-menu-target="iconOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-              </svg>
-              <svg class="h-5 w-5 hidden" data-mobile-menu-target="iconClose" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
           <% end %>
-        </div>
-      </div>
-    </div>
 
-    <!-- 모바일 드롭다운 (비로그인 전용) -->
-    <% unless user_signed_in? %>
-    <div class="md:hidden hidden border-t border-gray-100" data-mobile-menu-target="panel">
-      <div class="px-4 py-3 space-y-1 mobile-menu-enter bg-white shadow-lg">
-        <% unless controller_name == 'pages' && action_name == 'coming_soon' %>
-          <%= link_to "누수 진단하기", new_leak_inspection_path,
-                class: "flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-700 transition-colors" %>
-        <% end %>
-        <%= link_to "서비스 소개", about_path,
-              class: "flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-700 transition-colors" %>
-        <div class="pt-2 pb-1 grid grid-cols-2 gap-2 border-t border-gray-100 mt-2">
-          <%= link_to "로그인", new_user_session_path,
-                class: "text-center py-2.5 rounded-xl text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors" %>
-          <%= link_to "시작하기", new_user_registration_path,
-                class: "text-center py-2.5 rounded-xl text-sm font-semibold text-white bg-primary-500 hover:bg-primary-600 transition-colors" %>
+          <!-- 햄버거 버튼: 고객/전문가/관리자/비로그인 모두 (모바일 전용) -->
+          <button type="button"
+                  class="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors relative"
+                  data-action="mobile-menu#toggle"
+                  data-mobile-menu-target="button"
+                  aria-expanded="false"
+                  aria-label="메뉴 열기">
+            <svg class="h-5 w-5" data-mobile-menu-target="iconOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+            <svg class="h-5 w-5 hidden" data-mobile-menu-target="iconClose" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            <% if unread_chat_count > 0 %>
+              <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            <% end %>
+          </button>
         </div>
       </div>
     </div>
-    <% end %>
   </nav>
+
+  <!-- ═══ 모바일 전체 메뉴 패널 (역할별 분기) ═══ -->
+  <div class="md:hidden hidden fixed top-14 left-0 right-0 bottom-0 bg-white z-50 overflow-y-auto" data-mobile-menu-target="panel">
+      <% if user_signed_in? %>
+        <!-- 프로필 헤더 -->
+        <div class="px-5 py-4 bg-gray-50 border-b border-gray-100">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-xl shadow-sm flex-shrink-0">
+              <%= current_user.name&.first || "?" %>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-gray-900 text-[15px] truncate"><%= current_user.name %></p>
+              <% if current_user.admin? %>
+                <span class="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full mt-0.5">
+                  <i class="fa-solid fa-shield-halved text-[10px]"></i> 관리자
+                </span>
+              <% elsif current_user.master? %>
+                <span class="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full mt-0.5">
+                  <i class="fa-solid fa-star text-[10px]"></i> 전문가
+                </span>
+              <% else %>
+                <span class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full mt-0.5">
+                  <i class="fa-solid fa-user text-[10px]"></i> 고객
+                </span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-3 py-3 pb-8">
+          <% if current_user.customer? %>
+            <%# ── 고객 메뉴 ── %>
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-3 pt-3 pb-1">메인</p>
+            <%= link_to customers_dashboard_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors #{controller_path == 'customers/dashboard' ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <i class="fa-solid fa-house w-5 text-center text-base"></i>
+              <span class="font-medium">홈</span>
+            <% end %>
+            <%= link_to customers_requests_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors #{controller_path == 'customers/requests' ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <i class="fa-solid fa-droplet w-5 text-center text-base"></i>
+              <span class="font-medium">내 체크</span>
+            <% end %>
+            <%= link_to chats_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors #{(controller_name == 'chats' || controller_name == 'messages') ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <i class="fa-solid fa-comment-dots w-5 text-center text-base"></i>
+              <span class="font-medium">채팅</span>
+              <% if unread_chat_count > 0 %>
+                <span class="ml-auto text-xs font-bold bg-red-500 text-white px-1.5 py-0.5 rounded-full"><%= unread_chat_count > 9 ? "9+" : unread_chat_count %></span>
+              <% end %>
+            <% end %>
+            <%= link_to customers_masters_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors #{controller_path == 'customers/masters' ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <i class="fa-solid fa-user-tie w-5 text-center text-base"></i>
+              <span class="font-medium">전문가 찾기</span>
+            <% end %>
+
+            <div class="border-t border-gray-100 my-2"></div>
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-3 pb-1">내 활동</p>
+            <%= link_to customers_insurance_claims_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-file-shield w-5 text-center text-base"></i>
+              <span class="font-medium">보험청구</span>
+            <% end %>
+            <%= link_to customers_payments_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-credit-card w-5 text-center text-base"></i>
+              <span class="font-medium">결제 내역</span>
+            <% end %>
+            <%= link_to customers_profile_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors #{controller_path == 'customers/profiles' ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <i class="fa-solid fa-user w-5 text-center text-base"></i>
+              <span class="font-medium">내 프로필</span>
+            <% end %>
+
+            <div class="border-t border-gray-100 my-2"></div>
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-3 pb-1">서비스</p>
+            <%= link_to about_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-circle-info w-5 text-center text-base"></i>
+              <span class="font-medium">서비스 소개</span>
+            <% end %>
+            <%= link_to reviews_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-star w-5 text-center text-base"></i>
+              <span class="font-medium">리뷰/후기</span>
+            <% end %>
+            <%= link_to faq_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-circle-question w-5 text-center text-base"></i>
+              <span class="font-medium">FAQ</span>
+            <% end %>
+            <%= link_to events_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-gift w-5 text-center text-base"></i>
+              <span class="font-medium">이벤트</span>
+            <% end %>
+
+          <% elsif current_user.master? %>
+            <%# ── 전문가 메뉴 ── %>
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-3 pt-3 pb-1">메인</p>
+            <%= link_to expert_dashboard_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors #{controller_name == 'dashboard' ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <i class="fa-solid fa-house w-5 text-center text-base"></i>
+              <span class="font-medium">홈</span>
+            <% end %>
+            <%= link_to open_orders_masters_requests_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors #{action_name == 'open_orders' ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <i class="fa-solid fa-box-open w-5 text-center text-base"></i>
+              <span class="font-medium">오더 피드</span>
+              <% open_count_nav = Request.open_orders.count rescue 0 %>
+              <% if open_count_nav > 0 %>
+                <span class="ml-auto text-xs font-bold bg-primary-500 text-white px-1.5 py-0.5 rounded-full"><%= open_count_nav > 9 ? "9+" : open_count_nav %></span>
+              <% end %>
+            <% end %>
+            <%= link_to masters_requests_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors #{(controller_path == 'masters/requests' && action_name != 'open_orders') ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <i class="fa-solid fa-clipboard-list w-5 text-center text-base"></i>
+              <span class="font-medium">내 요청</span>
+            <% end %>
+            <%= link_to chats_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors #{(controller_name == 'chats' || controller_name == 'messages') ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <i class="fa-solid fa-comment-dots w-5 text-center text-base"></i>
+              <span class="font-medium">채팅</span>
+              <% if unread_chat_count > 0 %>
+                <span class="ml-auto text-xs font-bold bg-red-500 text-white px-1.5 py-0.5 rounded-full"><%= unread_chat_count > 9 ? "9+" : unread_chat_count %></span>
+              <% end %>
+            <% end %>
+
+            <div class="border-t border-gray-100 my-2"></div>
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-3 pb-1">관리</p>
+            <%= link_to expert_settlements_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-money-bill-wave w-5 text-center text-base"></i>
+              <span class="font-medium">정산 내역</span>
+            <% end %>
+            <%= link_to masters_insurance_claims_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-file-shield w-5 text-center text-base"></i>
+              <span class="font-medium">보험청구</span>
+            <% end %>
+            <%= link_to masters_profile_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors #{controller_name == 'profiles' ? 'bg-primary-50 text-primary-600' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <i class="fa-solid fa-user w-5 text-center text-base"></i>
+              <span class="font-medium">내 프로필</span>
+            <% end %>
+
+          <% elsif current_user.admin? %>
+            <%# ── 관리자 메뉴 ── %>
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-3 pt-3 pb-1">대시보드</p>
+            <%= link_to admin_root_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors #{controller_name == 'dashboard' ? 'bg-violet-50 text-violet-600' : 'text-gray-700 hover:bg-gray-50'}" do %>
+              <i class="fa-solid fa-chart-line w-5 text-center text-base"></i>
+              <span class="font-medium">대시보드</span>
+            <% end %>
+
+            <div class="border-t border-gray-100 my-2"></div>
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-3 pb-1">관리</p>
+            <%= link_to admin_requests_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-droplet w-5 text-center text-base"></i>
+              <span class="font-medium">체크 관리</span>
+            <% end %>
+            <%= link_to admin_masters_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-users w-5 text-center text-base"></i>
+              <span class="font-medium">마스터 관리</span>
+            <% end %>
+            <%= link_to admin_feedbacks_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-comments w-5 text-center text-base"></i>
+              <span class="font-medium">피드백</span>
+            <% end %>
+            <%= link_to admin_surveys_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-chart-bar w-5 text-center text-base"></i>
+              <span class="font-medium">설문</span>
+            <% end %>
+            <%= link_to admin_insurance_claims_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-file-shield w-5 text-center text-base"></i>
+              <span class="font-medium">보험청구</span>
+            <% end %>
+            <%= link_to admin_payment_audit_logs_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-credit-card w-5 text-center text-base"></i>
+              <span class="font-medium">결제 로그</span>
+            <% end %>
+            <%= link_to admin_escrow_transactions_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-lock w-5 text-center text-base"></i>
+              <span class="font-medium">에스크로</span>
+            <% end %>
+          <% end %>
+
+          <!-- 로그아웃 -->
+          <div class="border-t border-gray-100 mt-3 pt-2">
+            <%= button_to destroy_user_session_path, method: :delete,
+                  class: "w-full flex items-center gap-3 px-3 py-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors text-left" do %>
+              <i class="fa-solid fa-right-from-bracket w-5 text-center text-base"></i>
+              <span class="font-medium">로그아웃</span>
+            <% end %>
+          </div>
+        </div>
+
+      <% else %>
+        <!-- 비로그인 메뉴 -->
+        <div class="px-3 py-4">
+          <% unless controller_name == 'pages' && action_name == 'coming_soon' %>
+            <%= link_to new_leak_inspection_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-magnifying-glass w-5 text-center text-base text-primary-500"></i>
+              <span class="font-medium">누수 진단하기</span>
+            <% end %>
+          <% end %>
+          <%= link_to about_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+            <i class="fa-solid fa-circle-info w-5 text-center text-base text-primary-500"></i>
+            <span class="font-medium">서비스 소개</span>
+          <% end %>
+          <%= link_to pricing_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+            <i class="fa-solid fa-tag w-5 text-center text-base text-primary-500"></i>
+            <span class="font-medium">가격 안내</span>
+          <% end %>
+          <%= link_to faq_path, class: "flex items-center gap-3 px-3 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+            <i class="fa-solid fa-circle-question w-5 text-center text-base text-primary-500"></i>
+            <span class="font-medium">FAQ</span>
+          <% end %>
+
+          <div class="border-t border-gray-100 mt-3 pt-3 px-3 grid grid-cols-2 gap-2">
+            <%= link_to "로그인", new_user_session_path,
+                  class: "text-center py-3 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors" %>
+            <%= link_to "시작하기", new_user_registration_path,
+                  class: "text-center py-3 rounded-xl text-sm font-semibold text-white bg-primary-500 hover:bg-primary-600 transition-colors" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
   <% end %>
 
   <!-- Flash messages -->
@@ -305,29 +508,12 @@
     </main>
   <% end %>
 
-  <!-- 플로팅 액션 버튼 (FAB) - 당근마켓 스타일 -->
-  <% unless hotwire_native_app? %>
-    <% if !user_signed_in? || (user_signed_in? && current_user.customer?) %>
-      <%= link_to new_customers_request_path, class: "fixed bottom-6 right-6 z-50 w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center group hover:scale-110", data: { turbo: false } do %>
-        <svg class="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/>
-        </svg>
-        <span class="sr-only">누수 체크하기</span>
-      <% end %>
-    <% end %>
-  <% end %>
 
   <!-- 고객/전문가용 하단 탭 네비게이션 (모바일) -->
   <% if user_signed_in? %>
     <% unless hotwire_native_app? %>
-      <% unread_chat_count = begin
-           reqs = current_user.master? ? current_user.assigned_requests : current_user.requests
-           Message.where(request: reqs).where.not(sender_id: current_user.id).unread.count
-         rescue
-           0
-         end %>
       <% if current_user.customer? %>
-        <!-- 고객용 하단 탭 (5탭: 홈/체크/채팅/더보기/마이) -->
+        <!-- 고객용 하단 탭 (5탭: 홈/커뮤니티/누수체크/채팅/마이페이지) -->
         <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 pb-safe">
           <div class="grid grid-cols-5 h-16">
 
@@ -339,14 +525,23 @@
               <span class="text-[10px] font-medium">홈</span>
             <% end %>
 
-            <!-- 체크하기 (가운데 강조) -->
+            <!-- 커뮤니티 -->
+            <% community_active = controller_name == 'community' || (controller_name == 'pages' && action_name == 'community') || controller_name == 'reviews' %>
+            <%= link_to community_path, class: "flex flex-col items-center justify-center gap-0.5 transition-colors #{community_active ? 'text-primary-600' : 'text-gray-400'}" do %>
+              <svg class="w-5 h-5" fill="<%= community_active ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span class="text-[10px] font-medium">커뮤니티</span>
+            <% end %>
+
+            <!-- 누수체크 (가운데 강조) -->
             <%= link_to new_customers_request_path, class: "flex flex-col items-center justify-center gap-0.5", data: { turbo: false } do %>
               <div class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center shadow-md shadow-primary-200 -mt-2">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
                 </svg>
               </div>
-              <span class="text-[10px] font-medium text-primary-600 mt-0.5">체크</span>
+              <span class="text-[10px] font-medium text-primary-600 mt-0.5">누수체크</span>
             <% end %>
 
             <!-- 채팅 -->
@@ -362,16 +557,7 @@
               <span class="text-[10px] font-medium">채팅</span>
             <% end %>
 
-            <!-- 더보기 (전문가/보험/결제 등) -->
-            <% more_active = %w[customers/masters customers/insurance_claims customers/payments customers/settings].include?(controller_path) || %w[faq reviews events].include?(controller_name) %>
-            <%= link_to customers_masters_path, class: "flex flex-col items-center justify-center gap-0.5 transition-colors #{more_active ? 'text-primary-600' : 'text-gray-400'}" do %>
-              <svg class="w-5 h-5" fill="<%= more_active ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
-              </svg>
-              <span class="text-[10px] font-medium">전문가</span>
-            <% end %>
-
-            <!-- 마이 -->
+            <!-- 마이페이지 -->
             <%= link_to customers_profile_path, class: "flex flex-col items-center justify-center gap-0.5 transition-colors #{controller_path == 'customers/profiles' ? 'text-primary-600' : 'text-gray-400'}" do %>
               <svg class="w-5 h-5" fill="<%= controller_path == 'customers/profiles' ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>

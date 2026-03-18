@@ -14,9 +14,9 @@
     </span>
   </button>
 
-  <!-- 알림 드롭다운 -->
+  <!-- 알림 드롭다운 (JS로 fixed 포지셔닝 적용) -->
   <div data-notifications-target="dropdown"
-       class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-lg border border-gray-200 z-50 max-h-[32rem] flex flex-col">
+       class="hidden w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-gray-200 z-[999] max-h-[32rem] flex flex-col" style="position:fixed;top:60px;right:16px">
     <!-- 헤더 -->
     <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
       <h3 class="font-semibold text-gray-900 flex items-center gap-2">

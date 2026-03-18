@@ -6,6 +6,7 @@ class User < ApplicationRecord
   # devise :omniauthable, omniauth_providers: [:kakao]
 
   # Associations
+  has_many :posts, dependent: :destroy
   has_many :notifications, as: :recipient, dependent: :destroy
   has_many :user_coupons, dependent: :destroy
   has_many :coupons, through: :user_coupons

@@ -14,7 +14,22 @@ export default class extends Controller {
 
   toggle(event) {
     event.stopPropagation()
-    this.dropdownTarget.classList.toggle("hidden")
+    const isHidden = this.dropdownTarget.classList.contains("hidden")
+    if (isHidden) {
+      this._positionDropdown(event.currentTarget)
+      this.dropdownTarget.classList.remove("hidden")
+    } else {
+      this.dropdownTarget.classList.add("hidden")
+    }
+  }
+
+  _positionDropdown(trigger) {
+    const rect = trigger.getBoundingClientRect()
+    const dropdown = this.dropdownTarget
+    dropdown.style.position = "fixed"
+    dropdown.style.top = `${rect.bottom + 4}px`
+    dropdown.style.right = `${window.innerWidth - rect.right}px`
+    dropdown.style.left = "auto"
   }
 
   closeIfOutside(event) {

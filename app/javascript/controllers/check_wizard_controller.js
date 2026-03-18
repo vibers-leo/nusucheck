@@ -9,11 +9,15 @@ export default class extends Controller {
   ]
   static values = {
     currentStep: { type: Number, default: 1 },
-    totalSteps: { type: Number, default: 7 }
+    totalSteps: { type: Number, default: 7 },
+    stepTypes: { type: Array, default: [] }
   }
 
   // 각 스텝의 유형: "button" = 버튼 선택, "form" = 일반 폼, "optional" = 건너뛰기 가능, "submit" = 마지막
   get stepTypes() {
+    if (this.stepTypesValue && this.stepTypesValue.length > 0) {
+      return this.stepTypesValue
+    }
     return ["button", "button", "form", "optional", "optional", "optional", "submit"]
   }
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_16_000001) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_18_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -268,6 +268,20 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_16_000001) do
     t.index ["user_id"], name: "index_payment_audit_logs_on_user_id"
   end
 
+  create_table "posts", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.text "content", null: false
+    t.string "category", default: "general", null: false
+    t.integer "views_count", default: 0, null: false
+    t.integer "likes_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_posts_on_category"
+    t.index ["created_at"], name: "index_posts_on_created_at"
+    t.index ["user_id"], name: "index_posts_on_user_id"
+  end
+
   create_table "requests", force: :cascade do |t|
     t.bigint "customer_id", null: false
     t.bigint "master_id"
@@ -433,6 +447,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_16_000001) do
   add_foreign_key "messages", "users", column: "sender_id"
   add_foreign_key "payment_audit_logs", "escrow_transactions"
   add_foreign_key "payment_audit_logs", "users"
+  add_foreign_key "posts", "users"
   add_foreign_key "requests", "users", column: "customer_id"
   add_foreign_key "requests", "users", column: "master_id"
   add_foreign_key "reviews", "requests"
