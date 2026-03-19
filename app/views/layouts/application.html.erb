@@ -512,41 +512,66 @@
 
   <!-- Footer (네이티브 앱에서는 숨김) -->
   <% unless hotwire_native_app? %>
-  <footer class="bg-gray-800 text-gray-300 py-8 mt-auto">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
-        <!-- 회사 정보 -->
-        <div>
-          <h3 class="text-white font-bold text-lg mb-3">누수체크</h3>
-          <p class="text-sm text-gray-400">누수 전문 매칭 플랫폼</p>
-          <p class="text-sm text-gray-400">투명한 가격, 검증된 전문가</p>
-        </div>
+  <% show_footer_mobile = controller_name.in?(%w[dashboard profiles]) || (controller_name == 'pages' && action_name == 'home') %>
+  <footer class="bg-gray-800 text-gray-300 mt-auto <%= show_footer_mobile ? '' : 'hidden md:block' %>">
 
-        <!-- 서비스 -->
+    <!-- 모바일: 접힌 사업자정보 -->
+    <div class="md:hidden px-4 py-3">
+      <button onclick="toggleFooterInfo(this)"
+              class="w-full flex items-center justify-between text-xs text-gray-500 hover:text-gray-300 transition-colors">
+        <span>사업자정보</span>
+        <svg class="w-3.5 h-3.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden mt-3 space-y-3 text-xs text-gray-400 pb-2">
         <div>
-          <h3 class="text-white font-semibold text-sm mb-3">서비스</h3>
-          <ul class="space-y-2 text-sm">
-            <li><%= link_to "누수 진단하기", new_leak_inspection_path, class: "text-gray-400 hover:text-white transition" %></li>
-            <li><%= link_to "서비스 소개", about_path, class: "text-gray-400 hover:text-white transition" %></li>
-            <li><%= link_to "가격안내", pricing_path, class: "text-gray-400 hover:text-white transition" %></li>
-          </ul>
+          <p class="font-semibold text-gray-300 mb-1">누수체크</p>
+          <p>누수 전문 매칭 플랫폼 · 투명한 가격, 검증된 전문가</p>
         </div>
-
-        <!-- 고객지원 -->
-        <div>
-          <h3 class="text-white font-semibold text-sm mb-3">고객지원</h3>
-          <ul class="space-y-2 text-sm">
-            <li><%= link_to "의견 보내기", new_feedback_path, class: "text-gray-400 hover:text-white transition" %></li>
-            <li><%= link_to "설문 참여하기", new_survey_path, class: "text-gray-400 hover:text-white transition" %></li>
-            <li><a href="mailto:contact@nusucheck.com" class="text-gray-400 hover:text-white transition">contact@nusucheck.com</a></li>
-          </ul>
+        <div class="flex flex-wrap gap-x-4 gap-y-1">
+          <%= link_to "누수 진단하기", new_leak_inspection_path, class: "hover:text-white transition" %>
+          <%= link_to "서비스 소개", about_path, class: "hover:text-white transition" %>
+          <%= link_to "가격안내", pricing_path, class: "hover:text-white transition" %>
+          <%= link_to "의견 보내기", new_feedback_path, class: "hover:text-white transition" %>
+          <a href="mailto:contact@nusucheck.com" class="hover:text-white transition">contact@nusucheck.com</a>
         </div>
-      </div>
-
-      <div class="border-t border-gray-700 pt-6 text-center">
-        <p class="text-sm text-gray-500">&copy; <%= Date.current.year %> 누수체크. All rights reserved.</p>
+        <p class="text-gray-600">&copy; <%= Date.current.year %> 누수체크. All rights reserved.</p>
       </div>
     </div>
+
+    <!-- 데스크톱: 전체 푸터 -->
+    <div class="hidden md:block py-8">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-3 gap-8 mb-6">
+          <div>
+            <h3 class="text-white font-bold text-lg mb-3">누수체크</h3>
+            <p class="text-sm text-gray-400">누수 전문 매칭 플랫폼</p>
+            <p class="text-sm text-gray-400">투명한 가격, 검증된 전문가</p>
+          </div>
+          <div>
+            <h3 class="text-white font-semibold text-sm mb-3">서비스</h3>
+            <ul class="space-y-2 text-sm">
+              <li><%= link_to "누수 진단하기", new_leak_inspection_path, class: "text-gray-400 hover:text-white transition" %></li>
+              <li><%= link_to "서비스 소개", about_path, class: "text-gray-400 hover:text-white transition" %></li>
+              <li><%= link_to "가격안내", pricing_path, class: "text-gray-400 hover:text-white transition" %></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-white font-semibold text-sm mb-3">고객지원</h3>
+            <ul class="space-y-2 text-sm">
+              <li><%= link_to "의견 보내기", new_feedback_path, class: "text-gray-400 hover:text-white transition" %></li>
+              <li><%= link_to "설문 참여하기", new_survey_path, class: "text-gray-400 hover:text-white transition" %></li>
+              <li><a href="mailto:contact@nusucheck.com" class="text-gray-400 hover:text-white transition">contact@nusucheck.com</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-gray-700 pt-6 text-center">
+          <p class="text-sm text-gray-500">&copy; <%= Date.current.year %> 누수체크. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+
   </footer>
   <% end %>
 
@@ -619,6 +644,15 @@
       if (userDd) userDd.classList.add('hidden');
       if (notifDd) notifDd.classList.add('hidden');
     });
+
+    // ── 사업자정보 푸터 토글 ──
+    function toggleFooterInfo(btn) {
+      var content = btn.nextElementSibling;
+      var chevron = btn.querySelector('svg');
+      var isHidden = content.classList.contains('hidden');
+      content.classList.toggle('hidden', !isHidden);
+      if (chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : '';
+    }
 
     // ── Turbo 페이지 이동 시 모바일 메뉴 닫기 ──
     document.addEventListener('turbo:before-visit', function() {
