@@ -48,4 +48,10 @@ class PagesController < ApplicationController
                     .order(created_at: :desc)
                     .limit(6)
   end
+
+  def terms
+  end
+
+  def privacy
+  end
 end

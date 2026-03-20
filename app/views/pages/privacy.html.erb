@@ -1,0 +1,231 @@
+<% content_for :title, "개인정보처리방침 - 누수체크" %>
+
+<div class="max-w-3xl mx-auto">
+  <!-- 헤더 -->
+  <div class="text-center mb-10">
+    <h1 class="text-3xl font-bold text-gray-900">개인정보처리방침</h1>
+    <p class="mt-3 text-gray-500">시행일: 2026년 1월 1일 · 최종 수정: 2026년 3월 1일</p>
+  </div>
+
+  <div class="bg-primary-50 rounded-xl p-5 mb-8 flex items-start gap-3">
+    <svg class="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+    </svg>
+    <p class="text-sm text-primary-800 leading-relaxed">
+      누수체크는 개인정보보호법 및 관련 법령에 따라 이용자의 개인정보를 보호하고 있어요. 본 방침은 회사가 어떤 개인정보를 수집하고, 어떻게 사용하며, 어떻게 보호하는지 안내합니다.
+    </p>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-gray-100 p-8 md:p-12 space-y-10">
+
+    <!-- 1. 수집 항목 -->
+    <section>
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <span class="w-7 h-7 rounded-lg bg-primary-100 text-primary-700 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+        수집하는 개인정보 항목
+      </h2>
+      <div class="space-y-4">
+        <div class="rounded-xl border border-gray-100 overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="text-left px-4 py-3 font-semibold text-gray-700">구분</th>
+                <th class="text-left px-4 py-3 font-semibold text-gray-700">수집 항목</th>
+                <th class="text-left px-4 py-3 font-semibold text-gray-700">수집 시점</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr>
+                <td class="px-4 py-3 text-gray-900 font-medium">필수</td>
+                <td class="px-4 py-3 text-gray-600">이름, 이메일, 비밀번호, 휴대폰 번호</td>
+                <td class="px-4 py-3 text-gray-600">회원가입 시</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 text-gray-900 font-medium">선택</td>
+                <td class="px-4 py-3 text-gray-600">주소, 생년월일, 프로필 사진</td>
+                <td class="px-4 py-3 text-gray-600">프로필 설정 시</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 text-gray-900 font-medium">마스터 추가</td>
+                <td class="px-4 py-3 text-gray-600">자격증 번호, 계좌정보, 배상책임보험 증서</td>
+                <td class="px-4 py-3 text-gray-600">전문가 등록 시</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 text-gray-900 font-medium">자동 수집</td>
+                <td class="px-4 py-3 text-gray-600">접속 IP, 기기 정보, 서비스 이용 기록</td>
+                <td class="px-4 py-3 text-gray-600">서비스 이용 중</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 수집 목적 -->
+    <section>
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <span class="w-7 h-7 rounded-lg bg-primary-100 text-primary-700 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+        개인정보 수집 및 이용 목적
+      </h2>
+      <div class="space-y-3">
+        <% [
+          ["회원 관리", "회원 식별, 본인 확인, 불량 회원 관리"],
+          ["서비스 제공", "체크 접수·매칭·견적·결제·정산 등 핵심 서비스 운영"],
+          ["고객 지원", "문의 응답, 불만 처리, 분쟁 조정"],
+          ["마케팅·통계", "서비스 개선을 위한 통계 분석 (개인 식별 불가 형태)"],
+          ["법적 의무 이행", "세금 계산서 발행, 전자금융거래법 준수"]
+        ].each do |purpose, desc| %>
+          <div class="flex gap-3 py-2 border-b border-gray-50 last:border-0">
+            <span class="font-semibold text-gray-900 min-w-[100px] text-sm"><%= purpose %></span>
+            <span class="text-gray-600 text-sm"><%= desc %></span>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <!-- 3. 보유 기간 -->
+    <section>
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <span class="w-7 h-7 rounded-lg bg-primary-100 text-primary-700 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+        개인정보 보유 및 이용 기간
+      </h2>
+      <div class="space-y-3 text-gray-700">
+        <p>① 회원 탈퇴 시 개인정보는 즉시 파기합니다. 단, 관련 법령에 따라 아래 정보는 일정 기간 보관합니다.</p>
+        <div class="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
+          <p class="flex justify-between"><span class="text-gray-600">계약·청약 철회 기록</span><span class="font-semibold">5년 (전자상거래법)</span></p>
+          <p class="flex justify-between"><span class="text-gray-600">대금 결제·공급 기록</span><span class="font-semibold">5년 (전자상거래법)</span></p>
+          <p class="flex justify-between"><span class="text-gray-600">소비자 불만·분쟁 기록</span><span class="font-semibold">3년 (전자상거래법)</span></p>
+          <p class="flex justify-between"><span class="text-gray-600">접속 로그</span><span class="font-semibold">3개월 (통신비밀보호법)</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 제3자 제공 -->
+    <section>
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <span class="w-7 h-7 rounded-lg bg-primary-100 text-primary-700 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+        개인정보 제3자 제공
+      </h2>
+      <div class="space-y-3 text-gray-700">
+        <p>회사는 원칙적으로 이용자의 개인정보를 제3자에게 제공하지 않습니다. 단, 다음의 경우는 예외입니다.</p>
+        <ul class="space-y-2 text-sm">
+          <li class="flex items-start gap-2">
+            <span class="text-primary-500 mt-0.5">•</span>
+            <span>이용자가 사전에 동의한 경우 (예: 마스터에게 연락처 공유)</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-primary-500 mt-0.5">•</span>
+            <span>법령에 의해 수사기관의 요청이 있는 경우</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-primary-500 mt-0.5">•</span>
+            <span>보험 청구 처리를 위해 보험사에 최소한의 정보를 제공하는 경우</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 5. 처리 위탁 -->
+    <section>
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <span class="w-7 h-7 rounded-lg bg-primary-100 text-primary-700 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+        개인정보 처리 위탁
+      </h2>
+      <div class="rounded-xl border border-gray-100 overflow-hidden text-sm">
+        <table class="w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="text-left px-4 py-3 font-semibold text-gray-700">수탁 업체</th>
+              <th class="text-left px-4 py-3 font-semibold text-gray-700">위탁 업무</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr>
+              <td class="px-4 py-3 text-gray-700">토스페이먼츠</td>
+              <td class="px-4 py-3 text-gray-600">결제 처리 및 에스크로 관리</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 text-gray-700">Amazon Web Services (AWS)</td>
+              <td class="px-4 py-3 text-gray-600">서버 및 데이터 보관</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 text-gray-700">Oracle Cloud</td>
+              <td class="px-4 py-3 text-gray-600">파일 스토리지 (사진·서류)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 6. 이용자 권리 -->
+    <section>
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <span class="w-7 h-7 rounded-lg bg-primary-100 text-primary-700 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+        이용자의 권리
+      </h2>
+      <div class="space-y-3 text-gray-700">
+        <p>이용자는 언제든지 다음 권리를 행사할 수 있어요.</p>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <% [
+            ["열람권", "보유 중인 개인정보 확인 요청"],
+            ["정정권", "부정확한 정보 수정 요청"],
+            ["삭제권", "개인정보 삭제(탈퇴) 요청"],
+            ["처리 정지권", "특정 목적의 처리 중단 요청"]
+          ].each do |right, desc| %>
+            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+              <div class="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-900 text-sm"><%= right %></p>
+                <p class="text-xs text-gray-500"><%= desc %></p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <p class="text-sm text-gray-500">권리 행사: <%= mail_to "support@nusucheck.kr", "support@nusucheck.kr", class: "text-primary-600 font-semibold" %> 또는 앱 내 고객센터</p>
+      </div>
+    </section>
+
+    <!-- 7. 파기 -->
+    <section>
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <span class="w-7 h-7 rounded-lg bg-primary-100 text-primary-700 text-sm font-bold flex items-center justify-center flex-shrink-0">7</span>
+        개인정보 파기
+      </h2>
+      <div class="space-y-3 text-gray-700">
+        <p>보유 기간이 경과하거나 처리 목적이 달성된 개인정보는 지체 없이 파기합니다.</p>
+        <div class="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
+          <p class="flex gap-3"><span class="font-semibold text-gray-700 min-w-[80px]">전자 파일</span><span class="text-gray-600">복구 불가능한 방법으로 영구 삭제</span></p>
+          <p class="flex gap-3"><span class="font-semibold text-gray-700 min-w-[80px]">종이 문서</span><span class="text-gray-600">분쇄 또는 소각 처리</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. 개인정보 보호책임자 -->
+    <section>
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <span class="w-7 h-7 rounded-lg bg-primary-100 text-primary-700 text-sm font-bold flex items-center justify-center flex-shrink-0">8</span>
+        개인정보 보호책임자
+      </h2>
+      <div class="bg-gray-50 rounded-xl p-5">
+        <div class="space-y-1 text-sm text-gray-700">
+          <p><span class="font-semibold">이름:</span> 누수체크 개인정보 보호팀</p>
+          <p><span class="font-semibold">이메일:</span> <%= mail_to "privacy@nusucheck.kr", "privacy@nusucheck.kr", class: "text-primary-600" %></p>
+          <p><span class="font-semibold">처리 기간:</span> 문의 접수 후 영업일 3일 이내 답변</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 이용약관 링크 -->
+  <div class="mt-6 text-center">
+    <p class="text-sm text-gray-500">
+      서비스 이용 조건은
+      <%= link_to "서비스 이용약관", terms_path, class: "text-primary-600 font-semibold hover:underline" %>을 확인해주세요.
+    </p>
+  </div>
+</div>

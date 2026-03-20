@@ -129,16 +129,27 @@
           </svg>
         <% end %>
 
-        <!-- 약관 및 정책 -->
-        <a href="#" class="flex items-center justify-between py-3 hover:bg-gray-50 rounded-xl px-3 -mx-3 transition-colors">
+        <!-- 이용약관 -->
+        <%= link_to terms_path, class: "flex items-center justify-between py-3 hover:bg-gray-50 rounded-xl px-3 -mx-3 transition-colors" do %>
           <div>
-            <p class="font-semibold text-gray-900">약관 및 정책</p>
-            <p class="text-sm text-gray-500">서비스 이용약관, 개인정보처리방침</p>
+            <p class="font-semibold text-gray-900">서비스 이용약관</p>
+            <p class="text-sm text-gray-500">누수체크 이용약관</p>
           </div>
           <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
           </svg>
-        </a>
+        <% end %>
+
+        <!-- 개인정보처리방침 -->
+        <%= link_to privacy_path, class: "flex items-center justify-between py-3 hover:bg-gray-50 rounded-xl px-3 -mx-3 transition-colors" do %>
+          <div>
+            <p class="font-semibold text-gray-900">개인정보처리방침</p>
+            <p class="text-sm text-gray-500">개인정보 수집 및 이용 안내</p>
+          </div>
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        <% end %>
       </div>
     </div>
 

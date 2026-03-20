@@ -255,4 +255,6 @@ Rails.application.routes.draw do
   get "community", to: "posts#index", as: :community
   resources :posts, except: [:index]
   get "search", to: "search#index", as: :search
+  get "terms", to: "pages#terms", as: :terms
+  get "privacy", to: "pages#privacy", as: :privacy
 end
