@@ -20,6 +20,16 @@ module CodefConfig
     ENV["CODEF_CLIENT_ID"].present? && ENV["CODEF_CLIENT_SECRET"].present?
   end
 
+  # 샌드박스(더미 데이터) 모드 — CODEF_SANDBOX_MODE=true 환경변수로 활성화
+  def self.sandbox_mode?
+    ENV["CODEF_SANDBOX_MODE"] == "true"
+  end
+
+  # API 키가 있거나 샌드박스 모드이면 CODEF 기능 활성화
+  def self.available?
+    configured? || sandbox_mode?
+  end
+
   def self.api_url
     case Rails.env
     when "production" then PRODUCTION_URL

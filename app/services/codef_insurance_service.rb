@@ -46,6 +46,7 @@ class CodefInsuranceService
   # user_info: { name:, birth: "YYYYMMDD", phone:, telecom: "SKT"|"KT"|"LGU", login_type: :pass }
   # 반환: { success: true, job_id: "...", message: "..." } 또는 { success: false, error: "..." }
   def request_auth(user_info)
+    return sandbox_auth_response if CodefConfig.sandbox_mode?
     return not_configured unless configured?
 
     token = fetch_token
@@ -92,6 +93,7 @@ class CodefInsuranceService
   # Step 2: 인증 결과 폴링 (간편인증 승인 후 호출)
   # 반환: { success: true, done: true, contracts: [...] } 또는 done: false (아직 대기 중)
   def poll_result(job_id, user_info)
+    return sandbox_poll_response if job_id == "SANDBOX-JOB-001"
     return not_configured unless configured?
 
     token = fetch_token
@@ -200,5 +202,44 @@ class CodefInsuranceService
 
   def not_configured
     { success: false, error: "CODEF API가 설정되지 않았어요" }
+  end
+
+  # ── 샌드박스(더미) 응답 ─────────────────────────────────────
+  # request_auth 더미: done:false → waiting 화면 → poll 흐름을 전부 테스트 가능
+  def sandbox_auth_response
+    {
+      success: true,
+      done: false,
+      job_id: "SANDBOX-JOB-001",
+      message: "[테스트 모드] 인증 요청 전송됨 (자동으로 완료됩니다)"
+    }
+  end
+
+  # poll 더미: 삼성화재 배상책임보험 + 현대해상 실손 2건 반환
+  def sandbox_poll_response
+    {
+      success: true,
+      done: true,
+      contracts: [
+        {
+          insurer_name:  "삼성화재",
+          product_name:  "일상생활배상책임보험",
+          contract_no:   "SANDBOX-2024-001234",
+          valid_from:    Date.current - 6.months,
+          valid_until:   Date.current + 6.months,
+          has_liability: true,
+          status:        "정상"
+        },
+        {
+          insurer_name:  "현대해상",
+          product_name:  "실손의료비보험",
+          contract_no:   "SANDBOX-2024-005678",
+          valid_from:    Date.current - 1.year,
+          valid_until:   Date.current + 1.year,
+          has_liability: false,
+          status:        "정상"
+        }
+      ]
+    }
   end
 end

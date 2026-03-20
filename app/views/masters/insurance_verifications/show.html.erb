@@ -33,12 +33,17 @@
         </svg>
       </div>
       <div>
-        <h2 class="text-sm font-bold text-gray-900">자동 조회 <span class="text-xs font-normal text-primary-600 ml-1">권장</span></h2>
+        <h2 class="text-sm font-bold text-gray-900">
+          자동 조회 <span class="text-xs font-normal text-primary-600 ml-1">권장</span>
+          <% if CodefConfig.sandbox_mode? %>
+            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-medium ml-1">테스트 모드</span>
+          <% end %>
+        </h2>
         <p class="text-xs text-gray-500">PASS 앱 인증 한 번으로 모든 보험사 자동 조회</p>
       </div>
     </div>
 
-    <% if CodefConfig.configured? %>
+    <% if CodefConfig.available? %>
       <%= form_with url: request_auth_masters_insurance_verification_path, method: :post, local: true, class: "space-y-3" do |f| %>
 
         <!-- 인증 방법 선택 -->

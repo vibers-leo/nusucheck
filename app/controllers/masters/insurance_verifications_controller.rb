@@ -11,7 +11,7 @@ class Masters::InsuranceVerificationsController < ApplicationController
   # POST /masters/insurance_verification/request_auth
   # CODEF 간편인증 요청 → 사용자 휴대폰으로 PASS/카카오 알림 발송
   def request_auth
-    unless CodefConfig.configured?
+    unless CodefConfig.available?
       redirect_to masters_insurance_verification_path, alert: "자동 조회 서비스가 준비 중이에요. 증명서 업로드를 이용해주세요." and return
     end
 
