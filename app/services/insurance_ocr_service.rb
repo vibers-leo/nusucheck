@@ -34,10 +34,14 @@ class InsuranceOcrService
     fallback_result("OCR 처리 중 오류가 발생했어요")
   end
 
+  def self.configured?
+    ENV["NAVER_OCR_SECRET"].present? && ENV["NAVER_OCR_INVOKE_URL"].present?
+  end
+
   private
 
   def configured?
-    ENV["NAVER_OCR_SECRET"].present? && ENV["NAVER_OCR_INVOKE_URL"].present?
+    self.class.configured?
   end
 
   def detect_format(url)
