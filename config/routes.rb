@@ -66,7 +66,6 @@ Rails.application.routes.draw do
       member do
         post :cancel
         post :accept_estimate
-        post :select_master          # 전문가 선택 (신청 목록에서)
         post :pay                    # 채팅 위젯: 결제 처리
         patch :confirm_schedule      # 채팅 위젯: 일정 확정
         post :deposit_trip_fee       # 1단계: 출장비

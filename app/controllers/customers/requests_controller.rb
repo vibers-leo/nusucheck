@@ -2,7 +2,7 @@ class Customers::RequestsController < ApplicationController
   include CustomerAccessible
 
   before_action :set_request, only: [
-    :show, :cancel, :select_master, :accept_estimate, :pay, :confirm_schedule,
+    :show, :cancel, :accept_estimate, :pay, :confirm_schedule,
     :deposit_trip_fee, :deposit_detection_fee, :deposit_escrow,
     :confirm_completion, :submit_complaint
   ]
@@ -61,41 +61,6 @@ class Customers::RequestsController < ApplicationController
     else
       redirect_to customers_request_path(@request), alert: "현재 상태에서는 취소할 수 없습니다."
     end
-  end
-
-  # 당근마켓 스타일: 신청한 전문가 중 1명 선택 → 채팅 시작
-  def select_master
-    authorize @request
-
-    unless @request.open?
-      redirect_to customers_request_path(@request), alert: "이미 전문가가 배정된 상태입니다."
-      return
-    end
-
-    application = @request.master_applications.pending.find_by(master_id: params[:master_id])
-    unless application
-      redirect_to customers_request_path(@request), alert: "해당 전문가의 신청을 찾을 수 없습니다."
-      return
-    end
-
-    ActiveRecord::Base.transaction do
-      # 선택된 전문가 배정
-      application.update!(status: :selected)
-      # 나머지 신청자 거절
-      @request.master_applications.pending.where.not(id: application.id).update_all(status: 2) # rejected
-      # 요청 상태 변경 (assigned)
-      @request.assign!(master: application.master)
-    end
-
-    # 배정 시스템 메시지
-    SystemMessageService.send_master_assigned_message(@request) rescue nil
-    NotificationService.notify_request_assigned(@request) rescue nil
-
-    redirect_to request_messages_path(@request), notice: "#{application.master.name} 전문가와 채팅을 시작합니다!"
-  rescue ActiveRecord::RecordInvalid => e
-    redirect_to customers_request_path(@request), alert: "처리 중 오류가 발생했습니다."
-  rescue AASM::InvalidTransition => e
-    redirect_to customers_request_path(@request), alert: "상태 변경 실패: #{e.message}"
   end
 
   def accept_estimate

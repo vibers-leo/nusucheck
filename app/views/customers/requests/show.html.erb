@@ -60,74 +60,19 @@
   </div>
 <% end %>
 
-<!-- 전문가 신청 목록 (open 상태일 때만 표시) -->
-<% if @request.open? && @request.master_applications.any? %>
-  <div class="bg-white rounded-2xl border-2 border-primary-100 mb-4 overflow-hidden">
-    <div class="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-100">
-      <div>
-        <h2 class="text-[15px] font-bold text-gray-900">신청한 전문가</h2>
-        <p class="text-xs text-gray-500 mt-0.5">마음에 드는 전문가와 채팅을 시작해보세요</p>
-      </div>
-      <span class="px-2.5 py-1 bg-primary-100 text-primary-700 text-xs font-bold rounded-full">
-        <%= @request.master_applications.pending.count %>명
-      </span>
-    </div>
-
-    <div class="divide-y divide-gray-100">
-      <% @request.master_applications.pending.includes(:master).recent.each do |application| %>
-        <div class="p-4">
-          <!-- 전문가 프로필 -->
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center flex-shrink-0">
-              <span class="text-white font-bold"><%= application.master.name&.first %></span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-[15px] font-bold text-gray-900"><%= application.master.name %></p>
-              <div class="flex items-center gap-2 mt-0.5">
-                <% rating = application.master.average_rating %>
-                <% if rating > 0 %>
-                  <span class="text-xs text-yellow-500 font-semibold">★ <%= rating %></span>
-                <% end %>
-                <% if application.master.experience_years.present? %>
-                  <span class="text-xs text-gray-400">경력 <%= application.master.experience_years %>년</span>
-                <% end %>
-                <% if application.master.master_profile&.verified? %>
-                  <span class="text-xs text-primary-600 font-medium">✓ 인증</span>
-                <% end %>
-              </div>
-            </div>
-            <span class="text-xs text-gray-400"><%= time_ago_in_words(application.created_at) %> 전</span>
-          </div>
-
-          <!-- 신청 메시지 -->
-          <% if application.intro_message.present? %>
-            <div class="bg-gray-50 rounded-xl px-3 py-2.5 mb-3">
-              <p class="text-sm text-gray-700 leading-relaxed"><%= application.intro_message %></p>
-            </div>
-          <% end %>
-
-          <!-- 채팅 시작 버튼 -->
-          <%= button_to select_master_customers_request_path(@request),
-                method: :post,
-                params: { master_id: application.master.id },
-                class: "w-full py-3 bg-primary-600 text-white rounded-xl text-sm font-bold hover:bg-primary-700 transition-colors",
-                data: { confirm: "#{application.master.name} 전문가와 채팅을 시작하시겠습니까? 다른 신청자는 자동으로 거절됩니다." },
-                form: { class: "w-full" } do %>
-            💬 채팅 시작하기
-          <% end %>
-        </div>
-      <% end %>
-    </div>
-  </div>
-<% elsif @request.open? && @request.master_applications.none? %>
-  <div class="bg-amber-50 rounded-2xl border border-amber-100 p-4 mb-4">
+<!-- 전문가 배정 대기 안내 (open 상태) -->
+<% if @request.open? %>
+  <div class="bg-blue-50 rounded-2xl border border-blue-100 p-4 mb-4">
     <div class="flex items-start gap-3">
-      <div class="w-9 h-9 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
-        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <div class="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+        </svg>
       </div>
       <div>
-        <p class="text-sm font-bold text-amber-800">전문가 신청 대기 중</p>
-        <p class="text-xs text-amber-700 mt-0.5">관리자가 승인한 후 전문가들이 신청할 수 있습니다</p>
+        <p class="text-sm font-bold text-blue-800">전문가 배정 중이에요</p>
+        <p class="text-xs text-blue-700 mt-0.5">검증된 전문가가 배정되면 바로 알림을 드릴게요</p>
       </div>
     </div>
   </div>

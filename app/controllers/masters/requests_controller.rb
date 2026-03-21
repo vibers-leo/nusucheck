@@ -40,7 +40,7 @@ class Masters::RequestsController < ApplicationController
     @requests = @q.result.includes(:customer).recent.page(params[:page])
   end
 
-  # 당근마켓 스타일: 전문가가 신청 (고객이 나중에 선택)
+  # 자동 배정: 전문가가 신청하면 선착순으로 즉시 배정
   def apply
     unless current_user.master_profile&.verified?
       respond_to do |format|
@@ -64,17 +64,15 @@ class Masters::RequestsController < ApplicationController
     )
 
     if @application.save
-      # 고객에게 알림
-      NotificationService.notify_master_applied(@request, current_user) rescue nil
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.replace("apply_btn_#{@request.id}", partial: "masters/requests/applied_badge"),
-            turbo_stream.replace("flash_messages", partial: "shared/flash_messages", locals: { notice: "신청이 완료되었습니다! 고객이 선택하면 알림을 드릴게요." })
-          ]
-        end
-        format.html { redirect_to open_orders_masters_requests_path, notice: "신청이 완료되었습니다!" }
+      ActiveRecord::Base.transaction do
+        @request.reload  # 동시 신청 race condition 방지
+        raise AASM::InvalidTransition.new(@request, :claim) unless @request.may_claim?
+        @request.claim!(master: current_user)
+        @application.update!(status: :selected)
       end
+      SystemMessageService.send_master_assigned_message(@request) rescue nil
+      NotificationService.notify_request_assigned(@request) rescue nil
+      redirect_to masters_request_path(@request), notice: "오더가 배정됐어요! 방문 일정을 잡아주세요."
     else
       error_msg = @application.errors.full_messages.first || "신청 중 오류가 발생했습니다."
       respond_to do |format|
@@ -82,6 +80,11 @@ class Masters::RequestsController < ApplicationController
         format.html { redirect_to open_orders_masters_requests_path, alert: error_msg }
       end
     end
+  rescue AASM::InvalidTransition
+    @application&.update!(status: :rejected) rescue nil
+    redirect_to open_orders_masters_requests_path, alert: "이미 다른 전문가가 먼저 배정된 오더예요."
+  rescue ActiveRecord::RecordInvalid
+    redirect_to open_orders_masters_requests_path, alert: "처리 중 오류가 발생했습니다."
   end
 
   def claim
