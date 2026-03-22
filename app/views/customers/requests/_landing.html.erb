@@ -1,123 +1,100 @@
-<%# 누수체크 랜딩 — 사전진단 vs 전문가 진단 요청 선택 %>
-<div class="min-h-screen bg-white">
+<%# 토스 스타일 초기 분기 질문 — "지금 누수가 발생하고 있나요?" %>
+<div class="min-h-screen bg-white flex flex-col">
+
   <!-- 헤더 -->
   <div class="sticky top-0 z-20 bg-white border-b border-gray-100">
     <div class="max-w-lg mx-auto px-4">
-      <div class="flex items-center justify-between h-14">
-        <%= link_to :back, class: "w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-gray-100 transition" do %>
+      <div class="flex items-center h-14">
+        <%= link_to customers_dashboard_path,
+              class: "w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-gray-100 transition" do %>
           <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         <% end %>
-        <span class="font-bold text-gray-900">누수체크</span>
-        <div class="w-10"></div>
+      </div>
+    </div>
+    <!-- 프로그레스 바 (1단계 표시용 — 가장 얇게) -->
+    <div class="h-0.5 bg-gray-100">
+      <div class="h-0.5 bg-primary-500 transition-all duration-400" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <!-- 메인 콘텐츠 -->
+  <div class="flex-1 max-w-lg mx-auto w-full px-5 pt-12 pb-36">
+
+    <!-- 질문 -->
+    <p class="text-xs font-bold text-primary-500 mb-4 tracking-widest uppercase">Step 1</p>
+    <h1 class="text-[1.85rem] font-bold text-gray-900 leading-tight mb-3">
+      지금 누수가<br>발생하고 있나요?
+    </h1>
+    <p class="text-[15px] text-gray-400 mb-10 leading-relaxed">
+      상황에 맞는 방법으로 빠르게 도와드릴게요
+    </p>
+
+    <!-- 선택 카드 -->
+    <div class="space-y-3">
+
+      <!-- YES: 지금 누수 중 -->
+      <%= link_to new_customers_request_path(mode: 'expert'),
+            class: "block group",
+            data: { turbo: false } do %>
+        <div class="flex items-center gap-4 p-5 rounded-3xl border-2 border-gray-100 bg-white
+                    group-hover:border-red-300 group-hover:bg-red-50
+                    active:scale-[0.98] transition-all duration-150 cursor-pointer">
+          <div class="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center flex-shrink-0
+                      group-hover:bg-red-200 transition-colors">
+            <span class="text-2xl">🚨</span>
+          </div>
+          <div class="flex-1">
+            <p class="font-bold text-gray-900 text-[16px] mb-0.5">네, 지금 새고 있어요</p>
+            <p class="text-sm text-gray-400">영상·사진으로 전문가에게 바로 연결</p>
+          </div>
+          <svg class="w-5 h-5 text-gray-300 group-hover:text-red-400 group-hover:translate-x-0.5 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+      <% end %>
+
+      <!-- NO: 점검/사전진단 필요 -->
+      <%= link_to new_customers_request_path(mode: 'diagnosis'),
+            class: "block group",
+            data: { turbo: false } do %>
+        <div class="flex items-center gap-4 p-5 rounded-3xl border-2 border-gray-100 bg-white
+                    group-hover:border-primary-300 group-hover:bg-primary-50
+                    active:scale-[0.98] transition-all duration-150 cursor-pointer">
+          <div class="w-14 h-14 bg-primary-100 rounded-2xl flex items-center justify-center flex-shrink-0
+                      group-hover:bg-primary-200 transition-colors">
+            <span class="text-2xl">🔍</span>
+          </div>
+          <div class="flex-1">
+            <p class="font-bold text-gray-900 text-[16px] mb-0.5">아니요, 점검이 필요해요</p>
+            <p class="text-sm text-gray-400">증상을 파악하고 전문가 예약</p>
+          </div>
+          <svg class="w-5 h-5 text-gray-300 group-hover:text-primary-400 group-hover:translate-x-0.5 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+      <% end %>
+
+    </div>
+
+    <!-- 안심 문구 -->
+    <div class="mt-10 flex items-center justify-center gap-5 text-center">
+      <div>
+        <p class="text-sm font-bold text-gray-700">투명</p>
+        <p class="text-xs text-gray-400 mt-0.5">표준 검사비</p>
+      </div>
+      <div class="w-px h-8 bg-gray-200"></div>
+      <div>
+        <p class="text-sm font-bold text-gray-700">안전</p>
+        <p class="text-xs text-gray-400 mt-0.5">에스크로 결제</p>
+      </div>
+      <div class="w-px h-8 bg-gray-200"></div>
+      <div>
+        <p class="text-sm font-bold text-gray-700">2년</p>
+        <p class="text-xs text-gray-400 mt-0.5">무상 AS</p>
       </div>
     </div>
   </div>
 
-  <div class="max-w-lg mx-auto px-5 pt-8 pb-24">
-    <!-- 타이틀 -->
-    <div class="mb-8 text-center">
-      <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-2xl mb-4 shadow-lg">
-        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
-        </svg>
-      </div>
-      <h1 class="text-[26px] font-bold text-gray-900 leading-tight">어떤 도움이<br>필요하신가요?</h1>
-      <p class="text-gray-500 mt-2 text-[15px]">증상에 맞는 방법을 선택해보세요</p>
-    </div>
-
-    <!-- 선택 카드 — 모바일: 세로, PC: 가로 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-
-      <!-- 사전진단하기 -->
-      <%= link_to new_customers_request_path(mode: 'diagnosis'), class: "block group", data: { turbo: false } do %>
-        <div class="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl border-2 border-blue-200 group-hover:border-blue-400 group-hover:shadow-xl transition-all duration-200 cursor-pointer h-full">
-          <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-            </svg>
-          </div>
-          <h2 class="text-xl font-bold text-gray-900 mb-2">사전 진단하기</h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-4">증상, 건물 정보, 상황을 단계별로 입력하고 누수 원인을 먼저 파악해보세요</p>
-          <div class="flex flex-wrap gap-2 mb-4">
-            <span class="text-xs px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">✅ 증상 분석</span>
-            <span class="text-xs px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">📋 상황 기록</span>
-            <span class="text-xs px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">🏠 건물 정보</span>
-          </div>
-          <div class="flex items-center gap-1 text-blue-600 font-semibold text-sm">
-            시작하기
-            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-            </svg>
-          </div>
-        </div>
-      <% end %>
-
-      <!-- 전문가 진단 요청 -->
-      <%= link_to new_customers_request_path(mode: 'expert'), class: "block group", data: { turbo: false } do %>
-        <div class="p-6 bg-gradient-to-br from-primary-50 to-teal-50 rounded-3xl border-2 border-primary-200 group-hover:border-primary-400 group-hover:shadow-xl transition-all duration-200 cursor-pointer h-full relative overflow-hidden">
-          <!-- 추천 뱃지 -->
-          <div class="absolute top-4 right-4 bg-primary-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">빠른 접수</div>
-          <div class="w-14 h-14 bg-gradient-to-br from-primary-500 to-teal-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-            </svg>
-          </div>
-          <h2 class="text-xl font-bold text-gray-900 mb-2">전문가 진단 요청</h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-4">누수 부위 영상을 올리면 전문가가 즉시 확인하고 채팅으로 연결해드려요</p>
-          <div class="flex flex-wrap gap-2 mb-4">
-            <span class="text-xs px-2.5 py-1 bg-primary-100 text-primary-700 rounded-full font-medium">🎥 영상 업로드</span>
-            <span class="text-xs px-2.5 py-1 bg-primary-100 text-primary-700 rounded-full font-medium">💬 즉시 채팅</span>
-            <span class="text-xs px-2.5 py-1 bg-primary-100 text-primary-700 rounded-full font-medium">🔧 전문가 배정</span>
-          </div>
-          <div class="flex items-center gap-1 text-primary-600 font-semibold text-sm">
-            영상 올리기
-            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-            </svg>
-          </div>
-        </div>
-      <% end %>
-    </div>
-
-    <!-- 누수 팁 -->
-    <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
-      <p class="font-semibold text-amber-800 flex items-center gap-2 mb-2.5 text-[15px]">
-        💡 누수 빠른 확인 팁
-      </p>
-      <ul class="text-sm text-amber-700 space-y-2">
-        <li class="flex items-start gap-2">
-          <span class="text-amber-500 font-bold flex-shrink-0">①</span>
-          <span>수도 계량기가 돌아가면 실제 누수일 가능성이 높아요</span>
-        </li>
-        <li class="flex items-start gap-2">
-          <span class="text-amber-500 font-bold flex-shrink-0">②</span>
-          <span>곰팡이나 물 얼룩이 생겼다면 빠른 점검이 필요해요</span>
-        </li>
-        <li class="flex items-start gap-2">
-          <span class="text-amber-500 font-bold flex-shrink-0">③</span>
-          <span>영상을 올리면 전문가가 현장 방문 전 원격으로 판단해드려요</span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- 안심 보증 -->
-    <div class="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-      <div class="grid grid-cols-3 gap-3 text-center">
-        <div>
-          <p class="text-lg font-bold text-primary-600">투명</p>
-          <p class="text-xs text-gray-500 mt-0.5">표준 검사비<br>사전 고지</p>
-        </div>
-        <div class="border-x border-gray-200">
-          <p class="text-lg font-bold text-primary-600">안전</p>
-          <p class="text-xs text-gray-500 mt-0.5">에스크로<br>결제 보호</p>
-        </div>
-        <div>
-          <p class="text-lg font-bold text-primary-600">2년</p>
-          <p class="text-xs text-gray-500 mt-0.5">무상 AS<br>보증</p>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>

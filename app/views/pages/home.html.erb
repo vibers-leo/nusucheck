@@ -22,7 +22,7 @@
           </svg>
         </div>
         <div>
-          <h2 class="text-lg font-bold text-gray-900">AI 누수 진단</h2>
+          <h2 class="text-lg font-bold text-gray-900">AI 사전점검</h2>
           <p class="text-sm text-gray-600">영상이 가장 정확해요! 예상 수리비와 원인을 분석해드려요</p>
         </div>
       </div>
@@ -41,7 +41,7 @@
             무료로 시작하기
           <% end %>
         <% end %>
-        <%= link_to new_leak_inspection_path, class: "flex-1 inline-flex items-center justify-center px-6 py-3.5 text-base font-semibold rounded-2xl bg-white border-2 border-primary-600 text-primary-700 hover:bg-primary-50 transition-colors" do %>
+        <%= link_to new_customers_request_path(mode: 'diagnosis'), class: "flex-1 inline-flex items-center justify-center px-6 py-3.5 text-base font-semibold rounded-2xl bg-white border-2 border-primary-600 text-primary-700 hover:bg-primary-50 transition-colors" do %>
           AI 빠른 점검
         <% end %>
       </div>
@@ -220,7 +220,7 @@
     </div>
     <h2 class="text-2xl font-bold mb-2">AI로 누수 여부를 즉시 확인하세요</h2>
     <p class="text-primary-100 mb-6">영상이 가장 정확해요! 로그인 없이 무료로 이용하세요.</p>
-    <%= link_to new_leak_inspection_path, class: "inline-flex items-center px-6 py-3.5 bg-white text-primary-700 rounded-2xl font-bold hover:bg-gray-50 transition-colors" do %>
+    <%= link_to new_customers_request_path(mode: 'diagnosis'), class: "inline-flex items-center px-6 py-3.5 bg-white text-primary-700 rounded-2xl font-bold hover:bg-gray-50 transition-colors" do %>
       AI 빠른 점검 시작
     <% end %>
   </div>
@@ -283,7 +283,7 @@
       <%= link_to new_user_registration_path, class: "inline-flex items-center justify-center px-6 py-3.5 text-base font-bold rounded-2xl bg-primary-600 text-white hover:bg-primary-700 transition-colors" do %>
         무료 회원가입
       <% end %>
-      <%= link_to new_leak_inspection_path, class: "inline-flex items-center justify-center px-6 py-3.5 text-base font-semibold rounded-2xl bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors" do %>
+      <%= link_to new_customers_request_path(mode: 'diagnosis'), class: "inline-flex items-center justify-center px-6 py-3.5 text-base font-semibold rounded-2xl bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors" do %>
         AI 점검 먼저 해보기
       <% end %>
     </div>

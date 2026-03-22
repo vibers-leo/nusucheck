@@ -1,9 +1,12 @@
 <% if params[:mode].blank? %>
-  <%# ── 랜딩: 사전진단 / 전문가 진단 요청 선택 ── %>
+  <%# ── 토스 스타일 초기 질문 화면 ── %>
   <%= render "landing" %>
 <% elsif params[:mode] == 'expert' %>
   <%# ── 전문가 진단 요청 (영상 중심 5-스텝 마법사) ── %>
   <%= render "expert_wizard", f_request: @request %>
+<% elsif params[:mode] == 'diagnosis' %>
+  <%# ── AI 사전점검 (토스 스타일 5-스텝 마법사) ── %>
+  <%= render "diagnosis_wizard", f_request: @request %>
 <% else %>
 <div class="min-h-screen bg-white" data-controller="check-wizard analytics" data-check-wizard-total-steps-value="7" data-analytics-category-value="Request Form">
   <!-- 상단 헤더 (Toss 스타일) -->
@@ -497,7 +500,7 @@
                 data-check-wizard-target="submitBtn"
                 data-button-loading-target="button"
                 data-button-loading-loading-text-value="영상 업로드 중... 잠시만 기다려주세요"
-                class="hidden w-full py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-primary-600 to-purple-700 text-white hover:from-primary-700 hover:to-purple-800 transition-all shadow-xl hover:shadow-2xl inline-flex items-center justify-center gap-2">
+                class="hidden w-full py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-primary-600 to-purple-700 text-white hover:from-primary-700 hover:to-purple-800 transition-all shadow-xl hover:shadow-2xl text-center">
           <span data-button-loading-target="spinner" class="btn-spinner hidden"></span>
           <span data-button-loading-target="text">전문가에게 요청하기</span>
         </button>
