@@ -46,9 +46,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("[CW] connect", this.element.dataset.controller)
-    console.log("[CW] nextBtnTarget exists?", this.hasNextBtnTarget)
-    console.log("[CW] nextBtn via querySelector?", !!this.element.querySelector('[data-check-wizard-target="nextBtn"]'))
     this.selections = {}
     this.showStep(this.currentStepValue)
     this.updateProgress()
@@ -57,7 +54,6 @@ export default class extends Controller {
 
   // 버튼 선택 (증상, 건물유형) - 토스 스타일 인터랙션
   selectOption(event) {
-    console.log("[CW] selectOption called", event.currentTarget.dataset.value)
     event.preventDefault()
     const button = event.currentTarget
     const group = button.closest("[data-field]")
@@ -337,7 +333,6 @@ export default class extends Controller {
 
   enableNextButton() {
     const btn = this._findNextBtn()
-    console.log("[CW] enableNextButton, btn found?", !!btn, btn)
     if (btn) {
       btn.disabled = false
       btn.classList.remove("hidden", "bg-gray-100", "bg-gray-200", "text-gray-300", "text-gray-400", "cursor-not-allowed")
