@@ -6,6 +6,8 @@ class Payments::WebhooksController < ApplicationController
   # Devise 인증 우회
   skip_before_action :authenticate_user!, raise: false
 
+  before_action :verify_webhook_signature!
+
   # POST /payments/webhook
   # 포트원에서 호출하는 웹훅
   def portone
@@ -118,5 +120,28 @@ class Payments::WebhooksController < ApplicationController
       ip_address: request.remote_ip
     )
     head :ok  # 포트원은 200이 아니면 재시도하므로 항상 200 응답
+  end
+
+  private
+
+  def verify_webhook_signature!
+    signature = request.headers['x-portone-signature']
+    return if Rails.env.development? && signature.blank?
+
+    unless signature.present?
+      render json: { error: 'Missing signature' }, status: :unauthorized
+      return false
+    end
+
+    secret = ENV['PORTONE_WEBHOOK_SECRET']
+    return true if secret.blank? && Rails.env.development?
+
+    expected = OpenSSL::HMAC.hexdigest('SHA256', secret, request.raw_post)
+    unless ActiveSupport::SecurityUtils.secure_compare(signature, expected)
+      Rails.logger.warn("[PortOne] 웹훅 서명 불일치")
+      render json: { error: 'Invalid signature' }, status: :unauthorized
+      return false
+    end
+    true
   end
 end

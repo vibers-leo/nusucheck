@@ -30,15 +30,20 @@ class Expert::RegistrationsController < Devise::RegistrationsController
   end
 
   def after_sign_up_path_for(resource)
-    # 관리자에게 새 전문가 가입 알림
-    User.where(role: :admin).each do |admin|
-      NotificationService.notify(
-        recipient: admin,
-        action: "new_master_signup",
-        message: "새 전문가 #{resource.name}님이 가입했습니다. 프로필을 검토하고 승인해주세요.",
-        notifiable: resource
-      )
-    end rescue nil
+    # 관리자에게 새 전문가 가입 알림 (N+1 방지: admin 레코드를 한 번만 로드)
+    begin
+      admins = User.where(role: :admin).select(:id, :name, :email)
+      admins.find_each do |admin|
+        NotificationService.notify(
+          recipient: admin,
+          action: "new_master_signup",
+          message: "새 전문가 #{resource.name}님이 가입했습니다. 프로필을 검토하고 승인해주세요.",
+          notifiable: resource
+        )
+      end
+    rescue => e
+      Rails.logger.error "전문가 가입 알림 실패: #{e.message}"
+    end
     edit_masters_profile_path
   end
 

@@ -9,9 +9,10 @@ class Customers::RequestsController < ApplicationController
 
   def index
     @active_requests = current_user.requests
+                                   .includes(:master, :estimates)
                                    .where.not(status: %w[closed cancelled])
                                    .recent.limit(3)
-    @q = current_user.requests.ransack(params[:q])
+    @q = current_user.requests.includes(:master, :estimates, :escrow_transactions).ransack(params[:q])
     @requests = @q.result.recent.page(params[:page])
   end
 
