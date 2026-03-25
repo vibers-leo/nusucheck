@@ -78,7 +78,12 @@ Devise.setup do |config|
     config.omniauth :kakao,
       ENV['KAKAO_CLIENT_ID'],
       ENV.fetch('KAKAO_CLIENT_SECRET', ''),
-      scope: 'profile_nickname,account_email',
-      strategy_class: OmniAuth::Strategies::Kakao
+      strategy_class: OmniAuth::Strategies::Kakao,
+      client_options: {
+        site: "https://kauth.kakao.com",
+        authorize_url: "/oauth/authorize",
+        token_url: "/oauth/token"
+      },
+      scope: "profile_nickname,account_email"
   end
 end

@@ -64,12 +64,12 @@
         </div>
       </div>
 
-      <% if Rails.application.routes.url_helpers.respond_to?(:user_kakao_omniauth_authorize_path) %>
-        <%= button_to "카카오로 3초만에 시작", user_kakao_omniauth_authorize_path, method: :post,
-              data: { turbo: false },
-              class: "mt-4 w-full h-12 bg-yellow-400 text-gray-900 font-bold rounded-xl hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2" do %>
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 0 1-1.727-.11l-4.408 2.883c-.501.265-.678.236-.472-.413l.892-3.678c-2.88-1.46-4.785-3.99-4.785-6.866C1.5 6.665 6.201 3 12 3z"/>
+      <% if respond_to?(:user_kakao_omniauth_authorize_path) %>
+        <%= button_to user_kakao_omniauth_authorize_path, method: :post, data: { turbo: false },
+              class: "mt-4 w-full h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer",
+              style: "background-color: #FEE500; color: #191919;" do %>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M9 0.6C4.03 0.6 0 3.713 0 7.55C0 9.944 1.558 12.065 3.93 13.325L2.933 16.93C2.845 17.246 3.213 17.496 3.486 17.31L7.873 14.39C8.242 14.43 8.617 14.45 9 14.45C13.97 14.45 18 11.337 18 7.55C18 3.713 13.97 0.6 9 0.6Z" fill="#191919"/>
           </svg>
           카카오로 3초만에 시작
         <% end %>
