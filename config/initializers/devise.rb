@@ -24,10 +24,10 @@ Devise.setup do |config|
 
   config.navigational_formats = ["*/*", :html, :turbo_stream]
 
-  # OmniAuth 설정 (카카오 로그인) - 나중에 추가 예정
-  # if ENV['KAKAO_CLIENT_ID'].present?
-  #   config.omniauth :kakao,
-  #     ENV['KAKAO_CLIENT_ID'],
-  #     scope: 'profile_nickname,account_email'
-  # end
+  # OmniAuth 설정 (카카오 로그인)
+  if ENV['KAKAO_CLIENT_ID'].present?
+    config.omniauth :kakao,
+      ENV['KAKAO_CLIENT_ID'],
+      scope: 'profile_nickname,account_email'
+  end
 end

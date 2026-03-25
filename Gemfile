@@ -18,9 +18,9 @@ gem "streamio-ffmpeg"
 
 # Authentication & Authorization
 gem "devise"
-# 카카오 로그인 (나중에 추가 예정)
-# gem "omniauth-kakao"
-# gem "omniauth-rails_csrf_protection"
+# 카카오 로그인
+gem "omniauth-kakao"
+gem "omniauth-rails_csrf_protection"
 gem "pundit"
 
 # State Machine

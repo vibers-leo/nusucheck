@@ -12,9 +12,8 @@ class User < ApplicationRecord
 
   # Devise 모듈 (게스트 지원을 위해 :validatable 제거)
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable
-  # 카카오 로그인 (나중에 추가 예정)
-  # devise :omniauthable, omniauth_providers: [:kakao]
+         :recoverable, :rememberable,
+         :omniauthable, omniauth_providers: [:kakao]
 
   # Associations
   has_many :posts, dependent: :destroy
@@ -67,16 +66,16 @@ class User < ApplicationRecord
     )
   end
 
-  # 카카오 OAuth (나중에 추가 예정)
-  # def self.from_omniauth(auth)
-  #   where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
-  #     user.email = auth.info.email
-  #     user.password = Devise.friendly_token[0, 20]
-  #     user.name = auth.info.nickname || "카카오유저#{SecureRandom.hex(4)}"
-  #     user.type = "Customer"  # 기본 고객으로 생성
-  #     user.account_status = :registered
-  #   end
-  # end
+  # 카카오 OAuth
+  def self.from_omniauth(auth)
+    where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
+      user.email = auth.info.email || "kakao_#{auth.uid}@nusucheck.com"
+      user.password = Devise.friendly_token[0, 20]
+      user.name = auth.info.nickname || "카카오유저#{SecureRandom.hex(4)}"
+      user.type = "Customer"
+      user.account_status = :registered
+    end
+  end
 
   # Devise 오버라이드
   def email_required?
