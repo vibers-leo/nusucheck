@@ -66,15 +66,32 @@ class User < ApplicationRecord
     )
   end
 
-  # 카카오 OAuth
+  # 카카오 OAuth — 기존 이메일 계정이 있으면 카카오 연결, 없으면 신규 생성
   def self.from_omniauth(auth)
-    where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
-      user.email = auth.info.email || "kakao_#{auth.uid}@nusucheck.com"
-      user.password = Devise.friendly_token[0, 20]
-      user.name = auth.info.nickname || "카카오유저#{SecureRandom.hex(4)}"
-      user.type = "Customer"
-      user.account_status = :registered
+    # 1) provider + uid로 기존 카카오 유저 찾기
+    user = find_by(provider: auth.provider, uid: auth.uid)
+    return user if user
+
+    # 2) 같은 이메일의 기존 계정이 있으면 카카오 연결
+    email = auth.info.email
+    if email.present?
+      user = find_by(email: email)
+      if user
+        user.update!(provider: auth.provider, uid: auth.uid)
+        return user
+      end
     end
+
+    # 3) 완전 신규 유저 생성
+    create!(
+      provider: auth.provider,
+      uid: auth.uid,
+      email: email || "kakao_#{auth.uid}@nusucheck.com",
+      password: Devise.friendly_token[0, 20],
+      name: auth.info.nickname || "카카오유저#{SecureRandom.hex(4)}",
+      type: "Customer",
+      account_status: :registered
+    )
   end
 
   # Devise 오버라이드
