@@ -47,7 +47,7 @@ class Customers::DashboardController < ApplicationController
   private
 
   def ensure_customer!
-    unless current_user.customer?
+    unless current_user.can_access_customer?
       redirect_to root_path, alert: "고객 권한이 필요합니다."
     end
   end

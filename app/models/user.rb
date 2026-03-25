@@ -1,4 +1,15 @@
 class User < ApplicationRecord
+  # 관리자 이메일 목록 — 회원가입 시 자동으로 admin 권한 부여
+  ADMIN_EMAILS = %w[
+    designd@designd.co.kr
+    designdlab@designdlab.co.kr
+    juuuno@naver.com
+    duscontactus@gmail.com
+    nusucheck@nusucheck.com
+    support@nusucheck.com
+    cleanmentor2@gmail.com
+  ].freeze
+
   # Devise 모듈 (게스트 지원을 위해 :validatable 제거)
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable
@@ -25,6 +36,7 @@ class User < ApplicationRecord
 
   before_create :set_guest_token, if: :guest?
   before_create :set_default_nickname
+  before_create :auto_promote_admin
 
   geocoded_by :address
   after_validation :geocode, if: ->(obj) { obj.address.present? && obj.address_changed? }
@@ -94,6 +106,19 @@ class User < ApplicationRecord
     "고객"
   end
 
+  # 관리자는 고객/전문가 기능도 모두 접근 가능
+  def can_access_customer?
+    admin? || customer?
+  end
+
+  def can_access_master?
+    admin? || master?
+  end
+
+  def can_access_admin?
+    admin?
+  end
+
   private
 
   def set_guest_token
@@ -102,6 +127,12 @@ class User < ApplicationRecord
 
   def set_default_nickname
     self.name = "물방울#{rand(1000..9999)}" if name.blank?
+  end
+
+  def auto_promote_admin
+    if email.present? && ADMIN_EMAILS.include?(email.downcase.strip)
+      self.role = :admin
+    end
   end
 
   def registered_or_verified?

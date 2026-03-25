@@ -13,7 +13,7 @@ module CustomerAccessible
       redirect_to new_user_session_path
       return
     end
-    unless current_user.customer?
+    unless current_user.can_access_customer?
       flash[:alert] = "고객 전용 기능입니다."
       redirect_to root_path
     end
