@@ -1,3 +1,52 @@
+# 카카오 OAuth2 전략 (Zeitwerk 오토로딩 충돌 방지를 위해 여기서 정의)
+require "omniauth-oauth2"
+
+module OmniAuth
+  module Strategies
+    class Kakao < OmniAuth::Strategies::OAuth2
+      option :name, "kakao"
+
+      option :client_options, {
+        site: "https://kauth.kakao.com",
+        authorize_url: "/oauth/authorize",
+        token_url: "/oauth/token"
+      }
+
+      uid { raw_info["id"].to_s }
+
+      info do
+        {
+          name: kakao_account.dig("profile", "nickname"),
+          email: kakao_account["email"],
+          image: kakao_account.dig("profile", "profile_image_url"),
+          nickname: kakao_account.dig("profile", "nickname")
+        }
+      end
+
+      extra do
+        { raw_info: raw_info }
+      end
+
+      def raw_info
+        @raw_info ||= access_token.get(
+          "https://kapi.kakao.com/v2/user/me",
+          headers: { "Content-Type" => "application/x-www-form-urlencoded;charset=utf-8" }
+        ).parsed
+      end
+
+      private
+
+      def kakao_account
+        raw_info.fetch("kakao_account", {})
+      end
+
+      def callback_url
+        full_host + callback_path
+      end
+    end
+  end
+end
+
 Devise.setup do |config|
   config.mailer_sender = ENV.fetch("SMTP_USERNAME", "noreply@nusucheck.kr")
   require "devise/orm/active_record"
@@ -26,7 +75,6 @@ Devise.setup do |config|
 
   # OmniAuth 설정 (카카오 로그인)
   if ENV['KAKAO_CLIENT_ID'].present?
-    require_relative "../../lib/omniauth/strategies/kakao"
     config.omniauth :kakao,
       ENV['KAKAO_CLIENT_ID'],
       ENV.fetch('KAKAO_CLIENT_SECRET', ''),
