@@ -117,7 +117,31 @@
     <% @requests.each do |request| %>
       <%= link_to masters_request_path(request), class: "block hover:bg-gray-50 transition-colors" do %>
         <div class="px-4 py-4">
-          <div class="flex items-start justify-between">
+          <div class="flex items-start gap-3">
+            <!-- 영상/사진 썸네일 -->
+            <div class="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+              <% if request.videos.attached? %>
+                <div class="w-full h-full bg-gray-800 flex items-center justify-center relative">
+                  <video src="<%= rails_blob_url(request.videos.first) %>" class="w-full h-full object-cover" preload="metadata"></video>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-6 h-6 bg-white/70 rounded-full flex items-center justify-center">
+                      <svg class="w-3 h-3 text-gray-800 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              <% elsif request.photos.attached? %>
+                <%= image_tag rails_blob_url(request.photos.first), class: "w-full h-full object-cover" %>
+              <% else %>
+                <div class="w-full h-full flex items-center justify-center">
+                  <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                </div>
+              <% end %>
+            </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-1.5">
                 <%= render "shared/status_badge", status: request.status %>
