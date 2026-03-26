@@ -127,8 +127,9 @@
       <% masters_preview.each do |master| %>
         <%
           m_completed = master.assigned_requests.where(status: 'closed').count rescue 0
-          m_tc = [m_completed * 3, 100].min
-          m_tt = (36.5 + m_tc * 0.6).round(1)
+          m_reviews = master.reviews.count rescue 0
+          m_avg = master.reviews.average("(punctuality_rating + skill_rating + kindness_rating + cleanliness_rating + price_rating) / 5.0").to_f.round(1) rescue 0
+          m_years = master.master_profile&.experience_years || 0
         %>
         <%= link_to customers_master_path(master), class: "flex items-center gap-3 p-3.5 bg-white rounded-2xl border border-gray-100 hover:border-primary-200 hover:shadow-sm transition-all block" do %>
           <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
@@ -137,10 +138,23 @@
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-0.5">
               <span class="font-semibold text-gray-900 text-sm"><%= master.name %></span>
-              <span class="text-xs px-2 py-0.5 bg-primary-100 text-primary-700 rounded-full font-semibold">인증</span>
+              <span class="text-xs px-1.5 py-0.5 bg-primary-100 text-primary-700 rounded-full font-semibold">인증</span>
             </div>
-            <p class="text-xs text-gray-400 truncate mb-0.5"><%= master.master_profile&.specialty_types_list&.first(2)&.join(' · ').presence || '누수 전문' %></p>
-            <p class="text-xs text-primary-600 font-semibold">신뢰도 <%= m_tt %>°C</p>
+            <p class="text-xs text-gray-400 truncate mb-1"><%= master.master_profile&.bio&.truncate(25) || '누수 전문가' %></p>
+            <div class="flex items-center gap-3 text-xs text-gray-500">
+              <% if m_avg > 0 %>
+                <span class="flex items-center gap-0.5 font-semibold text-yellow-600">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  <%= m_avg %>
+                </span>
+              <% end %>
+              <% if m_completed > 0 %>
+                <span>완료 <%= m_completed %>건</span>
+              <% end %>
+              <% if m_years > 0 %>
+                <span>경력 <%= m_years %>년</span>
+              <% end %>
+            </div>
           </div>
           <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
