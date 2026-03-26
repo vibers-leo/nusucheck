@@ -102,7 +102,8 @@ class SystemMessageService
   private
 
   def create_system_message(content)
-    message = @request.messages.create!(
+    message = ::Message.create!(
+      request: @request,
       content: content,
       message_type: :system,
       sender: nil

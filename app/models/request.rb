@@ -9,7 +9,7 @@ class Request < ApplicationRecord
   has_many :escrow_transactions, dependent: :destroy
   has_one :review, dependent: :destroy
   has_many :insurance_claims, dependent: :nullify
-  has_many :messages, dependent: :destroy
+  has_many :messages, class_name: "::Message", dependent: :destroy
   has_many_attached :photos
   has_many_attached :videos
 
