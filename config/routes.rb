@@ -207,8 +207,8 @@ Rails.application.routes.draw do
   end
 
   # API for standard estimate items
-  namespace :api do
-    resources :standard_estimate_items, only: [:index]
+  scope :api do
+    resources :standard_estimate_items, only: [:index], as: :api_standard_estimate_items
   end
 
   # Notifications
