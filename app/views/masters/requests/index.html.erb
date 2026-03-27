@@ -143,7 +143,7 @@
               <% end %>
             </div>
             <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1.5">
+              <div class="flex items-center gap-2.5 mb-2">
                 <%= render "shared/status_badge", status: request.status %>
                 <% if %w[detecting estimate_pending].include?(request.status) %>
                   <span class="text-[10px] font-bold text-orange-500 bg-orange-50 px-1.5 py-0.5 rounded-full">입력 필요</span>

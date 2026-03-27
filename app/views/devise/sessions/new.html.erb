@@ -57,7 +57,7 @@
   </div>
 
   <!-- 소셜 로그인 -->
-  <div class="space-y-2.5">
+  <div class="space-y-3">
     <% if respond_to?(:user_kakao_omniauth_authorize_path) %>
       <%= button_to user_kakao_omniauth_authorize_path, method: :post, data: { turbo: false },
           class: "w-full h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer",

@@ -28,7 +28,7 @@
 
     <!-- 펼쳐지는 인증 정보 + 프로필 수정 -->
     <div class="hidden border-t border-gray-50 divide-y divide-gray-50">
-      <div class="flex items-center justify-between px-5 py-3">
+      <div class="flex items-center justify-between px-5 py-3.5">
         <span class="text-sm text-gray-500 flex items-center gap-2">
           <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
@@ -37,7 +37,7 @@
         </span>
         <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-400">미인증</span>
       </div>
-      <div class="flex items-center justify-between px-5 py-3">
+      <div class="flex items-center justify-between px-5 py-3.5">
         <span class="text-sm text-gray-500 flex items-center gap-2">
           <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
@@ -47,7 +47,7 @@
         <span class="text-xs text-gray-400 truncate max-w-[55%] text-right"><%= @customer.email %></span>
       </div>
       <%# 소셜 로그인 연동 상태 %>
-      <div class="flex items-center justify-between px-5 py-3 border-t border-gray-50">
+      <div class="flex items-center justify-between px-5 py-3.5 border-t border-gray-50">
         <span class="text-sm text-gray-500 flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M9 0.6C4.03 0.6 0 3.713 0 7.55C0 9.944 1.558 12.065 3.93 13.325L2.933 16.93C2.845 17.246 3.213 17.496 3.486 17.31L7.873 14.39C8.242 14.43 8.617 14.45 9 14.45C13.97 14.45 18 11.337 18 7.55C18 3.713 13.97 0.6 9 0.6Z" fill="<%= @customer.provider == 'kakao' ? '#191919' : '#D1D5DB' %>"/>
@@ -63,7 +63,7 @@
           <% end %>
         <% end %>
       </div>
-      <div class="flex items-center justify-between px-5 py-3 border-t border-gray-50">
+      <div class="flex items-center justify-between px-5 py-3.5 border-t border-gray-50">
         <span class="text-sm text-gray-500 flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
             <path d="M13.5 10.6L6.2 0H0v20h6.5V9.4L13.8 20H20V0h-6.5v10.6z" fill="<%= @customer.provider == 'naver' ? '#03C75A' : '#D1D5DB' %>"/>
@@ -91,7 +91,7 @@
   </div>
 
   <!-- ② 활동 통계 -->
-  <div class="grid grid-cols-3 gap-2.5 mb-4">
+  <div class="grid grid-cols-3 gap-3 mb-5">
     <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center shadow-sm">
       <p class="text-2xl font-bold text-gray-900"><%= total_requests %></p>
       <p class="text-[11px] text-gray-500 mt-0.5">전체 접수</p>

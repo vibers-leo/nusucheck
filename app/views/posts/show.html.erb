@@ -67,7 +67,7 @@
 
   <!-- 수정/삭제 버튼 (작성자 or 관리자) -->
   <% if user_signed_in? && (@post.user == current_user || current_user.admin?) %>
-    <div class="flex gap-2 mt-3">
+    <div class="flex gap-3 mt-4">
       <%= link_to edit_post_path(@post), class: "flex-1 text-center py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50 transition" do %>
         수정
       <% end %>
@@ -80,7 +80,7 @@
   <% end %>
 
   <!-- 다른 글 보기 CTA -->
-  <div class="mt-4 p-4 bg-gray-50 rounded-2xl text-center">
+  <div class="mt-6 p-5 bg-gray-50 rounded-2xl text-center">
     <%= link_to community_path, class: "text-sm text-primary-600 font-semibold hover:text-primary-700 transition" do %>
       ← 커뮤니티 목록으로
     <% end %>

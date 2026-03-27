@@ -8,7 +8,7 @@
      data-chat-current-user-id-value="<%= current_user.id %>">
 
   <!-- 상단 헤더 -->
-  <div class="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 flex-shrink-0 shadow-sm">
+  <div class="bg-white border-b border-gray-200 px-4 py-3.5 flex items-center gap-3 flex-shrink-0 shadow-sm">
     <%= link_to :back, class: "text-gray-500 hover:text-gray-800 flex-shrink-0 p-1" do %>
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
@@ -134,7 +134,7 @@
   <% end %>
 
   <!-- 메시지 영역 -->
-  <div class="flex-1 overflow-y-auto px-4 py-4 space-y-1 bg-gray-50"
+  <div class="flex-1 overflow-y-auto px-4 py-4 space-y-2 bg-gray-50"
        data-chat-target="messagesContainer"
        id="messages">
     <%= render @messages %>
@@ -270,7 +270,7 @@
   <% end %>
 
   <!-- 메시지 입력창 -->
-  <div class="bg-white border-t border-gray-100 px-3 py-2 flex-shrink-0" style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));" data-controller="emoji-picker">
+  <div class="bg-white border-t border-gray-100 px-3 py-3 flex-shrink-0" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));" data-controller="emoji-picker">
 
     <!-- 이모지 피커 패널 -->
     <div data-emoji-picker-target="panel"
@@ -302,7 +302,7 @@
                    chat_target: "form",
                    action: "turbo:submit-end->chat#resetForm"
                  },
-                 class: "flex items-end gap-2") do |f| %>
+                 class: "flex items-end gap-2.5") do |f| %>
 
       <!-- 이모지 버튼 -->
       <button type="button"

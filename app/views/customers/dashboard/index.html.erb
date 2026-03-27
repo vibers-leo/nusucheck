@@ -23,7 +23,7 @@
     </div>
 
     <!-- 빠른 액션 (당근마켓 스타일) -->
-    <div class="grid grid-cols-3 gap-3 mb-6">
+    <div class="grid grid-cols-3 gap-3.5 mb-6">
       <%= link_to new_customers_request_path, class: "bg-white rounded-2xl p-5 text-center hover:shadow-lg transition-all border-2 border-gray-100 hover:border-primary-200 card-hover" do %>
         <div class="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3">
           <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,7 +56,7 @@
     </div>
 
     <!-- 통계 카드 (당근마켓 스타일) -->
-    <div class="grid grid-cols-3 gap-3 mb-6">
+    <div class="grid grid-cols-3 gap-3.5 mb-6">
       <div class="bg-white rounded-2xl p-4 text-center border-2 border-gray-100">
         <p class="text-2xl font-extrabold text-primary-600"><%= @active_requests.count %></p>
         <p class="text-xs text-gray-600 mt-1">진행중</p>

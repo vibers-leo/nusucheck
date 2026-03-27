@@ -123,7 +123,7 @@
       <h2 class="text-base font-bold text-gray-900">활동 중인 전문가</h2>
       <%= link_to customers_masters_path, class: "text-sm text-primary-600 font-semibold" do %>전체보기 →<% end %>
     </div>
-    <div class="space-y-2.5">
+    <div class="space-y-3">
       <% masters_preview.each do |master| %>
         <%
           m_completed = master.assigned_requests.where(status: 'closed').count rescue 0
@@ -293,7 +293,7 @@
   <div class="max-w-lg mx-auto md:max-w-3xl px-4 md:px-6 text-center">
     <h2 class="text-xl font-bold text-gray-900 mb-2">지금 바로 시작하세요</h2>
     <p class="text-sm text-gray-500 mb-6">누수 걱정, 더 이상 혼자 고민하지 마세요</p>
-    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
       <%= link_to new_user_registration_path, class: "inline-flex items-center justify-center px-6 py-3.5 text-base font-bold rounded-2xl bg-primary-600 text-white hover:bg-primary-700 transition-colors" do %>
         무료 회원가입
       <% end %>
