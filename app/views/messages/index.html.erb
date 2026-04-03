@@ -90,7 +90,27 @@
     </button>
     <video id="video-player" controls autoplay playsinline class="max-w-full max-h-[85vh] rounded-lg" onclick="event.stopPropagation()"></video>
   </div>
+  <!-- 이미지 라이트박스 -->
+  <div id="lightbox" class="hidden fixed inset-0 z-50 bg-black/95 flex items-center justify-center" onclick="closeLightbox()">
+    <button type="button" onclick="closeLightbox()" class="absolute top-4 right-4 text-white/80 hover:text-white z-10">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+    <img id="lightbox-img" src="" alt="" class="max-w-full max-h-[90vh] object-contain rounded-lg" onclick="event.stopPropagation()">
+  </div>
+
   <script>
+    function openLightbox(url) {
+      document.getElementById('lightbox-img').src = url;
+      document.getElementById('lightbox').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.add('hidden');
+      document.getElementById('lightbox-img').src = '';
+      document.body.style.overflow = '';
+    }
     function openVideoModal(url) {
       const modal = document.getElementById('video-modal');
       const player = document.getElementById('video-player');

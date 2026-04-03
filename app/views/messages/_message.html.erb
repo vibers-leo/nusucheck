@@ -56,18 +56,27 @@
           <!-- 첨부 이미지 -->
           <% if message.images.attached? %>
             <div class="mt-2 grid <%= message.images.count == 1 ? 'grid-cols-1' : 'grid-cols-2' %> gap-1.5">
-              <% message.images.each do |img| %>
-                <div class="rounded-xl overflow-hidden">
-                  <%= image_tag rails_blob_url(img), class: "w-full h-32 object-cover" rescue nil %>
-                </div>
+              <% message.images.each_with_index do |img, idx| %>
+                <% img_url = rails_blob_url(img) rescue nil %>
+                <% if img_url %>
+                  <button type="button" onclick="openLightbox('<%= img_url %>')"
+                          class="rounded-xl overflow-hidden block w-full cursor-zoom-in hover:opacity-90 transition">
+                    <%= image_tag img_url, class: "w-full #{message.images.count == 1 ? 'h-56' : 'h-40'} object-cover" %>
+                  </button>
+                <% end %>
               <% end %>
             </div>
           <% end %>
 
           <!-- 첨부 영상 -->
           <% if message.respond_to?(:videos) && message.videos.attached? %>
-            <div class="mt-2">
-              <%= render "shared/video_gallery", videos: message.videos, compact: true %>
+            <div class="mt-2 space-y-2">
+              <% message.videos.each do |video| %>
+                <div class="rounded-xl overflow-hidden bg-black">
+                  <video src="<%= rails_blob_url(video) %>" controls playsinline preload="metadata"
+                         class="w-full max-h-64 object-contain"></video>
+                </div>
+              <% end %>
             </div>
           <% end %>
         </div>
