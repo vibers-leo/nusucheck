@@ -65,9 +65,9 @@
         <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
           <%# 썸네일 영역 %>
           <div class="relative w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200">
-            <% if thumb_photo.attached? %>
+            <% if thumb_photo.present? %>
               <%= image_tag thumb_photo.variant(resize_to_fill: [600, 300]), class: "w-full h-full object-cover" %>
-            <% elsif thumb_video.attached? %>
+            <% elsif thumb_video.present? %>
               <video src="<%= url_for(thumb_video) %>" class="w-full h-full object-cover" muted preload="metadata" style="pointer-events:none"></video>
               <div class="absolute inset-0 flex items-center justify-center">
                 <div class="w-12 h-12 bg-black/40 rounded-full flex items-center justify-center">
