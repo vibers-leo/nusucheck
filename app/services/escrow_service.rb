@@ -82,8 +82,10 @@ class EscrowService
       escrow.deposit!
 
       # Request 상태 자동 전이 (공사비 에스크로인 경우)
-      if escrow_type == "construction" && request.may_deposit_escrow?
-        request.deposit_escrow!
+      # reload로 캐시된 관계 초기화 후 가드 조건 재확인
+      if escrow_type == "construction"
+        request.reload
+        request.deposit_escrow! if request.may_deposit_escrow?
       end
 
       escrow
