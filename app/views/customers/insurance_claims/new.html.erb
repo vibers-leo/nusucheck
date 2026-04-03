@@ -261,7 +261,7 @@
       </div>
 
       <!-- ⑥ 사고 주소 -->
-      <div data-insurance-step-target="step" class="hidden">
+      <div data-insurance-step-target="step" class="hidden" data-controller="address-search">
         <p class="text-xs font-bold text-primary-500 mb-3 tracking-widest uppercase">사고 정보</p>
         <h1 class="text-[1.75rem] font-bold text-gray-900 leading-tight mb-2">어디서 발생했나요?</h1>
         <p class="text-sm text-gray-400 mb-10">사고가 일어난 장소를 알려주세요</p>
@@ -269,9 +269,18 @@
         <div class="space-y-9">
           <div>
             <label class="block text-xs font-semibold text-gray-400 mb-3">주소</label>
-            <%= f.text_field :incident_address, required: true,
-                  placeholder: "서울시 강남구 테헤란로 123",
-                  class: "w-full text-base border-0 border-b-2 border-gray-200 focus:border-primary-500 focus:outline-none py-3 px-0 placeholder-gray-300 transition-colors bg-transparent" %>
+            <div class="flex gap-2 items-end">
+              <%= f.text_field :incident_address, required: true,
+                    placeholder: "주소를 검색해주세요",
+                    readonly: true,
+                    data: { address_search_target: "address" },
+                    class: "flex-1 text-base border-0 border-b-2 border-gray-200 focus:border-primary-500 focus:outline-none py-3 px-0 placeholder-gray-300 transition-colors bg-transparent" %>
+              <button type="button"
+                      data-action="click->address-search#open"
+                      class="px-4 py-2 rounded-xl text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 transition-all whitespace-nowrap mb-0.5">
+                검색
+              </button>
+            </div>
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-400 mb-3">
@@ -280,6 +289,7 @@
             </label>
             <%= f.text_field :incident_detail_address,
                   placeholder: "101동 1234호",
+                  data: { address_search_target: "detailedAddress" },
                   class: "w-full text-base border-0 border-b-2 border-gray-200 focus:border-primary-500 focus:outline-none py-3 px-0 placeholder-gray-300 transition-colors bg-transparent" %>
           </div>
         </div>
