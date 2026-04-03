@@ -8,21 +8,8 @@ class Customers::RequestsController < ApplicationController
   ]
 
   def index
-    has_filter = params.dig(:q, :status_eq).present? || params.dig(:q, :symptom_type_eq).present?
-
-    @active_requests = has_filter ? [] : current_user.requests
-                                                     .includes(:master, :estimates)
-                                                     .where.not(status: %w[closed cancelled])
-                                                     .recent.limit(3)
-
     @q = current_user.requests.includes(:master, :estimates, :escrow_transactions).ransack(params[:q])
-    base = @q.result.recent
-
-    if @active_requests.any?
-      base = base.where.not(id: @active_requests.map(&:id))
-    end
-
-    @requests = base.page(params[:page])
+    @requests = @q.result.recent.page(params[:page])
   end
 
   def show

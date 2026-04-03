@@ -54,53 +54,6 @@
   <% end %>
 </div>
 
-<!-- ── 진행 중인 체크 하이라이트 (필터 없을 때만) ── -->
-<% if @active_requests.any? && !has_filter %>
-  <div class="mb-6">
-    <div class="flex items-center justify-between mb-3">
-      <span class="text-sm font-bold text-gray-800">지금 진행 중</span>
-      <span class="text-xs font-semibold text-primary-600 bg-primary-50 px-2.5 py-0.5 rounded-full"><%= @active_requests.count %>건</span>
-    </div>
-
-    <div class="space-y-3">
-      <% @active_requests.each do |req| %>
-        <%= link_to customers_request_path(req) do %>
-          <div class="bg-gradient-to-br from-primary-50 to-blue-50 border border-primary-100 rounded-2xl p-4 hover:shadow-md transition-shadow">
-            <div class="flex items-start justify-between mb-3">
-              <div class="flex items-center gap-2">
-                <%= render "shared/status_badge", status: req.status %>
-                <span class="text-xs text-gray-400">#<%= req.id %></span>
-              </div>
-              <span class="text-xs text-gray-400"><%= req.created_at.strftime("%m.%d") %></span>
-            </div>
-
-            <p class="font-bold text-gray-900 text-[15px] mb-1"><%= symptom_label(req.symptom_type) %></p>
-            <p class="text-sm text-gray-500 truncate mb-3"><%= req.address %></p>
-
-            <% hint = next_action.call(req) %>
-            <% if hint %>
-              <div class="flex items-center gap-2 py-2.5 px-3 bg-white/70 rounded-xl">
-                <div class="w-1.5 h-1.5 rounded-full bg-primary-400 animate-pulse flex-shrink-0"></div>
-                <span class="text-xs font-semibold text-primary-700"><%= hint %></span>
-                <svg class="w-3.5 h-3.5 text-primary-400 ml-auto flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-              </div>
-            <% end %>
-          </div>
-        <% end %>
-      <% end %>
-    </div>
-  </div>
-
-  <!-- 구분선 -->
-  <div class="flex items-center gap-3 mb-5">
-    <div class="flex-1 h-px bg-gray-100"></div>
-    <span class="text-xs text-gray-400 font-medium">전체 목록</span>
-    <div class="flex-1 h-px bg-gray-100"></div>
-  </div>
-<% end %>
-
 <!-- ── 필터 버튼 (드롭다운 없이 나열) ── -->
 <div class="space-y-3 mb-5">
 
