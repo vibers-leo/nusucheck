@@ -20,6 +20,18 @@ class Customers::ProfilesController < ApplicationController
     end
   end
 
+  def unlink_social
+    @customer = current_user
+
+    unless @customer.encrypted_password.present?
+      redirect_to customers_profile_path, alert: "비밀번호를 먼저 설정해야 소셜 로그인 연동을 해제할 수 있습니다."
+      return
+    end
+
+    @customer.update!(provider: nil, uid: nil)
+    redirect_to customers_profile_path, notice: "소셜 로그인 연동이 해제되었습니다."
+  end
+
   private
 
   def customer_params

@@ -39,7 +39,9 @@ Rails.application.routes.draw do
     get "dashboard", to: "dashboard#index", as: :dashboard
 
     # 프로필 관리
-    resource :profile, only: [:show, :edit, :update], controller: "profiles"
+    resource :profile, only: [:show, :edit, :update], controller: "profiles" do
+      delete :unlink_social, on: :member
+    end
 
     # 설정 페이지
     get "settings", to: "settings#index", as: :settings
