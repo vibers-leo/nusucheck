@@ -150,7 +150,7 @@
               <div class="flex gap-2 overflow-x-auto scrollbar-none">
                 <% @request.videos.each do |video| %>
                   <button type="button" onclick="openVideoModal('<%= rails_blob_url(video) %>')"
-                          class="flex-shrink-0 w-24 h-16 rounded-xl overflow-hidden bg-gray-900 relative cursor-pointer hover:opacity-80 transition">
+                          class="flex-shrink-0 w-40 h-28 rounded-xl overflow-hidden bg-gray-900 relative cursor-pointer hover:opacity-80 transition">
                     <video src="<%= rails_blob_url(video) %>" class="w-full h-full object-cover" preload="metadata"></video>
                     <div class="absolute inset-0 flex items-center justify-center">
                       <div class="w-7 h-7 bg-white/80 rounded-full flex items-center justify-center">
@@ -163,7 +163,7 @@
                 <% end %>
                 <% @request.photos.each do |photo| %>
                   <a href="<%= rails_blob_url(photo) %>" target="_blank"
-                     class="flex-shrink-0 w-24 h-16 rounded-xl overflow-hidden cursor-pointer hover:opacity-80 transition">
+                     class="flex-shrink-0 w-40 h-28 rounded-xl overflow-hidden cursor-pointer hover:opacity-80 transition">
                     <%= image_tag rails_blob_url(photo), class: "w-full h-full object-cover" %>
                   </a>
                 <% end %>
