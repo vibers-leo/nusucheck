@@ -15,7 +15,14 @@ class MessagesController < ApplicationController
     @message = @request.messages.build(message_params)
     @message.sender = current_user
     @message.message_type ||= :user
-    @message.message_category ||= :text
+
+    # 스티커 처리
+    if params[:sticker_name].present?
+      @message.message_category = :sticker
+      @message.content = params[:sticker_name]
+    else
+      @message.message_category ||= :text
+    end
 
     # Redis 기반 중복 전송 방지 (같은 유저가 같은 request에 0.5초 이내 재전송 차단)
     lock_key = "msg_lock:#{current_user.id}:#{@request.id}"

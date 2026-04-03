@@ -21,10 +21,11 @@ class Message < ApplicationRecord
     payment_request: 3,   # 결제 요청
     payment_complete: 4,  # 결제 완료
     insurance_claim: 5,   # 보험청구서
-    system_notice: 6      # 시스템 알림
+    system_notice: 6,     # 시스템 알림
+    sticker: 7            # 스티커
   }
 
-  validates :content, presence: true, length: { minimum: 1, maximum: 1000 }
+  validates :content, presence: true, length: { minimum: 1, maximum: 1000 }, unless: :sticker?
   validates :message_type, presence: true
   validates :metadata, presence: true, if: :structured_message?
 

@@ -32,6 +32,31 @@
       </div>
     </div>
 
+  <% elsif message.sticker? %>
+    <!-- 스티커 메시지 -->
+    <% is_my_message = message.sender_id == current_user&.id %>
+    <div class="flex <%= is_my_message ? 'justify-end' : 'justify-start' %> mb-1.5 items-end gap-2">
+      <% unless is_my_message %>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mb-0.5">
+          <%= message.sender&.name&.first %>
+        </div>
+      <% end %>
+      <div>
+        <% unless is_my_message %>
+          <div class="text-xs text-gray-500 mb-1 ml-1 font-medium"><%= message.sender_name %></div>
+        <% end %>
+        <img src="/stickers/<%= message.content %>" alt="sticker"
+             class="w-32 h-32 object-contain select-none"
+             draggable="false">
+        <div class="text-[10px] text-gray-400 mt-0.5 <%= is_my_message ? 'text-right' : 'text-left' %>">
+          <%= message.created_at.strftime("%H:%M") %>
+        </div>
+      </div>
+      <% if is_my_message %>
+        <div class="w-8 flex-shrink-0"></div>
+      <% end %>
+    </div>
+
   <% else %>
     <!-- 일반 텍스트 메시지 - 카카오톡 스타일 버블 -->
     <% is_my_message = message.sender_id == current_user&.id %>
