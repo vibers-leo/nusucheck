@@ -5,12 +5,12 @@ class Admin::MastersController < ApplicationController
 
   def index
     @q = Master.ransack(params[:q])
-    @masters = @q.result.includes(:master_profile).page(params[:page])
+    @masters = @q.result.includes(:master_profile, :reviews).page(params[:page])
   end
 
   def show
     @profile = @master.master_profile
-    @recent_requests = @master.assigned_requests.recent.limit(10)
+    @recent_requests = @master.assigned_requests.includes(:customer, :escrow_transactions).recent.limit(10)
     @reviews = @master.reviews.recent.limit(5)
   end
 

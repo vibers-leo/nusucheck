@@ -34,17 +34,8 @@ Rails.application.routes.draw do
   # 토스페이먼츠 웹훅 (POST - CSRF 제외)
   post "pg/webhooks/toss", to: "pg_webhooks#toss"
 
-  # 포트원 웹훅 (POST - CSRF 제외)
-  post "payments/webhook", to: "payments/webhooks#portone"
-
   # Customer namespace
   namespace :customers do
-    # 포트원 결제
-    scope :payments do
-      get  "checkout",  to: "payments#checkout",  as: :payments_checkout
-      get  "callback",  to: "payments#callback",  as: :payments_callback
-    end
-
     get "dashboard", to: "dashboard#index", as: :dashboard
 
     # 프로필 관리

@@ -76,6 +76,6 @@ class Admin::RequestsController < ApplicationController
   private
 
   def set_request
-    @request = Request.find(params[:id])
+    @request = Request.includes(:customer, :master, :estimates, :escrow_transactions, :insurance_claims).find(params[:id])
   end
 end
