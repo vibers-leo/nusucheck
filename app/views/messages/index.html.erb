@@ -81,57 +81,30 @@
     </div>
   </div>
 
-  <!-- 의뢰 첨부 미디어 (사진/영상) -->
-  <% if @request.photos.attached? || @request.videos.attached? %>
-    <div class="bg-white border-b border-gray-100 px-4 py-2.5 flex-shrink-0">
-      <div class="flex items-center gap-2 overflow-x-auto scrollbar-none">
-        <span class="text-xs text-gray-400 font-medium flex-shrink-0">첨부</span>
-        <% @request.videos.each_with_index do |video, idx| %>
-          <button type="button" onclick="openVideoModal('<%= rails_blob_url(video) %>')"
-                  class="flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden bg-gray-900 relative cursor-pointer hover:opacity-80 transition">
-            <video src="<%= rails_blob_url(video) %>" class="w-full h-full object-cover" preload="metadata"></video>
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="w-7 h-7 bg-white/80 rounded-full flex items-center justify-center">
-                <svg class="w-3.5 h-3.5 text-gray-800 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
-                </svg>
-              </div>
-            </div>
-          </button>
-        <% end %>
-        <% @request.photos.each do |photo| %>
-          <a href="<%= rails_blob_url(photo) %>" target="_blank" class="flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition">
-            <%= image_tag rails_blob_url(photo), class: "w-full h-full object-cover" %>
-          </a>
-        <% end %>
-      </div>
-    </div>
-
-    <!-- 영상 재생 모달 -->
-    <div id="video-modal" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center" onclick="closeVideoModal()">
-      <button type="button" onclick="closeVideoModal()" class="absolute top-4 right-4 text-white/80 hover:text-white z-10">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-      <video id="video-player" controls autoplay playsinline class="max-w-full max-h-[85vh] rounded-lg" onclick="event.stopPropagation()"></video>
-    </div>
-    <script>
-      function openVideoModal(url) {
-        const modal = document.getElementById('video-modal');
-        const player = document.getElementById('video-player');
-        player.src = url;
-        modal.classList.remove('hidden');
-      }
-      function closeVideoModal() {
-        const modal = document.getElementById('video-modal');
-        const player = document.getElementById('video-player');
-        player.pause();
-        player.src = '';
-        modal.classList.add('hidden');
-      }
-    </script>
-  <% end %>
+  <!-- 영상 재생 모달 -->
+  <div id="video-modal" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center" onclick="closeVideoModal()">
+    <button type="button" onclick="closeVideoModal()" class="absolute top-4 right-4 text-white/80 hover:text-white z-10">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+    <video id="video-player" controls autoplay playsinline class="max-w-full max-h-[85vh] rounded-lg" onclick="event.stopPropagation()"></video>
+  </div>
+  <script>
+    function openVideoModal(url) {
+      const modal = document.getElementById('video-modal');
+      const player = document.getElementById('video-player');
+      player.src = url;
+      modal.classList.remove('hidden');
+    }
+    function closeVideoModal() {
+      const modal = document.getElementById('video-modal');
+      const player = document.getElementById('video-player');
+      player.pause();
+      player.src = '';
+      modal.classList.add('hidden');
+    }
+  </script>
 
   <!-- 메시지 영역 -->
   <div class="flex-1 overflow-y-auto px-4 py-4 space-y-2 bg-gray-50"
@@ -171,11 +144,30 @@
             <span class="text-xs text-gray-400 w-16 flex-shrink-0">접수일</span>
             <span class="text-xs text-gray-600"><%= @request.created_at.strftime("%Y.%m.%d %H:%M") %></span>
           </div>
-          <% media_count = (@request.photos.attached? ? @request.photos.count : 0) + (@request.videos.attached? ? @request.videos.count : 0) %>
-          <% if media_count > 0 %>
-            <div class="flex items-center gap-2">
-              <span class="text-xs text-gray-400 w-16 flex-shrink-0">첨부</span>
-              <span class="text-xs text-gray-600">사진/영상 <%= media_count %>개 · 위 미디어 섹션에서 확인</span>
+          <% has_media = @request.photos.attached? || @request.videos.attached? %>
+          <% if has_media %>
+            <div class="pt-1">
+              <div class="flex gap-2 overflow-x-auto scrollbar-none">
+                <% @request.videos.each do |video| %>
+                  <button type="button" onclick="openVideoModal('<%= rails_blob_url(video) %>')"
+                          class="flex-shrink-0 w-24 h-16 rounded-xl overflow-hidden bg-gray-900 relative cursor-pointer hover:opacity-80 transition">
+                    <video src="<%= rails_blob_url(video) %>" class="w-full h-full object-cover" preload="metadata"></video>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <div class="w-7 h-7 bg-white/80 rounded-full flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 text-gray-800 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+                <% end %>
+                <% @request.photos.each do |photo| %>
+                  <a href="<%= rails_blob_url(photo) %>" target="_blank"
+                     class="flex-shrink-0 w-24 h-16 rounded-xl overflow-hidden cursor-pointer hover:opacity-80 transition">
+                    <%= image_tag rails_blob_url(photo), class: "w-full h-full object-cover" %>
+                  </a>
+                <% end %>
+              </div>
             </div>
           <% end %>
         </div>
