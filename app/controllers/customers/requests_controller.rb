@@ -8,7 +8,9 @@ class Customers::RequestsController < ApplicationController
   ]
 
   def index
-    @q = current_user.requests.includes(:master, :estimates, :escrow_transactions).ransack(params[:q])
+    @q = current_user.requests.includes(:master, :estimates, :escrow_transactions,
+                                        photos_attachments: :blob,
+                                        videos_attachments: :blob).ransack(params[:q])
     @requests = @q.result.recent.page(params[:page])
   end
 
