@@ -54,7 +54,7 @@ class InsuranceSubmissionService
       app_name: company_info[:app_name],
       website: company_info[:website],
       claim_menu: company_info[:claim_menu],
-      logo_emoji: company_info[:logo_emoji],
+      badge_color: company_info[:badge_color],
       pdf_download_url: pdf_download_url,
       required_documents: required_documents_list
     }
@@ -69,7 +69,7 @@ class InsuranceSubmissionService
         app_name: info[:app_name],
         website: info[:website],
         claim_menu: info[:claim_menu],
-        logo_emoji: info[:logo_emoji]
+        badge_color: info[:badge_color]
       }
     end
   end
