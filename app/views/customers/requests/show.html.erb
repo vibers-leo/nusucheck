@@ -29,10 +29,6 @@
   </div>
 </div>
 
-<!-- 상태 타임라인 -->
-<div class="bg-white rounded-2xl border border-gray-100 p-4 mb-4">
-  <%= render "shared/status_timeline", request_record: @request %>
-</div>
 
 <!-- 담당 전문가 -->
 <% if @request.master.present? %>
