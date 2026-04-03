@@ -351,7 +351,7 @@
   <% end %>
 
   <!-- 메시지 입력창 -->
-  <div class="bg-white border-t border-gray-100 px-3 py-3 flex-shrink-0" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));" data-controller="emoji-picker sticker-picker">
+  <div class="bg-white border-t border-gray-100 px-3 py-3 flex-shrink-0" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
 
     <!-- 이모지/스티커 통합 패널 -->
     <div id="expression-panel" class="hidden mb-2 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
@@ -380,8 +380,7 @@
           ].each do |emoji| %>
             <button type="button"
                     class="w-8 h-8 text-xl hover:bg-gray-100 rounded-lg flex items-center justify-center transition-colors"
-                    data-action="click->emoji-picker#insert"
-                    data-emoji="<%= emoji %>">
+                    onclick="insertEmoji('<%= emoji %>')">
               <%= emoji %>
             </button>
           <% end %>
@@ -394,7 +393,7 @@
         <% if sticker_files.any? %>
           <div class="grid grid-cols-4 gap-2">
             <% sticker_files.each do |filename| %>
-              <button type="button" onclick="sendSticker('<%= filename %>'); toggleExpressionPanel()"
+              <button type="button" onclick="sendSticker('<%= filename %>'); closeExpressionPanel()"
                       class="w-full aspect-square rounded-xl overflow-hidden hover:bg-gray-100 p-1 transition-colors">
                 <img src="/stickers/<%= filename %>" alt="sticker" class="w-full h-full object-contain">
               </button>
@@ -406,48 +405,25 @@
       </div>
     </div>
 
-    <!-- 이모지 피커 패널 (Stimulus용 — 숨김 유지) -->
-    <div data-emoji-picker-target="panel"
-         class="hidden mb-2 bg-white border border-gray-200 rounded-2xl shadow-lg p-3 max-h-52 overflow-y-auto">
-      <div class="grid grid-cols-8 gap-1">
-        <% %w[
-          😊 😂 🥰 😍 🤣 😭 😘 🥺
-          👍 👏 🙏 💪 ❤️ 🔥 ✅ 💯
-          😅 🤔 😤 😎 🤩 😢 😩 😡
-          💧 🏠 🔧 🚿 🪣 💦 🛁 🚽
-          📷 📱 📋 📞 🗓️ ⏰ 💳 📝
-          🎉 🎊 👋 🤝 💬 💌 📢 🔔
-          🚗 🏃 ✈️ 🌟 ⭐ 🏆 🎯 💡
-          😇 🥳 😜 🤗 😴 🤧 🤒 😷
-        ].each do |emoji| %>
-          <button type="button"
-                  class="w-8 h-8 text-xl hover:bg-gray-100 rounded-lg flex items-center justify-center transition-colors"
-                  data-action="click->emoji-picker#insert"
-                  data-emoji="<%= emoji %>">
-            <%= emoji %>
-          </button>
-        <% end %>
-      </div>
-    </div>
-
     <%= form_with(model: [@request, @message],
                  id: "message_form",
                  data: {
                    chat_target: "form",
                    action: "turbo:submit-end->chat#resetForm"
                  },
-                 class: "flex items-end gap-2.5") do |f| %>
+                 class: "flex items-end gap-2") do |f| %>
 
-      <!-- 이모지/스티커 통합 버튼 -->
+      <!-- 이모지/스티커 버튼 -->
       <button type="button" onclick="toggleExpressionPanel()"
-              class="flex-shrink-0 w-9 h-9 flex items-center justify-center text-gray-400 hover:text-yellow-500 transition-colors rounded-lg hover:bg-gray-100">
+              class="flex-shrink-0 w-9 h-9 flex items-center justify-center text-gray-400 hover:text-yellow-500 transition-colors rounded-xl hover:bg-gray-100">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
       </button>
 
-      <!-- 첨부 버튼 (클립) — 사진/영상/문서 -->
-      <label for="file-attach-input" class="flex-shrink-0 w-9 h-9 flex items-center justify-center text-gray-400 hover:text-primary-500 cursor-pointer transition-colors rounded-lg hover:bg-gray-100">
+      <!-- 첨부 버튼 (클립) -->
+      <label for="file-attach-input"
+             class="flex-shrink-0 w-9 h-9 flex items-center justify-center text-gray-400 hover:text-primary-500 cursor-pointer transition-colors rounded-xl hover:bg-gray-100">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
         </svg>
@@ -503,6 +479,24 @@
     const panel = document.getElementById('expression-panel');
     panel.classList.toggle('hidden');
   }
+  function closeExpressionPanel() {
+    document.getElementById('expression-panel').classList.add('hidden');
+  }
+
+  // 이모지 삽입 후 패널 닫기
+  function insertEmoji(emoji) {
+    const textarea = document.querySelector('[data-chat-target="input"]');
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    textarea.value = textarea.value.substring(0, start) + emoji + textarea.value.substring(end);
+    const newPos = start + emoji.length;
+    textarea.setSelectionRange(newPos, newPos);
+    textarea.focus();
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    closeExpressionPanel();
+  }
+
   function switchTab(tab) {
     document.getElementById('panel-emoji').classList.toggle('hidden', tab !== 'emoji');
     document.getElementById('panel-sticker').classList.toggle('hidden', tab !== 'sticker');
@@ -523,6 +517,15 @@
       body: fd
     }).then(r => r.text()).then(html => Turbo.renderStreamMessage(html));
   }
+
+  // 패널 외부 클릭 시 닫기
+  document.addEventListener('click', function(e) {
+    const panel = document.getElementById('expression-panel');
+    const toggleBtn = e.target.closest('[onclick="toggleExpressionPanel()"]');
+    if (!toggleBtn && panel && !panel.contains(e.target)) {
+      panel.classList.add('hidden');
+    }
+  });
 
   // 파일 첨부 미리보기
   function handleFileAttach(input) {
