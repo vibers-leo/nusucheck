@@ -10,7 +10,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Pretendard Variable', 'Pretendard', ...defaultTheme.fontFamily.sans],
+        sans: ['Paperlogy', 'system-ui', '-apple-system', ...defaultTheme.fontFamily.sans],
       },
       colors: {
         primary: {
