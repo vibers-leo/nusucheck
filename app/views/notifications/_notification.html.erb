@@ -1,8 +1,9 @@
 <div class="<%= notification.unread? ? 'bg-primary-50' : 'bg-white' %> hover:bg-gray-50 transition-smooth border-b border-gray-100 last:border-b-0"
      data-notification-id="<%= notification.id %>">
-  <div class="p-4"
+  <div class="p-4 cursor-pointer"
        data-action="click->notifications#markAsRead"
-       data-notification-id="<%= notification.id %>">
+       data-notification-id="<%= notification.id %>"
+       data-notification-path="<%= notification_path(notification.notifiable) %>">
     <div class="flex gap-3">
       <div class="flex-shrink-0 text-2xl">
         <%= notification.icon %>

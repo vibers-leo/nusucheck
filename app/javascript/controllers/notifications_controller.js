@@ -76,6 +76,7 @@ export default class extends Controller {
 
   markAsRead(event) {
     const notificationId = event.currentTarget.dataset.notificationId
+    const notificationPath = event.currentTarget.dataset.notificationPath
     const notificationElement = event.currentTarget.closest('[data-notification-id]')
 
     fetch(`/notifications/${notificationId}/mark_as_read`, {
@@ -90,6 +91,11 @@ export default class extends Controller {
         notificationElement.classList.add('bg-white')
         this.unreadCountValue = Math.max(0, this.unreadCountValue - 1)
         this.updateBadge()
+
+        if (notificationPath && notificationPath !== '#') {
+          this.dropdownTarget.classList.add('hidden')
+          Turbo.visit(notificationPath)
+        }
       }
     })
   }
