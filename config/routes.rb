@@ -247,7 +247,7 @@ Rails.application.routes.draw do
   get "privacy", to: "pages#privacy", as: :privacy
 
   # Vibers 통합 어드민
-  namespace :api do
+  scope "/api" do
     get  "vibers_admin",           to: "vibers_admin#index"
     get  "vibers_admin/resource",  to: "vibers_admin#resource"
   end
