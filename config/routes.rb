@@ -245,4 +245,10 @@ Rails.application.routes.draw do
   get "search", to: "search#index", as: :search
   get "terms", to: "pages#terms", as: :terms
   get "privacy", to: "pages#privacy", as: :privacy
+
+  # Vibers 통합 어드민
+  namespace :api do
+    get  "vibers_admin",           to: "vibers_admin#index"
+    get  "vibers_admin/resource",  to: "vibers_admin#resource"
+  end
 end
