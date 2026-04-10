@@ -33,7 +33,7 @@ RUN bundle lock --add-platform x86_64-linux && \
 COPY . .
 
 # Precompile assets (includes Tailwind CSS)
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+RUN BUNDLE_DEPLOYMENT=1 SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 FROM base
 
