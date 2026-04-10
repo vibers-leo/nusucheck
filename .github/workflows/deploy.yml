@@ -43,3 +43,14 @@ jobs:
             docker compose ps
 
             echo "✅ Deploy complete: $(date)"
+
+      - name: Cleanup old images
+        if: success()
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.NCP_HOST }}
+          username: ${{ secrets.NCP_USER }}
+          key: ${{ secrets.NCP_SSH_KEY }}
+          script: |
+            docker image prune -af --filter "until=24h"
+            docker builder prune -af --filter "until=24h"
