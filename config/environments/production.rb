@@ -5,11 +5,7 @@ Rails.application.configure do
   config.eager_load = true
   config.consider_all_requests_local = false
   config.action_controller.perform_caching = true
-  if ENV["REDIS_URL"].present?
-    config.cache_store = :redis_cache_store, { url: ENV["REDIS_URL"] }
-  else
-    config.cache_store = :memory_store
-  end
+  config.cache_store = :memory_store
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
   config.assets.compile = false
   # 스토리지 우선순위: NCP > OCI > R2 > 로컬 디스크
