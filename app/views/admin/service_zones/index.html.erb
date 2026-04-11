@@ -46,6 +46,16 @@
         <span class="font-semibold <%= zone.full? ? 'text-red-500' : 'text-green-600' %>"><%= zone.claimed_slots_count %>/<%= zone.max_slots %></span>
         <%= link_to "수정", edit_admin_service_zone_path(zone), class: "text-primary-500 hover:underline" %>
       </div>
+      <% if zone.zone_claims.active.any? %>
+        <div class="mt-2 flex gap-1">
+          <% zone.zone_claims.active.order(last_assigned_at: :asc).each_with_index do |claim, i| %>
+            <span class="text-[10px] px-2 py-0.5 rounded-full <%= i == 0 ? 'bg-primary-100 text-primary-700 font-bold' : 'bg-gray-100 text-gray-500' %>"
+                  title="총 <%= claim.total_assignments %>건 배정, 진행 중 <%= claim.active_assignments %>건">
+              <%= i == 0 ? '▶' : '' %> <%= claim.master&.name || '?' %> (<%= claim.total_assignments %>)
+            </span>
+          <% end %>
+        </div>
+      <% end %>
     </div>
   <% end %>
 </div>

@@ -169,6 +169,7 @@ class Request < ApplicationRecord
     # 취소 (공사 진행 전 단계에서만 가능)
     event :cancel do
       before { self.closed_at = Time.current }
+      after { decrement_zone_assignment! }
       transitions from: [:reported, :open, :assigned, :visiting, :detecting,
                          :no_leak_found, :estimate_pending, :estimate_submitted,
                          :construction_agreed],
@@ -259,6 +260,15 @@ class Request < ApplicationRecord
   def release_escrow_payment
     self.closed_at = Time.current
     EscrowService.new(self).release_construction! if construction_escrow&.deposited?
+    decrement_zone_assignment!
+  end
+
+  # 구역 로테이션: 요청 완료/취소 시 active_assignments 감소
+  def decrement_zone_assignment!
+    return unless master_id
+    ZoneClaim.active.where(master_id: master_id).each(&:decrement_active!)
+  rescue => e
+    Rails.logger.error "[Request] decrement_zone_assignment! error: #{e.message}"
   end
 
   def self.ransackable_attributes(auth_object = nil)

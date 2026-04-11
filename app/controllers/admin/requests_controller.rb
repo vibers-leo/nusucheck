@@ -16,8 +16,18 @@ class Admin::RequestsController < ApplicationController
 
   def publish
     authorize @request
-    @request.publish!
-    redirect_to admin_request_path(@request), notice: "공개 오더 풀에 등록했습니다. 전문가가 선택할 수 있습니다."
+
+    # 로테이션 배정 시도
+    matched_master = RotationMatchingService.new(@request).assign!
+
+    if matched_master
+      SystemMessageService.send_master_assigned_message(@request, matched_master)
+      redirect_to admin_request_path(@request), notice: "🎯 로테이션 배정: #{matched_master.name} 전문가에게 자동 배정됐어요."
+    else
+      # 구역 전문가 없으면 공개 오더 풀
+      @request.publish! if @request.may_publish?
+      redirect_to admin_request_path(@request), notice: "공개 오더 풀에 등록했어요. 전문가가 선택할 수 있어요."
+    end
   rescue AASM::InvalidTransition => e
     redirect_to admin_request_path(@request), alert: "공개 등록 실패: #{e.message}"
   end

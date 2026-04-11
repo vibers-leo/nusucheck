@@ -24,6 +24,16 @@ class ZoneClaim < ApplicationRecord
     update!(status: "expired")
   end
 
+  # 요청 완료/취소 시 active_assignments 감소
+  def decrement_active!
+    update_column(:active_assignments, [active_assignments - 1, 0].max) if active_assignments > 0
+  end
+
+  # 로테이션 순서 (last_assigned_at이 가장 오래된 것이 1순위)
+  def rotation_priority
+    last_assigned_at || Time.at(0)
+  end
+
   private
 
   def zone_not_full
