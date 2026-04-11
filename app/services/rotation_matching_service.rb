@@ -39,18 +39,19 @@ class RotationMatchingService
     Rails.logger.info "[RotationMatching] ✅ 배정 완료: #{zone.display_name} → #{master.name} (총 #{claim&.total_assignments}건)"
 
     # 전문가에게 알림
-    NotificationService.notify(
-      recipient: master,
-      actor: request.customer,
-      notifiable: request,
-      action: "request_assigned",
-      message: "#{request.address}에서 새 요청이 배정됐어요. 확인해 주세요!"
-    )
+    begin
+      NotificationService.notify(
+        recipient: master,
+        actor: request.customer,
+        notifiable: request,
+        action: "request_assigned",
+        message: "#{request.address}에서 새 요청이 배정됐어요. 확인해 주세요!"
+      )
+    rescue => e
+      Rails.logger.warn "[RotationMatching] 알림 발송 실패 (배정은 완료): #{e.message}"
+    end
 
     master
-  rescue => e
-    Rails.logger.error "[RotationMatching] 에러: #{e.message}"
-    fallback_to_open_order!
   end
 
   # 구역별 로테이션 현황 조회
