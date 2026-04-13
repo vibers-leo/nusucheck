@@ -12,6 +12,7 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">자격증</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">경력</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">인증상태</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">구독 플랜</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">평점</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">작업</th>
           </tr>
@@ -35,6 +36,24 @@
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" role="status">인증됨</span>
                 <% else %>
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" role="status">미인증</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <% sub = master.subscription %>
+                <% if sub&.zone? %>
+                  <div>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">마스터 플랜</span>
+                    <% if sub.has_billing_key? %>
+                      <span class="ml-1 text-xs text-green-600">자동결제</span>
+                    <% end %>
+                    <p class="text-xs text-gray-400 mt-0.5"><%= sub.expires_on&.strftime("%m/%d") %> 만료</p>
+                  </div>
+                <% elsif sub&.premium? %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">프리미엄</span>
+                <% elsif sub&.basic? %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">베이직</span>
+                <% else %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-50 text-gray-400">무료</span>
                 <% end %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -74,11 +93,14 @@
           </div>
         </div>
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
             <% if master.verified? %>
               <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">인증됨</span>
             <% else %>
               <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">미인증</span>
+            <% end %>
+            <% if master.subscription&.zone? %>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">마스터</span>
             <% end %>
             <% if master.experience_years %>
               <span class="text-xs text-gray-500">경력 <%= master.experience_years %>년</span>

@@ -146,6 +146,7 @@
               <%= link_to "홈", expert_dashboard_path, class: (controller_name == 'dashboard' ? nav_link_active : nav_link) %>
               <%= link_to "오더 피드", open_orders_masters_requests_path, class: (action_name == 'open_orders' ? nav_link_active : nav_link) %>
               <%= link_to "내 작업", masters_requests_path, class: (controller_path == 'masters/requests' && action_name != 'open_orders' ? nav_link_active : nav_link) %>
+              <%= link_to "결제 관리", masters_billing_path, class: (controller_path == 'masters/billing' ? nav_link_active : nav_link) %>
               <%= link_to "커뮤니티", community_path, class: (controller_name == 'posts' ? nav_link_active : nav_link) %>
             <% elsif current_user.admin? %>
               <%= link_to "관리자", admin_root_path, class: (controller_path.start_with?('admin') ? nav_link_active : nav_link) %>
@@ -289,6 +290,13 @@
             <%= link_to masters_insurance_claims_path, class: "flex items-center gap-3 px-3 py-3.5 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
               <i class="fa-solid fa-file-shield w-5 text-center"></i>
               <span class="font-medium">보험청구</span>
+            <% end %>
+            <%= link_to masters_billing_path, class: "flex items-center gap-3 px-3 py-3.5 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors" do %>
+              <i class="fa-solid fa-credit-card w-5 text-center"></i>
+              <span class="font-medium">결제 관리</span>
+              <% if current_user.master? && current_user.subscription&.zone? %>
+                <span class="ml-auto text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">마스터</span>
+              <% end %>
             <% end %>
 
           <% elsif current_user.admin? %>

@@ -33,6 +33,7 @@ gem "matrix"  # Ruby 3.2+에서 기본 gem에서 제거됨 (prawn 의존성)
 
 # Background Jobs
 gem "sidekiq"
+gem "sidekiq-cron", "~> 1.12"
 
 # Error Tracking
 gem "sentry-ruby"

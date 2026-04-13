@@ -86,6 +86,14 @@ class TossPaymentsService
     response
   end
 
+  # 빌링키 삭제 (고아 빌링키 방지용)
+  def delete_billing_key(billing_key)
+    uri = URI("#{API_BASE_URL}/billing/authorizations/#{billing_key}")
+    req = Net::HTTP::Delete.new(uri)
+    req["Authorization"] = auth_header
+    http_request(uri, req)
+  end
+
   private
 
   def auth_header

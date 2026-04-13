@@ -44,6 +44,7 @@ class Masters::BillingController < ApplicationController
     end
 
     toss = TossPaymentsService.new
+    billing_key = nil
 
     # 빌링키 발급
     billing_result = toss.issue_billing_key(auth_key: auth_key, customer_key: customer_key)
@@ -61,7 +62,7 @@ class Masters::BillingController < ApplicationController
       customer_name: current_user.name
     )
 
-    # 구독 활성화
+    # 구독 활성화 (결제 성공 후에만)
     @subscription.activate_with_billing!(
       billing_key: billing_key,
       customer_key: customer_key
@@ -83,6 +84,24 @@ class Masters::BillingController < ApplicationController
 
   rescue TossPaymentsService::PaymentError => e
     Rails.logger.error "[Billing] 빌링키/결제 실패: #{e.message}"
+
+    # 빌링키가 발급됐지만 결제 실패 → 빌링키 비활성화 (고아 빌링키 방지)
+    if billing_key.present?
+      begin
+        toss.delete_billing_key(billing_key)
+        Rails.logger.info "[Billing] 고아 빌링키 삭제: #{billing_key}"
+      rescue => cleanup_error
+        Rails.logger.error "[Billing] 빌링키 삭제 실패 (수동 정리 필요): #{billing_key} / #{cleanup_error.message}"
+      end
+    end
+
+    PaymentAuditLog.log_payment(
+      user: current_user,
+      action: "fail",
+      details: { error: e.message, billing_key: billing_key },
+      ip_address: request.remote_ip
+    )
+
     redirect_to new_masters_billing_path, alert: "결제 처리 중 오류가 발생했어요. 다시 시도해주세요."
   rescue => e
     Rails.logger.error "[Billing] 알 수 없는 오류: #{e.class} - #{e.message}"

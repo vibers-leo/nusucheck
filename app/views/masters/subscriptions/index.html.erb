@@ -24,7 +24,7 @@
   </div>
 
   <!-- 플랜 비교표 -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
     <!-- Free Tier -->
     <div class="bg-white border-2 <%= @subscription.free? ? 'border-primary-400' : 'border-gray-200' %> rounded-2xl p-6 <%= @subscription.free? ? 'shadow-lg' : 'shadow-sm' %> hover:shadow-lg transition-shadow">
       <% if @subscription.free? %>
@@ -182,6 +182,62 @@
               class: "w-full py-3 bg-yellow-400 text-gray-900 font-bold rounded-lg hover:bg-yellow-500 transition-colors shadow-lg" %>
       <% end %>
     </div>
+
+    <!-- Zone / 마스터 플랜 -->
+    <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-shadow relative overflow-hidden">
+      <div class="absolute top-0 right-0 bg-white text-blue-700 px-4 py-1.5 text-xs font-bold rounded-bl-2xl">
+        구역 선점 📍
+      </div>
+
+      <% if @subscription.zone? %>
+        <div class="absolute top-4 left-4 bg-white/20 backdrop-blur-sm text-white px-3 py-1 text-xs font-bold rounded-full">
+          현재 플랜
+        </div>
+      <% end %>
+
+      <h2 class="text-2xl font-bold mb-2 mt-6">마스터 플랜</h2>
+      <p class="text-sm opacity-90 mb-4">내 구역 1위 전문가로 우선 노출</p>
+
+      <div class="mb-6">
+        <span class="text-4xl font-bold">₩99,000</span>
+        <span class="opacity-80">/월</span>
+      </div>
+
+      <ul class="space-y-3 mb-6">
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-blue-200 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm"><strong class="text-white">📍 구역 우선 노출</strong> 슬롯 1개</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-blue-200 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm"><strong>무제한</strong> 클레임</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-blue-200 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm"><strong class="text-blue-200">⚡ 우선 매칭 알림</strong></span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-blue-200 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm">매월 자동결제 · 언제든 해지</span>
+        </li>
+      </ul>
+
+      <% if @subscription.zone? %>
+        <%= link_to "결제 관리", masters_billing_path,
+              class: "block w-full py-3 text-center bg-white/20 text-white font-bold rounded-lg cursor-default" %>
+      <% else %>
+        <%= link_to "카드 등록하고 시작하기", new_masters_billing_path,
+              class: "block w-full py-3 text-center bg-white text-blue-700 font-bold rounded-lg hover:bg-blue-50 transition-colors shadow-lg" %>
+      <% end %>
+    </div>
   </div>
 
   <!-- Toss-like 안내 박스 -->
@@ -204,6 +260,10 @@
       <li class="flex items-start gap-2">
         <span class="text-blue-600 font-bold">•</span>
         <span><strong>프리미엄 플랜</strong>: 신규 체크가 올라오면 5분 먼저 알림을 받아요. 프로필도 상단에 노출돼서 더 많은 고객을 만날 수 있어요! 🚀</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-blue-600 font-bold">•</span>
+        <span><strong>마스터 플랜</strong>: 내가 선택한 구역에서 고객에게 가장 먼저 노출돼요. 매월 자동결제로 편리하게 유지하세요. 📍</span>
       </li>
       <li class="flex items-start gap-2">
         <span class="text-blue-600 font-bold">•</span>
