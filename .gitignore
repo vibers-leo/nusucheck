@@ -42,3 +42,12 @@ nul
 
 # 환경변수 (절대 커밋 금지)
 .env
+
+# E2E
+.env.e2e
+playwright-report/
+test-results/
+tests/reports/
+tests/.auth/
+node_modules/
+package-lock.json
