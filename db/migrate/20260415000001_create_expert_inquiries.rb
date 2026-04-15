@@ -1,4 +1,4 @@
-class CreateExpertInquiries < ActiveRecord::Migration[7.2]
+class CreateExpertInquiries < ActiveRecord::Migration[7.1]
   def change
     create_table :expert_inquiries do |t|
       t.string :name, null: false
