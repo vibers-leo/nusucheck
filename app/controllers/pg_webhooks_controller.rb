@@ -62,11 +62,16 @@ class PgWebhooksController < ApplicationController
   # 웹훅 서명 검증 (HMAC SHA256)
   # 토스페이먼츠에서 보낸 웹훅인지 검증하여 위조 방지
   def verify_toss_signature
-    # ENV에 TOSS_WEBHOOK_SECRET이 설정되지 않으면 검증 스킵 (개발/테스트 환경)
     webhook_secret = ENV["TOSS_WEBHOOK_SECRET"]
     unless webhook_secret.present?
-      Rails.logger.warn "[Toss Webhook] TOSS_WEBHOOK_SECRET 미설정 - 서명 검증 스킵"
-      return
+      if Rails.env.production?
+        Rails.logger.error "[Toss Webhook] TOSS_WEBHOOK_SECRET 미설정 - 프로덕션에서 웹훅 거부"
+        render json: { error: "Webhook not configured" }, status: :service_unavailable
+        return
+      else
+        Rails.logger.warn "[Toss Webhook] TOSS_WEBHOOK_SECRET 미설정 - 개발 환경 스킵"
+        return
+      end
     end
 
     # 헤더에서 서명 읽기

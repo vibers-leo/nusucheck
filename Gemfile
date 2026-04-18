@@ -56,6 +56,9 @@ gem "jwt"
 # CORS (모바일 앱 API 요청 허용)
 gem "rack-cors"
 
+# Rate Limiting & Brute-force protection
+gem "rack-attack"
+
 # Cloud Storage (Cloudflare R2 / Amazon S3 compatible)
 gem "aws-sdk-s3", require: false
 
@@ -70,6 +73,7 @@ group :development, :test do
   gem "rspec-rails"
   gem "factory_bot_rails"
   gem "faker"
+  gem "brakeman", require: false
 end
 
 group :development do

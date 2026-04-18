@@ -5,7 +5,23 @@ on:
     branches: [main]
 
 jobs:
+  security_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+      - name: Brakeman (static security analysis)
+        run: bundle exec brakeman --no-pager -q -w 2
+      - name: bundler-audit (gem CVE check)
+        run: |
+          gem install bundler-audit --no-document
+          bundle-audit check --update
+
   deploy:
+    needs: security_scan
     runs-on: ubuntu-latest
 
     steps:
