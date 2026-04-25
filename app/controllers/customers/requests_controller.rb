@@ -78,6 +78,7 @@ class Customers::RequestsController < ApplicationController
       )
     end
 
+    NotificationService.notify_estimate_accepted(estimate) rescue nil
     redirect_to request_messages_path(@request), notice: "견적을 수락했습니다. 결제를 진행해주세요."
   rescue ActiveRecord::RecordNotFound
     redirect_to customers_request_path(@request), alert: "견적을 찾을 수 없습니다."
@@ -277,6 +278,10 @@ class Customers::RequestsController < ApplicationController
     authorize @request
     if @request.may_confirm_completion?
       @request.confirm_completion!
+      # 에스크로 지급 알림 (전문가에게)
+      @request.escrow_transactions.where(status: :released).find_each do |txn|
+        NotificationService.notify_payment_released(txn) rescue nil
+      end
       redirect_to customers_request_path(@request), notice: "공사 완료가 확인되었습니다. 감사합니다!"
     else
       redirect_to customers_request_path(@request), alert: "현재 상태에서는 완료 확인을 할 수 없습니다."

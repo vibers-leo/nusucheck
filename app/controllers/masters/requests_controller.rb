@@ -157,6 +157,9 @@ class Masters::RequestsController < ApplicationController
   def submit_estimate
     authorize @request
     @request.submit_estimate!
+    @request.estimates.where(status: :pending).find_each do |est|
+      NotificationService.notify_estimate_submitted(est) rescue nil
+    end
     redirect_to masters_request_path(@request), notice: "견적이 제출되었습니다."
   rescue AASM::InvalidTransition => e
     redirect_to masters_request_path(@request), alert: "견적 제출 실패: #{e.message}"
@@ -175,6 +178,7 @@ class Masters::RequestsController < ApplicationController
     @request.construction_notes = params[:construction_notes] if params[:construction_notes].present?
     @request.construction_photos.attach(params[:construction_photos]) if params[:construction_photos].present?
     @request.complete_construction!
+    NotificationService.notify_construction_completed(@request) rescue nil
     redirect_to masters_request_path(@request), notice: "공사가 완료되었습니다. 고객 확인을 기다립니다."
   rescue AASM::InvalidTransition => e
     redirect_to masters_request_path(@request), alert: "상태 변경 실패: #{e.message}"

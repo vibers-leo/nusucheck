@@ -11,7 +11,10 @@ class NotificationService
     # ActionCable로 실시간 알림 브로드캐스트
     NotificationsChannel.broadcast_to(
       recipient,
-      notification: render_notification(notification)
+      notification: render_notification(notification),
+      icon: notification.icon,
+      title: action_title(action),
+      message: message
     )
 
     notification
@@ -138,6 +141,22 @@ class NotificationService
   end
 
   private
+
+  ACTION_TITLES = {
+    "master_applied" => "전문가 신청",
+    "request_assigned" => "체크 배정",
+    "estimate_submitted" => "견적 도착",
+    "estimate_accepted" => "견적 수락",
+    "construction_completed" => "공사 완료",
+    "insurance_review_requested" => "보험청구 검토",
+    "insurance_approved" => "보험청구 승인",
+    "insurance_change_requested" => "수정 요청",
+    "payment_released" => "대금 지급"
+  }.freeze
+
+  def self.action_title(action)
+    ACTION_TITLES[action] || "새 알림"
+  end
 
   def self.render_notification(notification)
     ApplicationController.render(
