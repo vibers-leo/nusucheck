@@ -20,7 +20,7 @@ class RequestPolicy < ApplicationPolicy
   end
 
   def assign_master?
-    user.admin? && (record.may_assign? || record.open?)
+    user.admin? && record.status.in?(%w[reported open])
   end
 
   def claim?
