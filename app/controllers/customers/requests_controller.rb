@@ -39,6 +39,9 @@ class Customers::RequestsController < ApplicationController
         SystemMessageService.send_video_received_message(@request)
       end
 
+      # 영상 썸네일 생성
+      VideoThumbnailJob.perform_later(@request.id) if @request.videos.attached?
+
       # 전문가 요청 모드(영상 업로드, 설명 없음)일 때 사전진단 유도 메시지
       if @request.videos.attached? && @request.description.blank?
         SystemMessageService.send_expert_request_prompt(@request)

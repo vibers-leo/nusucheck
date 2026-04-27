@@ -98,8 +98,13 @@
                   <% if request.photos.attached? %>
                     <%= image_tag request.photos.first.variant(resize_to_fill: [40, 40]), class: "w-10 h-10 rounded-lg object-cover flex-shrink-0" %>
                   <% elsif request.videos.attached? %>
-                    <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div class="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+                      <% if request.video_thumbnail.attached? %>
+                        <%= image_tag request.video_thumbnail.variant(resize_to_fill: [40, 40]), class: "w-full h-full object-cover" %>
+                      <% end %>
+                      <div class="absolute inset-0 flex items-center justify-center bg-black/20">
+                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+                      </div>
                     </div>
                   <% else %>
                     <div class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
@@ -150,8 +155,13 @@
             <% if request.photos.attached? %>
               <%= image_tag request.photos.first.variant(resize_to_fill: [48, 48]), class: "w-12 h-12 rounded-xl object-cover flex-shrink-0" %>
             <% elsif request.videos.attached? %>
-              <div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <div class="relative w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
+                <% if request.video_thumbnail.attached? %>
+                  <%= image_tag request.video_thumbnail.variant(resize_to_fill: [48, 48]), class: "w-full h-full object-cover" %>
+                <% end %>
+                <div class="absolute inset-0 flex items-center justify-center bg-black/20">
+                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+                </div>
               </div>
             <% end %>
             <div class="flex-1 min-w-0">
