@@ -107,8 +107,15 @@
                       </div>
                     </div>
                   <% else %>
-                    <div class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
-                      <img src="/images/icons/leak.png" alt="" class="w-6 h-6 object-contain opacity-40">
+                    <%
+                      symptom_icon = case request.symptom_type
+                        when "pipe_leak" then "tools"
+                        when "outdoor_leak" then "houses"
+                        else "leak"
+                      end
+                    %>
+                    <div class="w-10 h-10 rounded-lg bg-primary-50 flex items-center justify-center flex-shrink-0">
+                      <img src="/images/icons/<%= symptom_icon %>.png" alt="" class="w-7 h-7 object-contain">
                     </div>
                   <% end %>
                   <%= link_to "##{request.id}", admin_request_path(request), class: "text-primary-600 hover:text-primary-800 font-mono text-sm font-medium" %>
