@@ -1,2 +1,58 @@
-<%# 전문가 가입은 문의 페이지로 리다이렉트 %>
-<% redirect_to expert_inquiry_path %>
+<div class="max-w-md mx-auto py-8 px-4">
+
+  <div class="text-center mb-6">
+    <img src="/images/characters/team.png" alt="" class="w-20 h-20 mx-auto mb-3 object-contain" loading="lazy" />
+    <h1 class="text-xl font-bold text-gray-900">전문가 계정 만들기</h1>
+    <p class="text-sm text-gray-500 mt-1">승인이 완료되었어요. 아래 정보를 입력하고 가입하세요.</p>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-gray-100 p-6">
+    <%= form_for(resource, as: resource_name, url: expert_registration_path, method: :post, html: { class: "space-y-4" }) do |f| %>
+
+      <%= render "shared/form_errors", resource: resource if resource.errors.any? %>
+
+      <input type="hidden" name="user[type]" value="Master">
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1.5">이름</label>
+        <%= f.text_field :name, autofocus: true, required: true, placeholder: "홍길동",
+              class: "w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-primary-400 focus:outline-none" %>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1.5">이메일</label>
+        <%= f.email_field :email, required: true, placeholder: "expert@email.com",
+              class: "w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-primary-400 focus:outline-none" %>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1.5">연락처</label>
+        <%= f.telephone_field :phone, required: true, placeholder: "010-0000-0000",
+              class: "w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-primary-400 focus:outline-none" %>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1.5">비밀번호</label>
+        <%= f.password_field :password, required: true, autocomplete: "new-password", placeholder: "6자 이상",
+              class: "w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-primary-400 focus:outline-none" %>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1.5">비밀번호 확인</label>
+        <%= f.password_field :password_confirmation, required: true, autocomplete: "new-password", placeholder: "비밀번호를 한번 더 입력해주세요",
+              class: "w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-primary-400 focus:outline-none" %>
+      </div>
+
+      <button type="submit" class="w-full py-3 bg-primary-600 text-white text-sm font-bold rounded-xl hover:bg-primary-700 transition-colors">
+        가입하기
+      </button>
+
+    <% end %>
+  </div>
+
+  <p class="mt-4 text-center text-xs text-gray-400">
+    이미 계정이 있으신가요?
+    <%= link_to "로그인", new_user_session_path, class: "text-primary-600 font-medium" %>
+  </p>
+
+</div>
