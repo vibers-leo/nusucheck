@@ -5,7 +5,7 @@ class Admin::RequestsController < ApplicationController
 
   def index
     @q = Request.ransack(params[:q])
-    @requests = @q.result.includes(:customer, :master).recent.page(params[:page])
+    @requests = @q.result.includes(:customer, :master).with_attached_photos.with_attached_videos.recent.page(params[:page])
   end
 
   def show
