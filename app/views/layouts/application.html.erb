@@ -612,7 +612,7 @@
     </div>
     <div id="ai-chatbot-messages" class="p-4 space-y-3 overflow-y-auto flex-1">
       <div class="flex gap-2">
-        <img src="/images/characters/thumbsup.png" alt="" class="w-8 h-8 object-contain flex-shrink-0">
+        <img src="/images/characters/thumbsup.png" alt="" class="w-8 h-8 max-w-[32px] max-h-[32px] object-contain flex-shrink-0">
         <div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm text-gray-700 max-w-[80%]">
           안녕하세요! 누수체크 AI 비서예요.<br>궁금한 점이 있으면 편하게 물어보세요.
         </div>
@@ -701,7 +701,7 @@
     // AI 응답 (제로클로 웹훅)
     var loadingDiv = document.createElement('div');
     loadingDiv.className = 'flex gap-2 ai-loading';
-    loadingDiv.innerHTML = '<img src="/images/characters/ai-robot.png" alt="" class="w-8 h-8 object-contain flex-shrink-0"><div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm text-gray-400">생각 중...</div>';
+    loadingDiv.innerHTML = '<img src="/images/characters/ai-robot.png" alt="" class="w-8 h-8 max-w-[32px] max-h-[32px] object-contain flex-shrink-0"><div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm text-gray-400">생각 중...</div>';
     container.appendChild(loadingDiv);
     container.scrollTop = container.scrollHeight;
 
@@ -715,7 +715,7 @@
       container.removeChild(loadingDiv);
       var aiDiv = document.createElement('div');
       aiDiv.className = 'flex gap-2';
-      aiDiv.innerHTML = '<img src="/images/characters/ai-robot.png" alt="" class="w-8 h-8 object-contain flex-shrink-0"><div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm text-gray-700 max-w-[80%]">' + (data.reply || '잠시 후 다시 시도해주세요.').replace(/\n/g, '<br>') + '</div>';
+      aiDiv.innerHTML = '<img src="/images/characters/ai-robot.png" alt="" class="w-8 h-8 max-w-[32px] max-h-[32px] object-contain flex-shrink-0"><div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm text-gray-700 max-w-[80%]">' + (data.reply || '잠시 후 다시 시도해주세요.').replace(/\n/g, '<br>') + '</div>';
       container.appendChild(aiDiv);
       container.scrollTop = container.scrollHeight;
     })
@@ -723,7 +723,7 @@
       container.removeChild(loadingDiv);
       var errDiv = document.createElement('div');
       errDiv.className = 'flex gap-2';
-      errDiv.innerHTML = '<img src="/images/characters/sad.png" alt="" class="w-8 h-8 object-contain flex-shrink-0"><div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm text-gray-500 max-w-[80%]">잠시 연결이 어려워요. 조금 뒤에 다시 시도해주세요.</div>';
+      errDiv.innerHTML = '<img src="/images/characters/sad.png" alt="" class="w-8 h-8 max-w-[32px] max-h-[32px] object-contain flex-shrink-0"><div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm text-gray-500 max-w-[80%]">잠시 연결이 어려워요. 조금 뒤에 다시 시도해주세요.</div>';
       container.appendChild(errDiv);
       container.scrollTop = container.scrollHeight;
     });

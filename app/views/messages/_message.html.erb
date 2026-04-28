@@ -46,7 +46,7 @@
           <div class="text-xs text-gray-500 mb-1 ml-1 font-medium"><%= message.sender_name %></div>
         <% end %>
         <img src="/images/stickers/<%= message.content %>" alt="sticker"
-             class="w-32 h-32 object-contain select-none"
+             class="w-28 h-28 max-w-[112px] max-h-[112px] object-contain select-none"
              draggable="false">
         <div class="text-[10px] text-gray-400 mt-0.5 <%= is_my_message ? 'text-right' : 'text-left' %>">
           <%= message.created_at.strftime("%H:%M") %>
