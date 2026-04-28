@@ -173,13 +173,13 @@
           <% end %>
 
           <% if user_signed_in? %>
-            <!-- 튜토리얼 도움말 버튼 -->
-            <button type="button" id="tutorial-help-btn"
-                    onclick="window.nusuTutorial && window.nusuTutorial.start()"
-                    title="앱 사용법 보기"
-                    class="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors hidden md:flex items-center justify-center">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <!-- AI 비서 챗봇 버튼 -->
+            <button type="button" id="ai-chatbot-btn"
+                    onclick="toggleAiChatbot()"
+                    title="AI 비서에게 물어보기"
+                    class="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
               </svg>
             </button>
 
@@ -588,6 +588,89 @@
       <div class="md:hidden h-20"></div>
     <% end %>
   <% end %>
+
+  <!-- AI 챗봇 패널 (제로클로) -->
+  <div id="ai-chatbot-panel" class="hidden fixed bottom-20 right-4 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden" style="max-height: 70vh;">
+    <div class="bg-primary-600 px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <img src="/images/characters/ai-robot.png" alt="" class="w-7 h-7 object-contain">
+        <span class="text-white font-semibold text-sm">AI 비서</span>
+      </div>
+      <button onclick="toggleAiChatbot()" class="text-white/70 hover:text-white">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="ai-chatbot-messages" class="p-4 space-y-3 overflow-y-auto" style="max-height: 50vh;">
+      <div class="flex gap-2">
+        <img src="/images/characters/hello.png" alt="" class="w-8 h-8 object-contain flex-shrink-0">
+        <div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm text-gray-700 max-w-[80%]">
+          안녕하세요! 누수체크 AI 비서예요.<br>궁금한 점이 있으면 편하게 물어보세요.
+        </div>
+      </div>
+    </div>
+    <div class="border-t px-3 py-2 flex gap-2">
+      <input type="text" id="ai-chatbot-input" placeholder="메시지를 입력하세요"
+             class="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-400 focus:outline-none"
+             onkeydown="if(event.key==='Enter')sendAiChat()">
+      <button onclick="sendAiChat()" class="px-3 py-2 bg-primary-600 text-white rounded-xl text-sm font-semibold hover:bg-primary-700 transition-colors flex-shrink-0">
+        전송
+      </button>
+    </div>
+  </div>
+
+  <script>
+  function toggleAiChatbot() {
+    document.getElementById('ai-chatbot-panel').classList.toggle('hidden');
+    var input = document.getElementById('ai-chatbot-input');
+    if (input) setTimeout(function() { input.focus(); }, 100);
+  }
+
+  function sendAiChat() {
+    var input = document.getElementById('ai-chatbot-input');
+    var msg = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+
+    var container = document.getElementById('ai-chatbot-messages');
+
+    // 유저 메시지
+    var userDiv = document.createElement('div');
+    userDiv.className = 'flex justify-end';
+    userDiv.innerHTML = '<div class="bg-primary-600 text-white rounded-2xl rounded-tr-sm px-3 py-2 text-sm max-w-[80%]">' + msg.replace(/</g, '&lt;') + '</div>';
+    container.appendChild(userDiv);
+    container.scrollTop = container.scrollHeight;
+
+    // AI 응답 (제로클로 웹훅)
+    var loadingDiv = document.createElement('div');
+    loadingDiv.className = 'flex gap-2 ai-loading';
+    loadingDiv.innerHTML = '<img src="/images/characters/ai-robot.png" alt="" class="w-8 h-8 object-contain flex-shrink-0"><div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm text-gray-400">생각 중...</div>';
+    container.appendChild(loadingDiv);
+    container.scrollTop = container.scrollHeight;
+
+    fetch('/api/ai_chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content },
+      body: JSON.stringify({ message: msg })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      container.removeChild(loadingDiv);
+      var aiDiv = document.createElement('div');
+      aiDiv.className = 'flex gap-2';
+      aiDiv.innerHTML = '<img src="/images/characters/ai-robot.png" alt="" class="w-8 h-8 object-contain flex-shrink-0"><div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm text-gray-700 max-w-[80%]">' + (data.reply || '잠시 후 다시 시도해주세요.').replace(/\n/g, '<br>') + '</div>';
+      container.appendChild(aiDiv);
+      container.scrollTop = container.scrollHeight;
+    })
+    .catch(function() {
+      container.removeChild(loadingDiv);
+      var errDiv = document.createElement('div');
+      errDiv.className = 'flex gap-2';
+      errDiv.innerHTML = '<img src="/images/characters/sad.png" alt="" class="w-8 h-8 object-contain flex-shrink-0"><div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm text-gray-500 max-w-[80%]">잠시 연결이 어려워요. 조금 뒤에 다시 시도해주세요.</div>';
+      container.appendChild(errDiv);
+      container.scrollTop = container.scrollHeight;
+    });
+  }
+  </script>
 
   <!-- Footer -->
   <% unless hotwire_native_app? %>

@@ -146,15 +146,21 @@ class Customers::InsuranceClaimsController < ApplicationController
     end
 
     # 자동 제출 서비스 실행
-    submission_service = InsuranceSubmissionService.new(@insurance_claim)
+    begin
+      submission_service = InsuranceSubmissionService.new(@insurance_claim)
 
-    if submission_service.submit_to_insurance_company!
+      if submission_service.submit_to_insurance_company!
+        redirect_to customers_insurance_claim_path(@insurance_claim),
+                    notice: "#{@insurance_claim.insurance_company}에 보험 청구서가 이메일로 발송됐어요."
+      else
+        errors = submission_service.errors.join(", ")
+        redirect_to customers_insurance_claim_path(@insurance_claim),
+                    alert: "자동 제출에 실패했어요: #{errors}"
+      end
+    rescue => e
+      Rails.logger.error "[InsuranceClaim#auto_submit] #{e.class}: #{e.message}"
       redirect_to customers_insurance_claim_path(@insurance_claim),
-                  notice: "#{@insurance_claim.insurance_company}에 보험 청구서가 이메일로 발송되었습니다! 심사 중 상태로 변경되었습니다."
-    else
-      errors = submission_service.errors.join(", ")
-      redirect_to customers_insurance_claim_path(@insurance_claim),
-                  alert: "자동 제출에 실패했습니다: #{errors}"
+                  notice: "보험 신청서가 저장됐어요. 관리자가 확인 후 처리해드릴게요."
     end
   end
 

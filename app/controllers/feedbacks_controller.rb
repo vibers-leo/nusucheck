@@ -10,10 +10,14 @@ class FeedbacksController < ApplicationController
     @feedback.user = current_user if user_signed_in?
 
     if @feedback.save
-      # 관리자에게 알림 (선택사항)
-      # NotificationService.notify_admin_new_feedback(@feedback) rescue nil
+      # 관리자에게 메일 발송
+      ApplicationMailer.mail(
+        to: ApplicationMailer::ADMIN_EMAILS,
+        subject: "[누수체크] 의견 접수 - #{@feedback.category}",
+        body: "이름: #{@feedback.name}\n이메일: #{@feedback.email}\n분류: #{@feedback.category}\n\n#{@feedback.message}"
+      ).deliver_later rescue nil
 
-      redirect_to root_path, notice: "소중한 의견 감사합니다! 검토 후 연락드리겠습니다."
+      redirect_to root_path, notice: "소중한 의견 감사해요. 검토 후 연락드릴게요."
     else
       render :new, status: :unprocessable_entity
     end

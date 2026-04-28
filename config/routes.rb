@@ -341,6 +341,9 @@ Rails.application.routes.draw do
   get "refund", to: "pages#refund", as: :refund
   get "sitemap.xml", to: "pages#sitemap", as: :sitemap, defaults: { format: :xml }
 
+  # AI 챗봇 프록시 (제로클로)
+  post "api/ai_chat", to: "api/ai_chat#create"
+
   # Vibers 통합 어드민
   scope "/api" do
     get  "vibers_admin",           to: "vibers_admin#index"
