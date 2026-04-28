@@ -342,7 +342,9 @@ Rails.application.routes.draw do
   get "sitemap.xml", to: "pages#sitemap", as: :sitemap, defaults: { format: :xml }
 
   # AI 챗봇 프록시 (제로클로)
-  post "api/ai_chat", to: "api/ai_chat#create"
+  scope "/api", module: "api" do
+    post "ai_chat", to: "ai_chat#create"
+  end
 
   # Vibers 통합 어드민
   scope "/api" do

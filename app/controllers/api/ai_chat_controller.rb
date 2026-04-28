@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::AiChatController < ApplicationController
+class API::AiChatController < ApplicationController
   skip_before_action :verify_authenticity_token
   skip_before_action :authenticate_user!, raise: false
 
